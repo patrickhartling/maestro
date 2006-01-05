@@ -336,12 +336,16 @@ image1_data = \
     "\x00\x00\x49\x45\x4e\x44\xae\x42\x60\x82"
 
 class TestSettings(TestSettingsBase.TestSettingsBase):
-    def __init__(self,parent = None,name = None,fl = 0):
-        TestSettingsBase.TestSettingsBase.__init__(self,parent,name,fl)
-        self.image0 = QPixmap()
-        self.image0.loadFromData(image0_data,"PNG")
-        self.image1 = QPixmap()
-        self.image1.loadFromData(image1_data,"PNG")
+   def __init__(self,parent = None,name = None,fl = 0):
+      TestSettingsBase.TestSettingsBase.__init__(self,parent,name,fl)
+      self.image0 = QPixmap()
+      self.image0.loadFromData(image0_data,"PNG")
+      self.image1 = QPixmap()
+      self.image1.loadFromData(image1_data,"PNG")
+
+   def getName():
+      return "Test Settings"
+   getName = staticmethod(getName)
 
 def getModuleInfo():
    image1 = QPixmap()
@@ -349,9 +353,9 @@ def getModuleInfo():
    return (TestSettings,image1)
 
 if __name__ == "__main__":
-    a = QApplication(sys.argv)
-    QObject.connect(a,SIGNAL("lastWindowClosed()"),a,SLOT("quit()"))
-    w = TestSettings()
-    a.setMainWidget(w)
-    w.show()
-    a.exec_loop()
+   a = QApplication(sys.argv)
+   QObject.connect(a,SIGNAL("lastWindowClosed()"),a,SLOT("quit()"))
+   w = TestSettings()
+   a.setMainWidget(w)
+   w.show()
+   a.exec_loop()

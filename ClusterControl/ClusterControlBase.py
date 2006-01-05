@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ClusterControlBase.ui'
 #
-# Created: Thu Jan 5 11:28:23 2006
+# Created: Thu Jan 5 14:07:27 2006
 #      by: The PyQt User Interface Compiler (pyuic) 3.14.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -87,7 +87,9 @@ class ClusterControlBase(QMainWindow):
 
         self.mToolbox = QButtonGroup(self.centralWidget(),"mToolbox")
         self.mToolbox.setSizePolicy(QSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum,0,0,self.mToolbox.sizePolicy().hasHeightForWidth()))
-        self.mToolbox.setFrameShape(QButtonGroup.GroupBoxPanel)
+        self.mToolbox.setFrameShape(QButtonGroup.Panel)
+        self.mToolbox.setFrameShadow(QButtonGroup.Sunken)
+        self.mToolbox.setExclusive(1)
         self.mToolbox.setColumnLayout(0,Qt.Vertical)
         self.mToolbox.layout().setSpacing(6)
         self.mToolbox.layout().setMargin(11)

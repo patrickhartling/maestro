@@ -32,7 +32,10 @@
                 </sizepolicy>
             </property>
             <property name="frameShape">
-                <enum>GroupBoxPanel</enum>
+                <enum>Panel</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
             </property>
             <property name="title">
                 <string></string>
@@ -42,6 +45,9 @@
                     <cstring>unnamed</cstring>
                 </property>
             </vbox>
+            <property name="exclusive">
+                <bool>true</bool>
+            </property>
         </widget>
         <widget class="QWidgetStack">
             <property name="name">

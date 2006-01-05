@@ -175,6 +175,7 @@ class ClusterControl(ClusterControlBase.ClusterControlBase):
 
                btn.setIconSet(QIconSet(new_icon))
                btn.setAutoRaise(1)
+               btn.setToggleButton(True)
                self.mToolbox.layout().addWidget(btn)
 
                # Keep track of widgets to remove them later
@@ -182,17 +183,19 @@ class ClusterControl(ClusterControlBase.ClusterControlBase):
 
             except Exception, ex:
                view_name = "Unknown"
-               #if module_class:
-               #   pass
-                  #view_name = module_class.getName()
-               #if new_module:
-                  #new_module.destroy()
-                  #new_module = None
+               if module_class:
+                  view_name = module_class.getName()
+               if new_module:
+                  new_module.destroy()
+                  new_module = None
                err_text = "Error loading view:" + view_name + "\n  exception:" + str(ex)
                print err_text
                traceback.print_exc()
                #error_dialog = pyglui.dialogs.StdDialog("Exception: View Load Failed", err_text)         
                #error_dialog.doModal()
+
+      # Set the default button to display
+      self.mToolbox.setButton(0)
 
    def __tr(self,s,c = None):
       return qApp.translate("MainWindow",s,c)

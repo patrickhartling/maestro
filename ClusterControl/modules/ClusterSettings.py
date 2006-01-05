@@ -2,6 +2,7 @@
 
 import sys
 from qt import *
+from qttable import *
 import ClusterSettingsBase
 
 image0_data = \
@@ -335,13 +336,20 @@ image1_data = \
     "\xc0\x7f\xba\x21\xbb\x41\x9b\x63\x96\xbe\x00\x00" \
     "\x00\x00\x49\x45\x4e\x44\xae\x42\x60\x82"
 
+#class ClusterTableModel(QAbstractTableModel):
+#   pass
+
 class ClusterSettings(ClusterSettingsBase.ClusterSettingsBase):
-    def __init__(self,parent = None,name = None,fl = 0):
-        ClusterSettingsBase.ClusterSettingsBase.__init__(self,parent,name,fl)
-        self.image0 = QPixmap()
-        self.image0.loadFromData(image0_data,"PNG")
-        self.image1 = QPixmap()
-        self.image1.loadFromData(image1_data,"PNG")
+   def __init__(self,parent = None,name = None,fl = 0):
+      ClusterSettingsBase.ClusterSettingsBase.__init__(self,parent,name,fl)
+      self.image0 = QPixmap()
+      self.image0.loadFromData(image0_data,"PNG")
+      self.image1 = QPixmap()
+      self.image1.loadFromData(image1_data,"PNG")
+
+   def getName():
+        return "Cluster Settings"
+   getName = staticmethod(getName)
 
 def getModuleInfo():
    image0 = QPixmap()
@@ -349,9 +357,9 @@ def getModuleInfo():
    return (ClusterSettings,image0)
 
 if __name__ == "__main__":
-    a = QApplication(sys.argv)
-    QObject.connect(a,SIGNAL("lastWindowClosed()"),a,SLOT("quit()"))
-    w = ClusterSettings()
-    a.setMainWidget(w)
-    w.show()
-    a.exec_loop()
+   a = QApplication(sys.argv)
+   QObject.connect(a,SIGNAL("lastWindowClosed()"),a,SLOT("quit()"))
+   w = ClusterSettings()
+   a.setMainWidget(w)
+   w.show()
+   a.exec_loop()
