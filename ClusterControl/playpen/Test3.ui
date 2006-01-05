@@ -1,0 +1,36 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>Form7</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>Form7</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>600</width>
+            <height>480</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Form7</string>
+    </property>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>pushButton19</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>160</x>
+                <y>90</y>
+                <width>93</width>
+                <height>30</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>pushButton19</string>
+        </property>
+    </widget>
+</widget>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
