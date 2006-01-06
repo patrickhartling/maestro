@@ -8,9 +8,13 @@ import ClusterSettingsResource
 #class ClusterTableModel(QAbstractTableModel):
 #   pass
 
-class Ui_TestSettings(TestSettingsBase.Ui_Form):
-   def setupUi(self, Form):
-      TestSettingsBase.Ui_Form.setupUi(self, Form)
+class TestSettings(QtGui.QWidget, TestSettingsBase.Ui_Form):
+   def __init__(self, parent = None):
+      QtGui.QWidget.__init__(self, parent)
+      self.setupUi(self)
+
+   def setupUi(self, widget):
+      TestSettingsBase.Ui_Form.setupUi(self, widget)
       
       self.icon = QtGui.QIcon(":/linux2.png")
 
@@ -20,13 +24,12 @@ class Ui_TestSettings(TestSettingsBase.Ui_Form):
 
 def getModuleInfo():
    icon = QtGui.QIcon(":/linux2.png")
-   return (Ui_TestSettings, icon)
+   return (TestSettings, icon)
 
 if __name__ == "__main__":
    app = QtGui.QApplication(sys.argv)
    Form = QtGui.QWidget()
-   ui = Ui_TestSettings()
-   ui.setupUi(Form)
-   Form.show()
+   ts = TestSettings()
+   ts.show()
    sys.exit(app.exec_())
 

@@ -8,8 +8,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>778</width>
-    <height>702</height>
+    <width>788</width>
+    <height>711</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -135,16 +135,10 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>778</width>
+     <width>788</width>
      <height>29</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuHelp" >
-    <property name="title" >
-     <string>&amp;Help</string>
-    </property>
-    <addaction name="action_About" />
-   </widget>
    <widget class="QMenu" name="menuFile" >
     <property name="title" >
      <string>&amp;File</string>
@@ -157,6 +151,12 @@
     <addaction name="separator" />
     <addaction name="action_Exit" />
    </widget>
+   <widget class="QMenu" name="menuHelp" >
+    <property name="title" >
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="action_About" />
+   </widget>
    <addaction name="menuFile" />
    <addaction name="menuHelp" />
   </widget>
@@ -164,13 +164,19 @@
    <property name="geometry" >
     <rect>
      <x>0</x>
-     <y>680</y>
-     <width>778</width>
+     <y>689</y>
+     <width>788</width>
      <height>22</height>
     </rect>
    </property>
   </widget>
   <widget class="QToolBar" name="toolBar" >
+   <property name="windowTitle" >
+    <string>Toolbar</string>
+   </property>
+   <property name="movable" >
+    <bool>true</bool>
+   </property>
    <property name="orientation" >
     <enum>Qt::Horizontal</enum>
    </property>
@@ -179,8 +185,13 @@
    </attribute>
    <addaction name="actionReload" />
    <addaction name="actionNew" />
+   <addaction name="actionOpen" />
+   <addaction name="actionSave" />
   </widget>
   <widget class="QDockWidget" name="mStatusWindow" >
+   <property name="windowTitle" >
+    <string>Status Window</string>
+   </property>
    <property name="allowedAreas" >
     <set>Qt::BottomDockWidgetArea</set>
    </property>
@@ -201,11 +212,33 @@
         <attribute name="title" >
          <string>Tab 1</string>
         </attribute>
+        <layout class="QHBoxLayout" >
+         <property name="margin" >
+          <number>9</number>
+         </property>
+         <property name="spacing" >
+          <number>6</number>
+         </property>
+         <item>
+          <widget class="QTextBrowser" name="textBrowser" />
+         </item>
+        </layout>
        </widget>
        <widget class="QWidget" name="tab_2" >
         <attribute name="title" >
          <string>Tab 2</string>
         </attribute>
+        <layout class="QHBoxLayout" >
+         <property name="margin" >
+          <number>9</number>
+         </property>
+         <property name="spacing" >
+          <number>6</number>
+         </property>
+         <item>
+          <widget class="QTextBrowser" name="textBrowser_2" />
+         </item>
+        </layout>
        </widget>
       </widget>
      </item>
@@ -213,21 +246,33 @@
    </widget>
   </widget>
   <action name="actionReload" >
+   <property name="icon" >
+    <iconset resource="ClusterControlResource.qrc" >:/editredo.png</iconset>
+   </property>
    <property name="text" >
     <string>&amp;Reload</string>
    </property>
   </action>
   <action name="actionNew" >
+   <property name="icon" >
+    <iconset resource="ClusterControlResource.qrc" >:/new.png</iconset>
+   </property>
    <property name="text" >
     <string>&amp;New</string>
    </property>
   </action>
   <action name="actionOpen" >
+   <property name="icon" >
+    <iconset resource="ClusterControlResource.qrc" >:/open.png</iconset>
+   </property>
    <property name="text" >
     <string>&amp;Open</string>
    </property>
   </action>
   <action name="actionSave" >
+   <property name="icon" >
+    <iconset resource="ClusterControlResource.qrc" >:/save.png</iconset>
+   </property>
    <property name="text" >
     <string>&amp;Save</string>
    </property>
@@ -238,6 +283,9 @@
    </property>
   </action>
   <action name="action_Exit" >
+   <property name="icon" >
+    <iconset resource="ClusterControlResource.qrc" >:/exit.png</iconset>
+   </property>
    <property name="text" >
     <string>&amp;Exit</string>
    </property>
@@ -249,6 +297,8 @@
   </action>
  </widget>
  <pixmapfunction></pixmapfunction>
- <resources/>
+ <resources>
+  <include location="ClusterControlResource.qrc" />
+ </resources>
  <connections/>
 </ui>

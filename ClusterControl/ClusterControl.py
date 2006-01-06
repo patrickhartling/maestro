@@ -5,6 +5,7 @@ pj = os.path.join
 
 from PyQt4 import QtGui, QtCore
 import ClusterControlBase
+import ClusterControlResource
 
 import modules
 
@@ -17,12 +18,16 @@ except:
 print "Base gui dir:", gui_base_dir
 
 
-class Ui_ClusterControl(ClusterControlBase.Ui_ClusterControlBase):
-   def setupUi(self, ClusterControl):
-      ClusterControlBase.Ui_ClusterControlBase.setupUi(self, ClusterControl)
+class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase):
+   def __init__(self, parent = None):
+      QtGui.QMainWindow.__init__(self, parent)
+      self.setupUi(self)
+
+   def setupUi(self, widget):
+      ClusterControlBase.Ui_ClusterControlBase.setupUi(self, widget)
 
       self.mToolboxButtonGroup = QtGui.QButtonGroup()
-      ClusterControl.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.mStatusWindow)
+      widget.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.mStatusWindow)
 
       # Load custom modules
       self.mPlugins = {}             # Dict of plugins: mod_name -> (module, ..)
@@ -128,41 +133,11 @@ class Ui_ClusterControl(ClusterControlBase.Ui_ClusterControlBase):
             
                # Create module
                new_module = module_class()
-               ###
-               Form = QtGui.QWidget()
-               new_module.setupUi(Form)
-               ###
 
                # Keep track of widgets to remove them later
-               self.mModulePanels.append(Form)
-               #self.mStack.addWidget(Form, num)
-               index = self.mStack.addWidget(Form)
-               """
-               import Test
-               TestForm = QtGui.QWidget()
-               tuif = Test.Ui_Form()
-               tuif.setupUi(TestForm)
-               index = self.mStack.addWidget(TestForm)
-               """
-               
-               """
-               t = QtGui.QWidget()
-               t2 = QtGui.QToolButton(t)
-
-               sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(5),QtGui.QSizePolicy.Policy(5))
-               sizePolicy.setHorizontalStretch(0)
-               sizePolicy.setVerticalStretch(0)
-               sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
-               t.setSizePolicy(sizePolicy)
-
-               self.vboxlayout2 = QtGui.QVBoxLayout(t)
-               self.vboxlayout2.setMargin(9)
-               self.vboxlayout2.setSpacing(6)
-               self.vboxlayout2.setObjectName("vboxlayout2")
-               self.vboxlayout2.addWidget(t2)
-
-               index = self.mStack.addWidget(t)
-               """
+               self.mModulePanels.append(new_module)
+               #self.mStack.addWidget(new_module, num)
+               index = self.mStack.addWidget(new_module)
 
                btn = QtGui.QToolButton(self.mToolbox)
                btn.setIcon(new_icon)
@@ -210,8 +185,6 @@ class Ui_ClusterControl(ClusterControlBase.Ui_ClusterControlBase):
 
 if __name__ == "__main__":
    app = QtGui.QApplication(sys.argv)
-   ClusterControl = QtGui.QMainWindow()
-   ui = Ui_ClusterControl()
-   ui.setupUi(ClusterControl)
-   ClusterControl.show()
+   cc = ClusterControl()
+   cc.show()
    sys.exit(app.exec_())

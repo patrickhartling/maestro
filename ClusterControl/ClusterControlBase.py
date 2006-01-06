@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ClusterControlBase.ui'
 #
-# Created: Fri Jan  6 16:03:38 2006
+# Created: Fri Jan  6 17:11:11 2006
 #      by: PyQt4 UI code generator v0.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,7 +13,7 @@ from PyQt4 import QtGui, QtCore
 class Ui_ClusterControlBase(object):
    def setupUi(self, ClusterControlBase):
       ClusterControlBase.setObjectName("ClusterControlBase")
-      ClusterControlBase.resize(QtCore.QSize(QtCore.QRect(0,0,778,702).size()).expandedTo(ClusterControlBase.minimumSizeHint()))
+      ClusterControlBase.resize(QtCore.QSize(QtCore.QRect(0,0,788,711).size()).expandedTo(ClusterControlBase.minimumSizeHint()))
       
       self.centralwidget = QtGui.QWidget(ClusterControlBase)
       self.centralwidget.setObjectName("centralwidget")
@@ -35,7 +35,6 @@ class Ui_ClusterControlBase(object):
       sizePolicy.setVerticalStretch(0)
       sizePolicy.setHeightForWidth(self.mToolbox.sizePolicy().hasHeightForWidth())
       self.mToolbox.setSizePolicy(sizePolicy)
-      self.mToolbox.setAutoFillBackground(True)
       self.mToolbox.setFrameShape(QtGui.QFrame.StyledPanel)
       self.mToolbox.setFrameShadow(QtGui.QFrame.Sunken)
       self.mToolbox.setLineWidth(3)
@@ -99,18 +98,18 @@ class Ui_ClusterControlBase(object):
       ClusterControlBase.setCentralWidget(self.centralwidget)
       
       self.menubar = QtGui.QMenuBar(ClusterControlBase)
-      self.menubar.setGeometry(QtCore.QRect(0,0,778,29))
+      self.menubar.setGeometry(QtCore.QRect(0,0,788,29))
       self.menubar.setObjectName("menubar")
-      
-      self.menuHelp = QtGui.QMenu(self.menubar)
-      self.menuHelp.setObjectName("menuHelp")
       
       self.menuFile = QtGui.QMenu(self.menubar)
       self.menuFile.setObjectName("menuFile")
+      
+      self.menuHelp = QtGui.QMenu(self.menubar)
+      self.menuHelp.setObjectName("menuHelp")
       ClusterControlBase.setMenuBar(self.menubar)
       
       self.statusbar = QtGui.QStatusBar(ClusterControlBase)
-      self.statusbar.setGeometry(QtCore.QRect(0,680,778,22))
+      self.statusbar.setGeometry(QtCore.QRect(0,689,788,22))
       self.statusbar.setObjectName("statusbar")
       ClusterControlBase.setStatusBar(self.statusbar)
       
@@ -136,35 +135,57 @@ class Ui_ClusterControlBase(object):
       
       self.tab = QtGui.QWidget()
       self.tab.setObjectName("tab")
+      
+      self.hboxlayout2 = QtGui.QHBoxLayout(self.tab)
+      self.hboxlayout2.setMargin(9)
+      self.hboxlayout2.setSpacing(6)
+      self.hboxlayout2.setObjectName("hboxlayout2")
+      
+      self.textBrowser = QtGui.QTextBrowser(self.tab)
+      self.textBrowser.setObjectName("textBrowser")
+      self.hboxlayout2.addWidget(self.textBrowser)
       self.tabWidget.addTab(self.tab, "")
       
       self.tab_2 = QtGui.QWidget()
       self.tab_2.setObjectName("tab_2")
+      
+      self.hboxlayout3 = QtGui.QHBoxLayout(self.tab_2)
+      self.hboxlayout3.setMargin(9)
+      self.hboxlayout3.setSpacing(6)
+      self.hboxlayout3.setObjectName("hboxlayout3")
+      
+      self.textBrowser_2 = QtGui.QTextBrowser(self.tab_2)
+      self.textBrowser_2.setObjectName("textBrowser_2")
+      self.hboxlayout3.addWidget(self.textBrowser_2)
       self.tabWidget.addTab(self.tab_2, "")
       self.vboxlayout3.addWidget(self.tabWidget)
       self.mStatusWindow.setWidget(self.dockWidgetContents)
       
       self.actionReload = QtGui.QAction(ClusterControlBase)
+      self.actionReload.setIcon(QtGui.QIcon(":/editredo.png"))
       self.actionReload.setObjectName("actionReload")
       
       self.actionNew = QtGui.QAction(ClusterControlBase)
+      self.actionNew.setIcon(QtGui.QIcon(":/new.png"))
       self.actionNew.setObjectName("actionNew")
       
       self.actionOpen = QtGui.QAction(ClusterControlBase)
+      self.actionOpen.setIcon(QtGui.QIcon(":/open.png"))
       self.actionOpen.setObjectName("actionOpen")
       
       self.actionSave = QtGui.QAction(ClusterControlBase)
+      self.actionSave.setIcon(QtGui.QIcon(":/save.png"))
       self.actionSave.setObjectName("actionSave")
       
       self.actionSave_As = QtGui.QAction(ClusterControlBase)
       self.actionSave_As.setObjectName("actionSave_As")
       
       self.action_Exit = QtGui.QAction(ClusterControlBase)
+      self.action_Exit.setIcon(QtGui.QIcon(":/exit.png"))
       self.action_Exit.setObjectName("action_Exit")
       
       self.action_About = QtGui.QAction(ClusterControlBase)
       self.action_About.setObjectName("action_About")
-      self.menuHelp.addAction(self.action_About)
       self.menuFile.addAction(self.actionReload)
       self.menuFile.addAction(self.actionNew)
       self.menuFile.addAction(self.actionOpen)
@@ -172,10 +193,13 @@ class Ui_ClusterControlBase(object):
       self.menuFile.addAction(self.actionSave_As)
       self.menuFile.addSeparator()
       self.menuFile.addAction(self.action_Exit)
+      self.menuHelp.addAction(self.action_About)
       self.menubar.addAction(self.menuFile.menuAction())
       self.menubar.addAction(self.menuHelp.menuAction())
       self.toolBar.addAction(self.actionReload)
       self.toolBar.addAction(self.actionNew)
+      self.toolBar.addAction(self.actionOpen)
+      self.toolBar.addAction(self.actionSave)
       
       self.retranslateUi(ClusterControlBase)
 
@@ -188,8 +212,10 @@ class Ui_ClusterControlBase(object):
       self.pushButton.setText(self.tr("PushButton"))
       self.pushButton_3.setText(self.tr("PushButton"))
       self.pushButton_2.setText(self.tr("PushButton"))
-      self.menuHelp.setTitle(self.tr("&Help"))
       self.menuFile.setTitle(self.tr("&File"))
+      self.menuHelp.setTitle(self.tr("&Help"))
+      self.toolBar.setWindowTitle(self.tr("Toolbar"))
+      self.mStatusWindow.setWindowTitle(self.tr("Status Window"))
       self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), self.tr("Tab 1"))
       self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), self.tr("Tab 2"))
       self.actionReload.setText(self.tr("&Reload"))

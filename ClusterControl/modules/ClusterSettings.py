@@ -4,14 +4,20 @@ import sys
 from PyQt4 import QtGui, QtCore
 import ClusterSettingsBase
 import ClusterSettingsResource
-
+import Cluster
 #class ClusterTableModel(QAbstractTableModel):
 #   pass
 
-class Ui_ClusterSettings(ClusterSettingsBase.Ui_ClusterSettings):
-   def setupUi(self, Form):
-      ClusterSettingsBase.Ui_ClusterSettings.setupUi(self, Form)
+class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase):
+   def __init__(self, parent = None):
+      QtGui.QWidget.__init__(self, parent)
+      self.setupUi(self)
+
+   def setupUi(self, widget):
+      ClusterSettingsBase.Ui_ClusterSettingsBase.setupUi(self, widget)
       
+      c = Cluster.ClusterModel(self.listView)
+      self.listView.setModel(c)
       self.icon = QtGui.QIcon(":/linux2.png")
 
    def getName():
@@ -20,13 +26,11 @@ class Ui_ClusterSettings(ClusterSettingsBase.Ui_ClusterSettings):
 
 def getModuleInfo():
    icon = QtGui.QIcon(":/linux2.png")
-   return (Ui_ClusterSettings, icon)
+   return (ClusterSettings, icon)
 
 if __name__ == "__main__":
    app = QtGui.QApplication(sys.argv)
-   Form = QtGui.QWidget()
-   ui = Ui_ClusterSettings()
-   ui.setupUi(Form)
-   Form.show()
+   cs = ClusterSettings()
+   cs.show()
    sys.exit(app.exec_())
 
