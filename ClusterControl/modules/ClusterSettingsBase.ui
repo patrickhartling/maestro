@@ -1,83 +1,80 @@
-<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>ClusterSettingsBase</class>
-<widget class="QWidget">
-    <property name="name">
-        <cstring>ClusterSettingsBase</cstring>
-    </property>
-    <property name="geometry">
-        <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>600</width>
-            <height>480</height>
-        </rect>
-    </property>
-    <property name="caption">
-        <string>Cluster Settings</string>
-    </property>
-    <hbox>
-        <property name="name">
-            <cstring>unnamed</cstring>
-        </property>
-        <widget class="QSplitter">
-            <property name="name">
-                <cstring>splitter2</cstring>
-            </property>
-            <property name="orientation">
-                <enum>Horizontal</enum>
-            </property>
-            <widget class="QListView">
-                <column>
-                    <property name="text">
-                        <string>Column 1</string>
-                    </property>
-                    <property name="clickable">
-                        <bool>true</bool>
-                    </property>
-                    <property name="resizable">
-                        <bool>true</bool>
-                    </property>
-                </column>
-            <item>
-                <property name="text">
-                    <string>New Item</string>
-                </property>
-                <property name="pixmap">
-                    <pixmap></pixmap>
-                </property>
-            </item>
-                <property name="name">
-                    <cstring>listView2</cstring>
-                </property>
-            </widget>
-            <widget class="QLayoutWidget">
-                <property name="name">
-                    <cstring>layout2</cstring>
-                </property>
-                <vbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <widget class="QGroupBox">
-                        <property name="name">
-                            <cstring>mClusterGroup</cstring>
-                        </property>
-                        <property name="title">
-                            <string>Cluster Settings</string>
-                        </property>
-                    </widget>
-                    <widget class="QGroupBox">
-                        <property name="name">
-                            <cstring>mNodeGroup</cstring>
-                        </property>
-                        <property name="title">
-                            <string>Node Settings</string>
-                        </property>
-                    </widget>
-                </vbox>
-            </widget>
+<ui version="4.0" >
+ <author></author>
+ <comment></comment>
+ <exportmacro></exportmacro>
+ <class>Form</class>
+ <widget class="QWidget" name="Form" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>599</width>
+    <height>478</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" >
+   <property name="margin" >
+    <number>9</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
+   <item>
+    <widget class="QSplitter" name="splitter" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QListView" name="listView" />
+     <widget class="QWidget" name="layoutWidget" >
+      <layout class="QVBoxLayout" >
+       <property name="margin" >
+        <number>0</number>
+       </property>
+       <property name="spacing" >
+        <number>6</number>
+       </property>
+       <item>
+        <widget class="QGroupBox" name="groupBox" >
+         <property name="title" >
+          <string>GroupBox</string>
+         </property>
+         <widget class="QToolButton" name="toolButton" >
+          <property name="geometry" >
+           <rect>
+            <x>30</x>
+            <y>140</y>
+            <width>24</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text" >
+           <string>...</string>
+          </property>
+          <property name="icon" >
+           <iconset resource="ClusterSettings.qrc" >:/linux2.png</iconset>
+          </property>
+         </widget>
         </widget>
-    </hbox>
-</widget>
-<layoutdefaults spacing="6" margin="11"/>
-</UI>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_2" >
+         <property name="title" >
+          <string>GroupBox</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <pixmapfunction></pixmapfunction>
+ <resources>
+  <include location="ClusterSettings.qrc" />
+ </resources>
+ <connections/>
+</ui>

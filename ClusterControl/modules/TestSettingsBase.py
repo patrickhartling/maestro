@@ -2,66 +2,55 @@
 
 # Form implementation generated from reading ui file 'TestSettingsBase.ui'
 #
-# Created: Wed Jan 4 19:08:16 2006
-#      by: The PyQt User Interface Compiler (pyuic) 3.14.1
+# Created: Fri Jan  6 12:05:09 2006
+#      by: PyQt4 UI code generator v0.4
 #
 # WARNING! All changes made in this file will be lost!
 
-
 import sys
-from qt import *
+from PyQt4 import QtGui, QtCore
 
+import ClusterSettingsResource
 
-class TestSettingsBase(QWidget):
-    def __init__(self,parent = None,name = None,fl = 0):
-        QWidget.__init__(self,parent,name,fl)
+class Ui_Form(object):
+   def setupUi(self, Form):
+      Form.setObjectName("Form")
+      Form.resize(QtCore.QSize(QtCore.QRect(0,0,599,478).size()).expandedTo(Form.minimumSizeHint()))
+      
+      self.hboxlayout = QtGui.QHBoxLayout(Form)
+      self.hboxlayout.setMargin(9)
+      self.hboxlayout.setSpacing(6)
+      self.hboxlayout.setObjectName("hboxlayout")
+      
+      self.splitter = QtGui.QSplitter(Form)
+      self.splitter.setOrientation(QtCore.Qt.Horizontal)
+      self.splitter.setObjectName("splitter")
+      
+      self.listView = QtGui.QListView(self.splitter)
+      self.listView.setObjectName("listView")
+      
+      self.layoutWidget = QtGui.QWidget(self.splitter)
+      self.layoutWidget.setObjectName("layoutWidget")
+      
+      self.vboxlayout = QtGui.QVBoxLayout(self.layoutWidget)
+      self.vboxlayout.setMargin(0)
+      self.vboxlayout.setSpacing(6)
+      self.vboxlayout.setObjectName("vboxlayout")
+      
+      self.retranslateUi(Form)
 
-        if not name:
-            self.setName("TestSettingsBase")
-
-
-        TestSettingsBaseLayout = QHBoxLayout(self,11,6,"TestSettingsBaseLayout")
-
-        self.splitter2 = QSplitter(self,"splitter2")
-        self.splitter2.setOrientation(QSplitter.Horizontal)
-
-        self.listView2 = QListView(self.splitter2,"listView2")
-        self.listView2.addColumn(self.__tr("Column 1"))
-
-        LayoutWidget = QWidget(self.splitter2,"layout2")
-        layout2 = QVBoxLayout(LayoutWidget,11,6,"layout2")
-
-#        self.mClusterGroup = QGroupBox(LayoutWidget,"mClusterGroup")
-#        layout2.addWidget(self.mClusterGroup)
-
-#        self.mNodeGroup = QGroupBox(LayoutWidget,"mNodeGroup")
-#        layout2.addWidget(self.mNodeGroup)
-        TestSettingsBaseLayout.addWidget(self.splitter2)
-
-        self.languageChange()
-
-        self.resize(QSize(600,480).expandedTo(self.minimumSizeHint()))
-        self.clearWState(Qt.WState_Polished)
-
-
-    def languageChange(self):
-        self.setCaption(self.__tr("Cluster Settings"))
-        self.listView2.header().setLabel(0,self.__tr("Column 1"))
-        self.listView2.clear()
-        item = QListViewItem(self.listView2,None)
-        item.setText(0,self.__tr("New Item"))
-
-#        self.mClusterGroup.setTitle(self.__tr("Cluster Settings"))
-#        self.mNodeGroup.setTitle(self.__tr("Node Settings"))
-
-
-    def __tr(self,s,c = None):
-        return qApp.translate("TestSettingsBase",s,c)
+   
+   def tr(self, string):
+      return QtGui.QApplication.translate("Form", string, None, QtGui.QApplication.UnicodeUTF8)
+   
+   def retranslateUi(self, Form):
+      Form.setWindowTitle(self.tr("Form"))
 
 if __name__ == "__main__":
-    a = QApplication(sys.argv)
-    QObject.connect(a,SIGNAL("lastWindowClosed()"),a,SLOT("quit()"))
-    w = TestSettingsBase()
-    a.setMainWidget(w)
-    w.show()
-    a.exec_loop()
+   app = QtGui.QApplication(sys.argv)
+   Form = QtGui.QWidget()
+   ui = Ui_Form()
+   ui.setupUi(Form)
+   Form.show()
+   sys.exit(app.exec_())
+

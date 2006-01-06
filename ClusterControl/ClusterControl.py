@@ -3,7 +3,7 @@
 import sys, os, os.path, time, traceback
 pj = os.path.join
 
-from qt import *
+from PyQt4 import QtGui, QtCore
 import ClusterControlBase
 
 import modules
@@ -17,52 +17,18 @@ except:
 print "Base gui dir:", gui_base_dir
 
 
-class ClusterControl(ClusterControlBase.ClusterControlBase):
-   def __init__(self,parent = None,name = None,fl = 0):
-      ClusterControlBase.ClusterControlBase.__init__(self,parent,name,fl)
+class Ui_ClusterControl(ClusterControlBase.Ui_ClusterControlBase):
+   def setupUi(self, ClusterControl):
+      ClusterControlBase.Ui_ClusterControlBase.setupUi(self, ClusterControl)
 
-
-      ### Start
-      mStatusWindow = QDockWindow(QDockWindow.InDock, self)
-      mStatusWindow.setOrientation(Qt.Horizontal)
-      mStatusWindow.setHorizontallyStretchable(True)
-      mStatusWindow.setVerticallyStretchable(True)
-      mStatusWindow.setResizeEnabled(True);
-      mStatusWindow.setCloseMode( QDockWindow.Always );
-      mStatusWindow.setNewLine(True)
-      mStatusWindow.setCaption(self.__tr("Status Panel"))
-
-      self.mStatusTabPanel = QTabWidget(mStatusWindow,"mStatusTabPanel")
-      mStatusWindow.setWidget(self.mStatusTabPanel)
-
-      self.setDockEnabled( mStatusWindow, Qt.DockTop, False);
-      self.moveDockWindow( mStatusWindow, Qt.DockBottom );
-
-      self.mStatusTabPanel.setGeometry(QRect(90,130,139,62))
-
-      self.tab = QWidget(self.mStatusTabPanel,"tab")
-      self.mStatusTabPanel.insertTab(self.tab,QString.fromLatin1(""))
-
-      self.tab_2 = QWidget(self.mStatusTabPanel,"tab_2")
-      self.mStatusTabPanel.insertTab(self.tab_2,QString.fromLatin1(""))
-
+      self.mToolboxButtonGroup = QtGui.QButtonGroup()
+      ClusterControl.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.mStatusWindow)
 
       # Load custom modules
       self.mPlugins = {}             # Dict of plugins: mod_name -> (module, ..)
       self.mModulePanels = []
       self.mModuleButtons = []
       self.buildGUI()
-
-      # Call local language change.
-      # XXX: In the future we should remove the call in the base class.
-      self.languageChange()
-
-
-   def languageChange(self):
-      ClusterControlBase.ClusterControlBase.languageChange(self)
-      #self.setCaption(self.__tr("Form1"))
-      self.mStatusTabPanel.changeTab(self.tab,self.__tr("Tab 1"))
-      self.mStatusTabPanel.changeTab(self.tab_2,self.__tr("Tab 2"))
 
    def reloadModules(self):
       """ Reload the entire GUI and all class code for it (ie. modules). """
@@ -85,14 +51,14 @@ class ClusterControl(ClusterControlBase.ClusterControlBase):
       self.mModulePanels = []
       for b in self.mModuleButtons:
          self.mToolbox.removeChild(b)
-         #self.mStack.removeChild(f)
+         self.mToolboxButtonGroup.removeButton(btn)
       self.mModuleButtons = []
       self.mToolbox.layout().removeItem(self.mToolboxSpacer)
 
    def buildGUI (self):
       self.scanAndLoadPlugins()         # Scan the set of plugins we have
       self.loadModulePlugins()            # Find and load any view plugins
-      self.mToolboxSpacer = QSpacerItem(20,40,QSizePolicy.Minimum,QSizePolicy.Expanding)
+      self.mToolboxSpacer = QtGui.QSpacerItem(20,40,QtGui.QSizePolicy.Minimum,QtGui.QSizePolicy.Expanding)
       self.mToolbox.layout().addItem(self.mToolboxSpacer)
 
 
@@ -161,22 +127,32 @@ class ClusterControl(ClusterControlBase.ClusterControlBase):
                print "Opening view: ", module_class.__name__
             
                # Create module
-               new_module = module_class(self.mStack)
-               # Keep track of widgets to remove them later
-               self.mModulePanels.append(new_module)
-               self.mStack.addWidget(new_module, num)
+               new_module = module_class()
+               ###
+               Form = QtGui.QWidget()
+               new_module.setupUi(Form)
+               ###
 
-               btn = QToolButton(self.mToolbox, "Module Button")
-               self.mToolbox.insert(btn, num)
+               # Keep track of widgets to remove them later
+               self.mModulePanels.append(Form)
+               #self.mStack.addWidget(Form, num)
+               index = self.mStack.addWidget(Form)
+
+               btn = QtGui.QToolButton(self.mToolbox)
+               btn.setIcon(new_icon)
+               btn.setAutoRaise(1)
+               btn.setCheckable(True)
+               self.mToolbox.layout().addWidget(btn)
+               self.mToolboxButtonGroup.addButton(btn, index)
+
+               #self.mToolbox.addWidget(btn)
+               #self.mToolbox.insert(btn, num)
                num = num + 1
 
-               #self.connect(self.mToolbox,SIGNAL("buttonClicked(int)"),self.mStack.raiseWidget)
+               QtCore.QObject.connect(self.mToolboxButtonGroup,QtCore.SIGNAL("buttonClicked(int)"),self.mStack.setCurrentIndex)
+               #QtCore.QObject.connect(self.mToolboxButtonGroup,QtCore.SIGNAL("buttonClicked(int)"),self.test)
                #self.connect(self.mToolbox,SIGNAL("clicked(int)"),self.test)
 
-               btn.setIconSet(QIconSet(new_icon))
-               btn.setAutoRaise(1)
-               btn.setToggleButton(True)
-               self.mToolbox.layout().addWidget(btn)
 
                # Keep track of widgets to remove them later
                self.mModuleButtons.append(btn)
@@ -186,7 +162,7 @@ class ClusterControl(ClusterControlBase.ClusterControlBase):
                if module_class:
                   view_name = module_class.getName()
                if new_module:
-                  new_module.destroy()
+                  #new_module.destroy()
                   new_module = None
                err_text = "Error loading view:" + view_name + "\n  exception:" + str(ex)
                print err_text
@@ -195,15 +171,21 @@ class ClusterControl(ClusterControlBase.ClusterControlBase):
                #error_dialog.doModal()
 
       # Set the default button to display
-      self.mToolbox.setButton(0)
+      btn = self.mToolboxButtonGroup.buttons()[0]
+      btn.click()
+      self.mStack.setCurrentIndex(self.mToolboxButtonGroup.id(btn))
+
+   def test(self, e):
+      print e
 
    def __tr(self,s,c = None):
       return qApp.translate("MainWindow",s,c)
 
+
 if __name__ == "__main__":
-   a = QApplication(sys.argv)
-   QObject.connect(a,SIGNAL("lastWindowClosed()"),a,SLOT("quit()"))
-   w = ClusterControl()
-   a.setMainWidget(w)
-   w.show()
-   a.exec_loop()
+   app = QtGui.QApplication(sys.argv)
+   ClusterControl = QtGui.QMainWindow()
+   ui = Ui_ClusterControl()
+   ui.setupUi(ClusterControl)
+   ClusterControl.show()
+   sys.exit(app.exec_())
