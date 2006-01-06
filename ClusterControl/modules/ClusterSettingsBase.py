@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ClusterSettingsBase.ui'
+# Form implementation generated from reading ui file 'modules/ClusterSettingsBase.ui'
 #
-# Created: Fri Jan  6 12:05:09 2006
+# Created: Fri Jan  6 15:59:12 2006
 #      by: PyQt4 UI code generator v0.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -10,64 +10,62 @@
 import sys
 from PyQt4 import QtGui, QtCore
 
-import ClusterSettingsResource
-
-class Ui_Form(object):
-   def setupUi(self, Form):
-      Form.setObjectName("Form")
-      Form.resize(QtCore.QSize(QtCore.QRect(0,0,599,478).size()).expandedTo(Form.minimumSizeHint()))
+class Ui_ClusterSettings(object):
+   def setupUi(self, ClusterSettings):
+      ClusterSettings.setObjectName("ClusterSettings")
+      ClusterSettings.resize(QtCore.QSize(QtCore.QRect(0,0,665,362).size()).expandedTo(ClusterSettings.minimumSizeHint()))
       
-      self.hboxlayout = QtGui.QHBoxLayout(Form)
+      self.hboxlayout = QtGui.QHBoxLayout(ClusterSettings)
       self.hboxlayout.setMargin(9)
       self.hboxlayout.setSpacing(6)
       self.hboxlayout.setObjectName("hboxlayout")
       
-      self.splitter = QtGui.QSplitter(Form)
-      self.splitter.setOrientation(QtCore.Qt.Horizontal)
-      self.splitter.setObjectName("splitter")
+      self.hboxlayout1 = QtGui.QHBoxLayout()
+      self.hboxlayout1.setMargin(0)
+      self.hboxlayout1.setSpacing(6)
+      self.hboxlayout1.setObjectName("hboxlayout1")
       
-      self.listView = QtGui.QListView(self.splitter)
+      self.listView = QtGui.QListView(ClusterSettings)
+      
+      sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(5),QtGui.QSizePolicy.Policy(5))
+      sizePolicy.setHorizontalStretch(0)
+      sizePolicy.setVerticalStretch(0)
+      sizePolicy.setHeightForWidth(self.listView.sizePolicy().hasHeightForWidth())
+      self.listView.setSizePolicy(sizePolicy)
       self.listView.setObjectName("listView")
+      self.hboxlayout1.addWidget(self.listView)
       
-      self.layoutWidget = QtGui.QWidget(self.splitter)
-      self.layoutWidget.setObjectName("layoutWidget")
-      
-      self.vboxlayout = QtGui.QVBoxLayout(self.layoutWidget)
+      self.vboxlayout = QtGui.QVBoxLayout()
       self.vboxlayout.setMargin(0)
       self.vboxlayout.setSpacing(6)
       self.vboxlayout.setObjectName("vboxlayout")
       
-      self.groupBox = QtGui.QGroupBox(self.layoutWidget)
-      self.groupBox.setObjectName("groupBox")
+      self.mClusterGroup = QtGui.QGroupBox(ClusterSettings)
+      self.mClusterGroup.setObjectName("mClusterGroup")
+      self.vboxlayout.addWidget(self.mClusterGroup)
       
-      self.toolButton = QtGui.QToolButton(self.groupBox)
-      self.toolButton.setGeometry(QtCore.QRect(30,140,24,25))
-      self.toolButton.setIcon(QtGui.QIcon(":/linux2.png"))
-      self.toolButton.setObjectName("toolButton")
-      self.vboxlayout.addWidget(self.groupBox)
+      self.mNodeGroup = QtGui.QGroupBox(ClusterSettings)
+      self.mNodeGroup.setObjectName("mNodeGroup")
+      self.vboxlayout.addWidget(self.mNodeGroup)
+      self.hboxlayout1.addLayout(self.vboxlayout)
+      self.hboxlayout.addLayout(self.hboxlayout1)
       
-      self.groupBox_2 = QtGui.QGroupBox(self.layoutWidget)
-      self.groupBox_2.setObjectName("groupBox_2")
-      self.vboxlayout.addWidget(self.groupBox_2)
-      self.hboxlayout.addWidget(self.splitter)
-      
-      self.retranslateUi(Form)
+      self.retranslateUi(ClusterSettings)
 
    
    def tr(self, string):
-      return QtGui.QApplication.translate("Form", string, None, QtGui.QApplication.UnicodeUTF8)
+      return QtGui.QApplication.translate("ClusterSettings", string, None, QtGui.QApplication.UnicodeUTF8)
    
-   def retranslateUi(self, Form):
-      Form.setWindowTitle(self.tr("Form"))
-      self.groupBox.setTitle(self.tr("GroupBox"))
-      self.toolButton.setText(self.tr("..."))
-      self.groupBox_2.setTitle(self.tr("GroupBox"))
+   def retranslateUi(self, ClusterSettings):
+      ClusterSettings.setWindowTitle(self.tr("Cluster Settings"))
+      self.mClusterGroup.setTitle(self.tr("Cluster Settings"))
+      self.mNodeGroup.setTitle(self.tr("Node Settings"))
 
 if __name__ == "__main__":
    app = QtGui.QApplication(sys.argv)
-   Form = QtGui.QWidget()
-   ui = Ui_Form()
-   ui.setupUi(Form)
-   Form.show()
+   ClusterSettings = QtGui.QWidget()
+   ui = Ui_ClusterSettings()
+   ui.setupUi(ClusterSettings)
+   ClusterSettings.show()
    sys.exit(app.exec_())
 

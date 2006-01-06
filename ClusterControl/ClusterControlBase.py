@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ClusterControlBase.ui'
 #
-# Created: Fri Jan  6 13:59:48 2006
+# Created: Fri Jan  6 16:03:38 2006
 #      by: PyQt4 UI code generator v0.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -18,35 +18,84 @@ class Ui_ClusterControlBase(object):
       self.centralwidget = QtGui.QWidget(ClusterControlBase)
       self.centralwidget.setObjectName("centralwidget")
       
-      self.vboxlayout = QtGui.QVBoxLayout(self.centralwidget)
-      self.vboxlayout.setMargin(9)
-      self.vboxlayout.setSpacing(6)
-      self.vboxlayout.setObjectName("vboxlayout")
-      
-      self.hboxlayout = QtGui.QHBoxLayout()
-      self.hboxlayout.setMargin(0)
+      self.hboxlayout = QtGui.QHBoxLayout(self.centralwidget)
+      self.hboxlayout.setMargin(9)
       self.hboxlayout.setSpacing(6)
       self.hboxlayout.setObjectName("hboxlayout")
       
+      self.hboxlayout1 = QtGui.QHBoxLayout()
+      self.hboxlayout1.setMargin(0)
+      self.hboxlayout1.setSpacing(6)
+      self.hboxlayout1.setObjectName("hboxlayout1")
+      
       self.mToolbox = QtGui.QFrame(self.centralwidget)
+      
+      sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(1),QtGui.QSizePolicy.Policy(1))
+      sizePolicy.setHorizontalStretch(0)
+      sizePolicy.setVerticalStretch(0)
+      sizePolicy.setHeightForWidth(self.mToolbox.sizePolicy().hasHeightForWidth())
+      self.mToolbox.setSizePolicy(sizePolicy)
+      self.mToolbox.setAutoFillBackground(True)
       self.mToolbox.setFrameShape(QtGui.QFrame.StyledPanel)
-      self.mToolbox.setFrameShadow(QtGui.QFrame.Raised)
+      self.mToolbox.setFrameShadow(QtGui.QFrame.Sunken)
+      self.mToolbox.setLineWidth(3)
       self.mToolbox.setObjectName("mToolbox")
       
-      self.vboxlayout1 = QtGui.QVBoxLayout(self.mToolbox)
-      self.vboxlayout1.setMargin(9)
-      self.vboxlayout1.setSpacing(6)
-      self.vboxlayout1.setObjectName("vboxlayout1")
-      self.hboxlayout.addWidget(self.mToolbox)
+      self.vboxlayout = QtGui.QVBoxLayout(self.mToolbox)
+      self.vboxlayout.setMargin(9)
+      self.vboxlayout.setSpacing(6)
+      self.vboxlayout.setObjectName("vboxlayout")
+      self.hboxlayout1.addWidget(self.mToolbox)
       
       self.mStack = QtGui.QStackedWidget(self.centralwidget)
+      
+      sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(1),QtGui.QSizePolicy.Policy(1))
+      sizePolicy.setHorizontalStretch(0)
+      sizePolicy.setVerticalStretch(0)
+      sizePolicy.setHeightForWidth(self.mStack.sizePolicy().hasHeightForWidth())
+      self.mStack.setSizePolicy(sizePolicy)
       self.mStack.setObjectName("mStack")
       
       self.page = QtGui.QWidget()
+      
+      sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(5),QtGui.QSizePolicy.Policy(5))
+      sizePolicy.setHorizontalStretch(0)
+      sizePolicy.setVerticalStretch(0)
+      sizePolicy.setHeightForWidth(self.page.sizePolicy().hasHeightForWidth())
+      self.page.setSizePolicy(sizePolicy)
       self.page.setObjectName("page")
+      
+      self.vboxlayout1 = QtGui.QVBoxLayout(self.page)
+      self.vboxlayout1.setMargin(9)
+      self.vboxlayout1.setSpacing(6)
+      self.vboxlayout1.setObjectName("vboxlayout1")
+      
+      self.splitter = QtGui.QSplitter(self.page)
+      self.splitter.setOrientation(QtCore.Qt.Horizontal)
+      self.splitter.setObjectName("splitter")
+      
+      self.pushButton = QtGui.QPushButton(self.splitter)
+      self.pushButton.setObjectName("pushButton")
+      
+      self.widget = QtGui.QWidget(self.splitter)
+      self.widget.setObjectName("widget")
+      
+      self.vboxlayout2 = QtGui.QVBoxLayout(self.widget)
+      self.vboxlayout2.setMargin(0)
+      self.vboxlayout2.setSpacing(6)
+      self.vboxlayout2.setObjectName("vboxlayout2")
+      
+      self.pushButton_3 = QtGui.QPushButton(self.widget)
+      self.pushButton_3.setObjectName("pushButton_3")
+      self.vboxlayout2.addWidget(self.pushButton_3)
+      
+      self.pushButton_2 = QtGui.QPushButton(self.widget)
+      self.pushButton_2.setObjectName("pushButton_2")
+      self.vboxlayout2.addWidget(self.pushButton_2)
+      self.vboxlayout1.addWidget(self.splitter)
       self.mStack.addWidget(self.page)
-      self.hboxlayout.addWidget(self.mStack)
-      self.vboxlayout.addLayout(self.hboxlayout)
+      self.hboxlayout1.addWidget(self.mStack)
+      self.hboxlayout.addLayout(self.hboxlayout1)
       ClusterControlBase.setCentralWidget(self.centralwidget)
       
       self.menubar = QtGui.QMenuBar(ClusterControlBase)
@@ -77,10 +126,10 @@ class Ui_ClusterControlBase(object):
       self.dockWidgetContents = QtGui.QWidget(self.mStatusWindow)
       self.dockWidgetContents.setObjectName("dockWidgetContents")
       
-      self.vboxlayout2 = QtGui.QVBoxLayout(self.dockWidgetContents)
-      self.vboxlayout2.setMargin(9)
-      self.vboxlayout2.setSpacing(6)
-      self.vboxlayout2.setObjectName("vboxlayout2")
+      self.vboxlayout3 = QtGui.QVBoxLayout(self.dockWidgetContents)
+      self.vboxlayout3.setMargin(9)
+      self.vboxlayout3.setSpacing(6)
+      self.vboxlayout3.setObjectName("vboxlayout3")
       
       self.tabWidget = QtGui.QTabWidget(self.dockWidgetContents)
       self.tabWidget.setObjectName("tabWidget")
@@ -92,7 +141,7 @@ class Ui_ClusterControlBase(object):
       self.tab_2 = QtGui.QWidget()
       self.tab_2.setObjectName("tab_2")
       self.tabWidget.addTab(self.tab_2, "")
-      self.vboxlayout2.addWidget(self.tabWidget)
+      self.vboxlayout3.addWidget(self.tabWidget)
       self.mStatusWindow.setWidget(self.dockWidgetContents)
       
       self.actionReload = QtGui.QAction(ClusterControlBase)
@@ -136,6 +185,9 @@ class Ui_ClusterControlBase(object):
    
    def retranslateUi(self, ClusterControlBase):
       ClusterControlBase.setWindowTitle(self.tr("Infiscape Cluster Control"))
+      self.pushButton.setText(self.tr("PushButton"))
+      self.pushButton_3.setText(self.tr("PushButton"))
+      self.pushButton_2.setText(self.tr("PushButton"))
       self.menuHelp.setTitle(self.tr("&Help"))
       self.menuFile.setTitle(self.tr("&File"))
       self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), self.tr("Tab 1"))

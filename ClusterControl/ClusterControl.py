@@ -137,6 +137,32 @@ class Ui_ClusterControl(ClusterControlBase.Ui_ClusterControlBase):
                self.mModulePanels.append(Form)
                #self.mStack.addWidget(Form, num)
                index = self.mStack.addWidget(Form)
+               """
+               import Test
+               TestForm = QtGui.QWidget()
+               tuif = Test.Ui_Form()
+               tuif.setupUi(TestForm)
+               index = self.mStack.addWidget(TestForm)
+               """
+               
+               """
+               t = QtGui.QWidget()
+               t2 = QtGui.QToolButton(t)
+
+               sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(5),QtGui.QSizePolicy.Policy(5))
+               sizePolicy.setHorizontalStretch(0)
+               sizePolicy.setVerticalStretch(0)
+               sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
+               t.setSizePolicy(sizePolicy)
+
+               self.vboxlayout2 = QtGui.QVBoxLayout(t)
+               self.vboxlayout2.setMargin(9)
+               self.vboxlayout2.setSpacing(6)
+               self.vboxlayout2.setObjectName("vboxlayout2")
+               self.vboxlayout2.addWidget(t2)
+
+               index = self.mStack.addWidget(t)
+               """
 
                btn = QtGui.QToolButton(self.mToolbox)
                btn.setIcon(new_icon)

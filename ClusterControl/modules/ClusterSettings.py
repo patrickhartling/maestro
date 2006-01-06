@@ -8,9 +8,9 @@ import ClusterSettingsResource
 #class ClusterTableModel(QAbstractTableModel):
 #   pass
 
-class Ui_ClusterSettings(ClusterSettingsBase.Ui_Form):
+class Ui_ClusterSettings(ClusterSettingsBase.Ui_ClusterSettings):
    def setupUi(self, Form):
-      ClusterSettingsBase.Ui_Form.setupUi(self, Form)
+      ClusterSettingsBase.Ui_ClusterSettings.setupUi(self, Form)
       
       self.icon = QtGui.QIcon(":/linux2.png")
 
