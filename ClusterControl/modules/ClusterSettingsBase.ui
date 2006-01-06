@@ -54,7 +54,7 @@
            <string>...</string>
           </property>
           <property name="icon" >
-           <iconset resource="ClusterSettings.qrc" >:/linux2.png</iconset>
+           <iconset resource="ClusterSettingsResource.qrc" >:/linux2.png</iconset>
           </property>
          </widget>
         </widget>
@@ -74,7 +74,7 @@
  </widget>
  <pixmapfunction></pixmapfunction>
  <resources>
-  <include location="ClusterSettings.qrc" />
+  <include location="ClusterSettingsResource.qrc" />
  </resources>
  <connections/>
 </ui>

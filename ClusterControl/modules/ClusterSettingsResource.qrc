@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/" >
+        <file>linux2.png</file>
+        <file>win_xp.png</file>
+    </qresource>
+</RCC>
