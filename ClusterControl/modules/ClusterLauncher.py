@@ -27,6 +27,7 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       self.activeThread        = None
 
    def configure(self, clusterConfig):
+      self.mClusterConfig = clusterConfig
       self.xmlTree = clusterConfig.mElement
       top_element = self.xmlTree.find("./launcher")
       assert top_element.tag == "launcher"
@@ -200,9 +201,10 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       for o in self.commandOptions:
          opts += " " + o
       cmd = cmd + opts
-      
+
       if cmd != "" and cmd != None:
          print "running command: ", cmd
+         self.mClusterConfig.runRemoteCommand('ls', 'ls')
 #         self._runCommandWithLog(cmd)
 #         self.launchButton.setEnabled(False)
 #         self.killButton.setEnabled(True)
