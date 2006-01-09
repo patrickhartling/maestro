@@ -5,7 +5,7 @@ from PyQt4 import QtGui, QtCore
 import ClusterLauncherBase
 import ClusterSettingsResource
 import elementtree.ElementTree as ET
-import Helpers
+import ClusterConfig
 #class ClusterTableModel(QAbstractTableModel):
 #   pass
 
@@ -26,21 +26,21 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       self.actionDict          = {}   # Storage for user-defined action slots
       self.activeThread        = None
 
-   def configure(self, xmlTree):
-      self.xmlTree = xmlTree
-      top_element = self.xmlTree.getroot()
+   def configure(self, clusterConfig):
+      self.xmlTree = clusterConfig.mElement
+      top_element = self.xmlTree.find("./launcher")
       assert top_element.tag == "launcher"
 
       for app_elt in top_element.findall("./applications/app"):
-         self.apps.append(Helpers.Application(app_elt))
+         self.apps.append(Application(app_elt))
 
       for action_elt in top_element.findall("./controls/action"):
-         self.actions.append(Helpers.Action(action_elt))
+         self.actions.append(Action(action_elt))
 
       for n in top_element.findall("./global_options/option"):
-         self.globaloptions.append(Helpers.AppOption(n))
+         self.globaloptions.append(AppOption(n))
       for n in top_element.findall("./global_options/group"):
-         self.globaloptions.append(Helpers.AppExclusiveOption(n))
+         self.globaloptions.append(AppExclusiveOption(n))
 
       self._fillInApps()
       self._fillInControls()
@@ -85,7 +85,7 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       for i in range(0, len(all_opts)):
          opt = all_opts[i]
 
-         if isinstance(opt, Helpers.AppExclusiveOption):
+         if isinstance(opt, AppExclusiveOption):
             group = QtGui.QGroupBox(str(opt.group_name), self.appFrame)
         
             group_layout = QtGui.QVBoxLayout(group)
@@ -95,7 +95,6 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
             group.setLayout(group_layout)
             
             for o in opt.options:
-               print o.label
                rb = QtGui.QRadioButton(str(o.label), group)
 
                rb.setEnabled(o.enabled)
@@ -192,13 +191,30 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       else:
          assert "This should never happen"
 
+   def launchApp(self):
+      """ Invoked when the built-in Launch button is clicked. """
+      cmd = self.apps[self.selectedApp].getCommand()
+      
+      # Construct the list of options as a single string.
+      opts = ""
+      for o in self.commandOptions:
+         opts += " " + o
+      cmd = cmd + opts
+      
+      if cmd != "" and cmd != None:
+         print "running command: ", cmd
+#         self._runCommandWithLog(cmd)
+#         self.launchButton.setEnabled(False)
+#         self.killButton.setEnabled(True)
+      else:
+         assert "This should never happen"
 
    def setupUi(self, widget):
       ClusterLauncherBase.Ui_ClusterLauncherBase.setupUi(self, widget)
       
       #self.connect(self.fileExitAction,QtCore.SIGNAL("activated()"),self.fileExit)
       self.connect(self.appComboBox,QtCore.SIGNAL("activated(int)"),self.appSelect)
-      #self.connect(self.launchButton,QtCore.SIGNAL("clicked()"),self.launchApp)
+      self.connect(self.launchButton,QtCore.SIGNAL("clicked()"),self.launchApp)
       #self.connect(self.killButton,QtCore.SIGNAL("clicked()"),self.killApp)
       #self.connect(self.helpButton,QtCore.SIGNAL("clicked()"),self.loadHelp)
       
@@ -208,6 +224,113 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
         return "Cluster Launcher"
    getName = staticmethod(getName)
 
+class AppOption:
+   """ Encapsulation of command-line options that may be passed to apps. """
+   def __init__(self, xmlElt):
+      self.label = xmlElt.get("label")
+      self.flag  = xmlElt.get("flag")
+      self.tip   = xmlElt.get("tooltip")
+
+      enabled = xmlElt.get("enabled")
+
+      if enabled == "" or enabled == None:
+         self.enabled = True
+      elif enabled == "true" or enabled == "1":
+         self.enabled = True
+      else:
+         self.enabled = False
+
+      selected = xmlElt.get("selected")
+
+      if selected == "" or selected == None:
+         self.selected = False
+      elif selected == "true" or selected == "1":
+         self.selected = True
+      else:
+         self.selected = False
+
+class AppExclusiveOption:
+   def __init__(self, xmlElt):
+      self.group_name = xmlElt.get("name")
+      self.options = []
+
+      print "AppExclusiveOption name=", self.group_name
+
+      opts = xmlElt.findall("./option")
+      for o in opts:
+         self.options.append(AppOption(o))
+
+class Application:
+   """ Representation of an application that can be launched. """
+
+   def __init__(self, xmlElt):
+      self.name = xmlElt.get("name")
+
+      # Could this be any uglier?  I need to learn the Python XML API better...
+      self.command = xmlElt.find("./command").text
+
+      help_elts = xmlElt.findall("./helpURL")
+      if None != help_elts and len(help_elts) > 0 and help_elts[0].text:
+         self.helpURL = help_elts[0].text
+      else:
+         self.helpURL = None
+
+      tip = self.name  # Fallback in case no tooltip is defined
+
+      tip_elts = xmlElt.findall("./tooltip")
+      if None != tip_elts and len(tip_elts) > 0:
+         tip = tip_elts[0].text
+
+      self.tip = tip
+
+      self.options = []
+      options_elts = xmlElt.findall("./options")
+      if None != options_elts and len(tip_elts) > 0:
+         option_list = options_elts[0]
+
+         for n in option_list.findall("./option"):
+            self.options.append(AppOption(n))
+         for n in option_list.findall("./group"):
+            self.options.append(AppExclusiveOption(n))
+      
+   def getName(self):
+      return self.name
+
+   def getCommand(self):
+      return self.command
+
+   def getTip(self):
+      return self.tip
+
+   def getHelpURL(self):
+      return self.helpURL
+
+   def getOptions(self):
+      return self.options
+
+class Action:
+   """
+   Representation of user-defined action buttons displayed in the controls
+   panel.
+   """
+   def __init__(self, xmlElt):
+      self.name    = xmlElt.get("name")
+      self.command = xmlElt.findall("./command")[0].text
+
+      tip = xmlElt.findall("./tooltip")[0].text
+
+      if tip == "" or tip == None:
+         tip = self.name
+
+      self.tip = tip
+
+   def getName(self):
+      return self.name
+
+   def getTip(self):
+      return self.tip
+
+
 def getModuleInfo():
    icon = QtGui.QIcon(":/linux2.png")
    return (ClusterLauncher, icon)
@@ -216,8 +339,9 @@ def main():
    try:
       app = QtGui.QApplication(sys.argv)
       tree = ET.ElementTree(file=sys.argv[1])
+      cluster_config = ClusterConfig.ClusterConfig(tree);
       cs = ClusterLauncher()
-      cs.configure(tree)
+      cs.configure(cluster_config)
       cs.show()
       sys.exit(app.exec_())
    except IOError, ex:

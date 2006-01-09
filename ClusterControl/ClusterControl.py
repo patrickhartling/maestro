@@ -6,6 +6,8 @@ pj = os.path.join
 from PyQt4 import QtGui, QtCore
 import ClusterControlBase
 import ClusterControlResource
+import ClusterConfig
+import elementtree.ElementTree as ET
 
 import modules
 
@@ -22,6 +24,10 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
    def __init__(self, parent = None):
       QtGui.QMainWindow.__init__(self, parent)
       self.setupUi(self)
+
+   def configure(self, clusterConfig):
+      for module in self.mModulePanels:
+         module.configure(clusterConfig)
 
    def setupUi(self, widget):
       ClusterControlBase.Ui_ClusterControlBase.setupUi(self, widget)
@@ -182,9 +188,23 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
    def __tr(self,s,c = None):
       return qApp.translate("MainWindow",s,c)
 
+def main():
+   try:
+      app = QtGui.QApplication(sys.argv)
+      tree = ET.ElementTree(file=sys.argv[1])
+      cluster_config = ClusterConfig.ClusterConfig(tree);
+      cc = ClusterControl()
+      cc.configure(cluster_config)
+      cc.show()
+      sys.exit(app.exec_())
+   except IOError, ex:
+      print "Failed to read %s: %s" % (sys.argv[1], ex.strerror)
 
-if __name__ == "__main__":
-   app = QtGui.QApplication(sys.argv)
-   cc = ClusterControl()
-   cc.show()
-   sys.exit(app.exec_())
+def usage():
+   print "Usage: %s <XML configuration file>" % sys.argv[0]
+
+if __name__ == '__main__':
+   if len(sys.argv) >= 2:
+      main()
+   else:
+      usage()
