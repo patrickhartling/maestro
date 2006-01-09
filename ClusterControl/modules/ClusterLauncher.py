@@ -2,34 +2,33 @@
 
 import sys
 from PyQt4 import QtGui, QtCore
-import TestSettingsBase
+import ClusterLauncherBase
 import ClusterSettingsResource
-
+#import Cluster
 #class ClusterTableModel(QAbstractTableModel):
 #   pass
 
-class TestSettings(QtGui.QWidget, TestSettingsBase.Ui_Form):
+class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase):
    def __init__(self, parent = None):
       QtGui.QWidget.__init__(self, parent)
       self.setupUi(self)
 
    def setupUi(self, widget):
-      TestSettingsBase.Ui_Form.setupUi(self, widget)
+      ClusterLauncherBase.Ui_ClusterLauncherBase.setupUi(self, widget)
       
       self.icon = QtGui.QIcon(":/linux2.png")
 
    def getName():
-        return "Cluster Settings"
+        return "Cluster Launcher"
    getName = staticmethod(getName)
 
 def getModuleInfo():
    icon = QtGui.QIcon(":/linux2.png")
-   return (TestSettings, icon)
+   return (ClusterLauncher, icon)
 
 if __name__ == "__main__":
    app = QtGui.QApplication(sys.argv)
-   Form = QtGui.QWidget()
-   ts = TestSettings()
-   ts.show()
+   cs = ClusterLauncher()
+   cs.show()
    sys.exit(app.exec_())
 
