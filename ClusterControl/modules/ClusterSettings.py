@@ -4,7 +4,7 @@ import sys
 from PyQt4 import QtGui, QtCore
 import ClusterSettingsBase
 import ClusterSettingsResource
-import Cluster
+import Helpers
 #class ClusterTableModel(QAbstractTableModel):
 #   pass
 
@@ -16,7 +16,7 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
    def setupUi(self, widget):
       ClusterSettingsBase.Ui_ClusterSettingsBase.setupUi(self, widget)
       
-      c = Cluster.ClusterModel(self.listView)
+      c = Helpers.ClusterModel(self.listView)
       self.listView.setModel(c)
       self.icon = QtGui.QIcon(":/linux2.png")
 
