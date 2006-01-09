@@ -16,6 +16,7 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
 
       self.apps    = []
       self.actions = []
+      self.globaloptions = []
 
       # State information for the selected application.
       self.selectedApp         = None
@@ -36,6 +37,11 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       for action_elt in top_element.findall("./controls/action"):
          self.actions.append(Helpers.Action(action_elt))
 
+      for n in top_element.findall("./global_options/option"):
+         self.globaloptions.append(Helpers.AppOption(n))
+      for n in top_element.findall("./global_options/group"):
+         self.globaloptions.append(Helpers.AppExclusiveOption(n))
+
       self._fillInApps()
       self._fillInControls()
 
@@ -44,8 +50,6 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       self.appComboBox.clear()
    
       for app in self.apps:
-         print "Application: ", app
-         print "Application: ", app.getName()
          #self.appComboBox.insertItem(app.getName())
          self.appComboBox.addItem(app.getName())
    
@@ -74,19 +78,26 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
          self.helpButton.setEnabled(True)
 
       app_opts = app.getOptions()
+      all_opts = []
+      all_opts.extend(self.globaloptions)
+      all_opts.extend(app_opts)
 
-      for i in range(0, len(app_opts)):
-         opt = app_opts[i]
+      for i in range(0, len(all_opts)):
+         opt = all_opts[i]
 
          if isinstance(opt, Helpers.AppExclusiveOption):
-            group = QButtonGroup(str(opt.group_name), self.appFrame)
-            group.setColumnLayout(0, Qt.Vertical)
-
-            group_layout = QVBoxLayout(group.layout())
-            group_layout.setAlignment(Qt.AlignTop)
-
+            group = QtGui.QGroupBox(str(opt.group_name), self.appFrame)
+        
+            group_layout = QtGui.QVBoxLayout(group)
+            group_layout.setMargin(9)
+            group_layout.setSpacing(6)
+            group_layout.setObjectName("group_layout")
+            group.setLayout(group_layout)
+            
             for o in opt.options:
-               rb = QRadioButton(str(o.label), group)
+               print o.label
+               rb = QtGui.QRadioButton(str(o.label), group)
+
                rb.setEnabled(o.enabled)
                rb.setChecked(o.selected)
                group_layout.addWidget(rb)
@@ -96,7 +107,7 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
                if o.tip != None and o.tip != "":
                   rb.setToolTip(self.tr(str(o.tip)))
 
-            self.appFrame.layout().insertWidget(i + 1, group)
+            self.vboxlayout1.insertWidget(i + 1, group)
             self.appSpecificChildren.append(group)
 
             # This is critical for making the layout update dynamically.
@@ -201,7 +212,6 @@ def getModuleInfo():
    icon = QtGui.QIcon(":/linux2.png")
    return (ClusterLauncher, icon)
 
-
 def main():
    try:
       app = QtGui.QApplication(sys.argv)
@@ -210,8 +220,6 @@ def main():
       cs.configure(tree)
       cs.show()
       sys.exit(app.exec_())
-   #except SAXParseException, ex:
-   #   print "Failed to parse", sys.argv[1], ":", ex
    except IOError, ex:
       print "Failed to read %s: %s" % (sys.argv[1], ex.strerror)
 

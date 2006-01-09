@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ClusterLauncher.ui'
 #
-# Created: Mon Jan  9 09:58:44 2006
+# Created: Mon Jan  9 14:16:40 2006
 #      by: PyQt4 UI code generator v0.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,7 +13,7 @@ from PyQt4 import QtGui, QtCore
 class Ui_ClusterLauncherBase(object):
     def setupUi(self, ClusterLauncherBase):
         ClusterLauncherBase.setObjectName("ClusterLauncherBase")
-        ClusterLauncherBase.resize(QtCore.QSize(QtCore.QRect(0,0,304,379).size()).expandedTo(ClusterLauncherBase.minimumSizeHint()))
+        ClusterLauncherBase.resize(QtCore.QSize(QtCore.QRect(0,0,290,368).size()).expandedTo(ClusterLauncherBase.minimumSizeHint()))
         
         self.vboxlayout = QtGui.QVBoxLayout(ClusterLauncherBase)
         self.vboxlayout.setMargin(9)

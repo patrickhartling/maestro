@@ -31,12 +31,6 @@ class AppOption:
       else:
          self.selected = False
 
-      print "self.label: ", self.label
-      print "self.flag: ", self.flag
-      print "self.tip: ", self.tip
-      print "self.enabled: ", self.enabled
-      print "self.selected: ", self.selected
-
 class AppExclusiveOption:
    def __init__(self, xmlElt):
       self.group_name = xmlElt.get("name")
@@ -81,11 +75,6 @@ class Application:
          for n in option_list.findall("./group"):
             self.options.append(AppExclusiveOption(n))
       
-      print "App.name", self.name
-      print "App.command", self.command
-      print "App.helpURL", self.helpURL
-      print "App.tip", self.tip
-
    def getName(self):
       return self.name
 
@@ -122,9 +111,6 @@ class Action:
 
    def getTip(self):
       return self.tip
-
-
-
 
 class ClusterModel(QtCore.QAbstractListModel):
    """Create a new cluster element"""
