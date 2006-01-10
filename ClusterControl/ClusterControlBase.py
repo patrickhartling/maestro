@@ -41,8 +41,8 @@ class Ui_ClusterControlBase(object):
         self.mToolbox.setObjectName("mToolbox")
         
         self.vboxlayout = QtGui.QVBoxLayout(self.mToolbox)
-        self.vboxlayout.setMargin(9)
-        self.vboxlayout.setSpacing(6)
+        #self.vboxlayout.setMargin(9)
+        #self.vboxlayout.setSpacing(6)
         self.vboxlayout.setObjectName("vboxlayout")
         self.hboxlayout1.addWidget(self.mToolbox)
         

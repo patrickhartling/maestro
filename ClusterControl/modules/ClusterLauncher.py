@@ -3,7 +3,7 @@
 import sys
 from PyQt4 import QtGui, QtCore
 import ClusterLauncherBase
-import ClusterSettingsResource
+import ClusterLauncherResource
 import elementtree.ElementTree as ET
 import ClusterConfig
 #class ClusterTableModel(QAbstractTableModel):
@@ -333,7 +333,7 @@ class Action:
 
 
 def getModuleInfo():
-   icon = QtGui.QIcon(":/linux2.png")
+   icon = QtGui.QIcon(":/ClusterLauncher/images/launch.png")
    return (ClusterLauncher, icon)
 
 def main():

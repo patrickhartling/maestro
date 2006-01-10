@@ -1,6 +1,8 @@
 <RCC>
-    <qresource prefix="/" >
-        <file>linux2.png</file>
-        <file>win_xp.png</file>
+    <qresource prefix="/ClusterSettings" >
+        <file>images/linux2.png</file>
+        <file>images/settings.png</file>
+        <file>images/settings2.png</file>
+        <file>images/win_xp.png</file>
     </qresource>
 </RCC>

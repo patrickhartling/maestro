@@ -209,6 +209,7 @@
  </widget>
  <pixmapfunction></pixmapfunction>
  <resources>
+  <include location="../ClusterControlResource.qrc" />
   <include location="ClusterSettingsResource.qrc" />
  </resources>
  <connections/>

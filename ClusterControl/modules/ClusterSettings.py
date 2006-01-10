@@ -21,8 +21,8 @@ class ClusterModel(QtCore.QAbstractListModel):
       QtCore.QAbstractListModel.__init__(self, parent)
       self.mClusterConfig = clusterConfig
       self.mIcons = {}
-      self.mIcons[ERROR] = QtGui.QIcon(":/win_xp.png")
-      self.mIcons[LINUX] = QtGui.QIcon(":/linux2.png")
+      self.mIcons[ERROR] = QtGui.QIcon(":/ClusterSettings/images/win_xp.png")
+      self.mIcons[LINUX] = QtGui.QIcon(":/ClusterSettings/images/linux2.png")
 
    def data(self, index, role=QtCore.Qt.DisplayRole):
       if not index.isValid():
@@ -55,7 +55,6 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
    def setupUi(self, widget):
       ClusterSettingsBase.Ui_ClusterSettingsBase.setupUi(self, widget)
       QtCore.QObject.connect(self.refreshButton,QtCore.SIGNAL("clicked()"), self.onRefresh)
-      self.icon = QtGui.QIcon(":/linux2.png")
 
    def onRefresh(self):
       if not None == self.mClusterConfig:
@@ -72,7 +71,7 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
    getName = staticmethod(getName)
 
 def getModuleInfo():
-   icon = QtGui.QIcon(":/linux2.png")
+   icon = QtGui.QIcon(":/ClusterSettings/images/settings.png")
    return (ClusterSettings, icon)
 
 if __name__ == "__main__":

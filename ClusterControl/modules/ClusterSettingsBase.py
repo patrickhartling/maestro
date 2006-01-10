@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ClusterSettingsBase.ui'
 #
-# Created: Mon Jan  9 15:54:25 2006
+# Created: Tue Jan 10 17:14:26 2006
 #      by: PyQt4 UI code generator v0.4
 #
 # WARNING! All changes made in this file will be lost!

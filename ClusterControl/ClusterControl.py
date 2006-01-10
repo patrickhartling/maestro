@@ -140,6 +140,10 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
             try:
                module_class = mod_info[0]
                new_icon = mod_info[1]
+               size = QtCore.QSize()
+               print "ICON:", new_icon.actualSize(size)
+               if None == new_icon:
+                  new_icon = QtGui.QIcon(":/construction.png")
                print "Opening view: ", module_class.__name__
             
                # Create module
@@ -154,6 +158,8 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
                btn.setIcon(new_icon)
                btn.setAutoRaise(1)
                btn.setCheckable(True)
+               btn.setMinimumSize(QtCore.QSize(40,40))
+               btn.setIconSize(QtCore.QSize(40,40))
                self.mToolbox.layout().addWidget(btn)
                self.mToolboxButtonGroup.addButton(btn, index)
 
