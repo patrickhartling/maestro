@@ -75,25 +75,10 @@ class ClusterServer(Pyro.core.ObjBase):
          os.system('shutdown -h now')
       return 0
 
-   def runCommand(self, command):
-      print command
-      #(child_out1, child_in1) = popen2.popen2(command)
-      #(cmd_stdin, cmd_stdout) = os.popen4(command, 'r')
-
-      #self.connect(self.activeThread, PYSIGNAL("lineRead()"), self.onLogOutput)
-
-      cmd = 'ls'         # find is a standard Unix tool
- 
+   def runCommand(self, command, callback, subject):
       (cmd_stdin, cmd_stdout) = os.popen4(command)
-      self.activeThread = LogThread.LogThread(cmd_stdout, self)
+      self.activeThread = LogThread.LogThread(cmd_stdout, callback, subject)
       self.activeThread.start()
-      #for file in cmd_stdout.readlines():     # run find command
-      #   num  = 1
-      #   print file
-      #   num = num+1
-   
-      #daemonize(pidfile='C:\\server.pid', stdout='C:\\log')
-      #sys.execl('notepad.exe')
 
 if os.name == 'nt':
    class vrjclusterserver(win32serviceutil.ServiceFramework):
@@ -138,18 +123,6 @@ def RunServer():
    print "The object's uri is:",uri
 
    daemon.requestLoop()
-
-   #daemon=Pyro.core.Daemon()
-   #ns=Pyro.naming.NameServerLocator().getNS()
-   #daemon.useNameServer(ns)
-   #uri=daemon.connect(ClusterServer(),"cluster_server")
-   #daemon.requestLoop()
-
-#   sfcServer = BaseSfcServer(('0.0.0.0', PORT), 0)
-#   try:
-#      sfcServer.serve_forever()
-#   finally:
-#      sfcServer.server_close()
 
 def daemonize (stdin='/dev/null', stdout='/dev/null', stderr=None, pidfile=None):
    """This forks the current process into a daemon. The stdin, stdout,
