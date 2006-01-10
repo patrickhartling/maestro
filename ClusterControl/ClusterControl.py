@@ -11,6 +11,8 @@ import elementtree.ElementTree as ET
 
 import modules
 
+import Pyro
+
 gui_base_dir = ""
 try:
    gui_base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -28,6 +30,9 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
    def configure(self, clusterConfig):
       for module in self.mModulePanels:
          module.configure(clusterConfig)
+      
+      clusterConfig.getOutputLogger().subscribeMatch(".*", self.mTextEdit.append)
+
 
    def setupUi(self, widget):
       ClusterControlBase.Ui_ClusterControlBase.setupUi(self, widget)
@@ -188,11 +193,29 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
    def __tr(self,s,c = None):
       return qApp.translate("MainWindow",s,c)
 
+   #def onDebugOutput(self, message):
+   #   #self.mTextEdit.append(str(message))
+   #   #self.mTextEdit.setText(str(message))
+   #   self.mTextEdit.append("Aron")
+
 def main():
+   Pyro.config.PYRO_LOGFILE = 'Pyro_sys_log'
+   Pyro.config.PYRO_USER_LOGFILE = 'Pyro_user_log'
+   Pyro.config.PYRO_TRACELEVEL = 4
+   Pyro.config.PYRO_USER_TRACELEVEL = 4
    try:
       app = QtGui.QApplication(sys.argv)
+
+      # Parse xml config file
       tree = ET.ElementTree(file=sys.argv[1])
+
+      # Create cluster configuration
       cluster_config = ClusterConfig.ClusterConfig(tree);
+
+      # Try to make inital connections
+      cluster_config.refreshConnections()
+
+      # Create and display GUI
       cc = ClusterControl()
       cc.configure(cluster_config)
       cc.show()

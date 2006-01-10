@@ -59,7 +59,7 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
 
    def onRefresh(self):
       if not None == self.mClusterConfig:
-         self.mClusterConfig.refresh()
+         self.mClusterConfig.refreshConnections()
          self.listView.reset()
 
    def configure(self, clusterConfig):

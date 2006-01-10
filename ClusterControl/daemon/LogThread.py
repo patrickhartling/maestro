@@ -5,13 +5,12 @@ class LogThread(threading.Thread):
    Handles reading output from a running command so that the main GUI
    thread can display it.
    """
-   def __init__(self, stdout, callback, subject):
+   def __init__(self, stdout, queue):
       threading.Thread.__init__(self)
 
       self.mStdout   = stdout
       self.mKeepRunning = False
-      self.mCallback = callback
-      self.mSubject = subject
+      self.mQueue = queue
 
    def run(self):
       self.mKeepRunning = True
@@ -27,8 +26,10 @@ class LogThread(threading.Thread):
          # If nothing was read, the thread can exit.
          if l == "":
             self.mKeepRunning = False
+            # Send to tell thread to exit.
+            self.mQueue.put(l)
          else:
-            self.mCallback.publish(self.mSubject, l)
+            self.mQueue.put(l)
             print "DEBUG %d: %s" % (count, l),
             count += 1
 

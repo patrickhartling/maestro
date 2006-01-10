@@ -9,6 +9,8 @@ import Pyro.core
 import Pyro.naming
 import popen2
 
+from Queue import Queue
+
 #platform.system()
 #os.uname()
 #sys.platform
@@ -40,6 +42,10 @@ if os.name == 'nt':
         win32security.AdjustTokenPrivileges(htoken, 0, newPrivileges)
 
 class ClusterServer(Pyro.core.ObjBase):
+   def __init__(self):
+      Pyro.core.ObjBase.__init__(self)
+      self.mQueue = Queue()
+
    def getPlatform(self):
       """Returns tuple with error code and platform code.
          1 is Linux, 2 is Windows, and 0 is unknown."""
@@ -75,10 +81,13 @@ class ClusterServer(Pyro.core.ObjBase):
          os.system('shutdown -h now')
       return 0
 
-   def runCommand(self, command, callback, subject):
+   def runCommand(self, command):
       (cmd_stdin, cmd_stdout) = os.popen4(command)
-      self.activeThread = LogThread.LogThread(cmd_stdout, callback, subject)
+      self.activeThread = LogThread.LogThread(cmd_stdout, self.mQueue)
       self.activeThread.start()
+
+   def getOutput(self):
+      return self.mQueue.get()
 
 if os.name == 'nt':
    class vrjclusterserver(win32serviceutil.ServiceFramework):

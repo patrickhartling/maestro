@@ -220,7 +220,7 @@
           <number>6</number>
          </property>
          <item>
-          <widget class="QTextBrowser" name="textBrowser" />
+          <widget class="QTextEdit" name="mTextEdit" />
          </item>
         </layout>
        </widget>
@@ -247,7 +247,7 @@
   </widget>
   <action name="actionReload" >
    <property name="icon" >
-    <iconset resource="ClusterControlResource.qrc" >:/editredo.png</iconset>
+    <iconset/>
    </property>
    <property name="text" >
     <string>&amp;Reload</string>
@@ -255,7 +255,7 @@
   </action>
   <action name="actionNew" >
    <property name="icon" >
-    <iconset resource="ClusterControlResource.qrc" >:/new.png</iconset>
+    <iconset/>
    </property>
    <property name="text" >
     <string>&amp;New</string>
@@ -263,7 +263,7 @@
   </action>
   <action name="actionOpen" >
    <property name="icon" >
-    <iconset resource="ClusterControlResource.qrc" >:/open.png</iconset>
+    <iconset/>
    </property>
    <property name="text" >
     <string>&amp;Open</string>
@@ -271,7 +271,7 @@
   </action>
   <action name="actionSave" >
    <property name="icon" >
-    <iconset resource="ClusterControlResource.qrc" >:/save.png</iconset>
+    <iconset/>
    </property>
    <property name="text" >
     <string>&amp;Save</string>
@@ -284,7 +284,7 @@
   </action>
   <action name="action_Exit" >
    <property name="icon" >
-    <iconset resource="ClusterControlResource.qrc" >:/exit.png</iconset>
+    <iconset/>
    </property>
    <property name="text" >
     <string>&amp;Exit</string>

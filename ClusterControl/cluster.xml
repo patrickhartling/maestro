@@ -1,7 +1,69 @@
-<?xml version="1.0" ?>
-<cluster>
-	<cluster_nodes>
-		<node hostname="slave1"/>
-		<node hostname="slave2"/>
-	</cluster_nodes>
-</cluster>
+<?xml version="1.0" encoding="UTF-8"?>
+<cluster_config>
+  <launcher title="App Launcher">
+    <applications>
+      <app name="Cow with Gaussian Filter">
+        <command>scripts/osgViewer-gaussian</command>
+        <tooltip>Load the App Viewer application with the Cow model</tooltip>
+        <helpURL>/usr/local/X11R6/lib/X11/doc/html/XvQueryAdaptors.3.html</helpURL>
+        <options>
+          <option label="Stereo" flag="--stereo"
+                  tooltip="Enable stereoscopic rendering" />
+        </options>
+      </app>
+      <app name="Cow with Mitchell Filter">
+        <command>scripts/osgViewer-mitchell</command>
+        <tooltip>Load the App Viewer application with the Cow model</tooltip>
+        <helpURL>http://www.137.org/patrick/work.html</helpURL>
+        <options>
+          <option label="Stereo" flag="--stereo"
+                  tooltip="Enable stereoscopic rendering" />
+        </options>
+      </app>
+      <app name="Cow with cylinder Filter">
+        <command>scripts/osgViewer-cylinder</command>
+        <tooltip>Load the App Viewer application with the Cow model</tooltip>
+        <helpURL>http://www.137.org/patrick/work.html</helpURL>
+        <options>
+          <option label="Stereo" flag="--stereo"
+                  tooltip="Enable stereoscopic rendering" />
+        </options>
+      </app>
+      <app name="Cow with catmull Filter">
+        <command>scripts/osgViewer-catmull</command>
+        <tooltip>Load the App Viewer application with the Cow model</tooltip>
+          <helpURL>http://www.137.org/patrick/work.html</helpURL>
+        <options>
+          <option label="Stereo" flag="--stereo"
+                  tooltip="Enable stereoscopic rendering" />
+          </options>
+      </app>
+      <app name="Another Test App">
+          <command>scripts/something</command>
+        <tooltip>I am another test application.  Run me!</tooltip>
+        <helpURL>http://www.137.org/patrick/resume.html</helpURL>
+        <options>
+          <option label="Things" flag="-t" tooltip="Enable things" />
+          <option label="Features" flag="-f" tooltip="Enable features" />
+          </options>
+      </app>
+      <app name="Pipe test">
+        <command>yes</command>
+      </app>
+    </applications>
+    <controls>
+      <action name="Reset Graphics">
+        <command>scripts/reset</command>
+        <tooltip>Click me to reset the graphics</tooltip>
+      </action>
+    </controls>
+    <global_options>
+      <group name="VR Juggler Configuration">
+         <option label="CAVE" flag="cave.jconf" tooltip="CAVE Configuration" />
+         <option label="Power Wall" flag="pwall.jconf" tooltip="Power Wall Configuration" />
+      </group>
+    </global_options>
+  </launcher>
+  <cluster_node name="Timmy" hostname="timmy.infiscape.com"/>
+  <cluster_node name="slave1" hostname="slave1"/>
+</cluster_config>

@@ -204,8 +204,7 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
 
       if cmd != "" and cmd != None:
          print "running command: ", cmd
-         self.mClusterConfig.runRemoteCommand('ls', 'ls')
-#         self._runCommandWithLog(cmd)
+         self.mClusterConfig.runRemoteCommand('rpm -qa', 'rpm -qa')
 #         self.launchButton.setEnabled(False)
 #         self.killButton.setEnabled(True)
       else:
