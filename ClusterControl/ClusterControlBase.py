@@ -13,6 +13,9 @@ class Ui_ClusterControlBase(object):
    def setupUi(self, ClusterControlBase):
       ClusterControlBase.setObjectName("ClusterControlBase")
       ClusterControlBase.resize(QtCore.QSize(QtCore.QRect(0,0,788,711).size()).expandedTo(ClusterControlBase.minimumSizeHint()))
+      ClusterControlBase.setWindowIcon(QtGui.QIcon(":/images/construction.png"))
+      ClusterControlBase.setAutoFillBackground(True)
+      ClusterControlBase.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
       
       self.centralwidget = QtGui.QWidget(ClusterControlBase)
       self.centralwidget.setObjectName("centralwidget")

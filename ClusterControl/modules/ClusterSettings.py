@@ -21,7 +21,9 @@ class ClusterModel(QtCore.QAbstractListModel):
       QtCore.QAbstractListModel.__init__(self, parent)
       self.mClusterConfig = clusterConfig
       self.mIcons = {}
-      self.mIcons[ERROR] = QtGui.QIcon(":/ClusterSettings/images/win_xp.png")
+      self.mIcons[ERROR] = QtGui.QIcon(":/ClusterSettings/images/error2.png")
+      self.mIcons[WIN] = QtGui.QIcon(":/ClusterSettings/images/win_xp.png")
+      self.mIcons[WINXP] = QtGui.QIcon(":/ClusterSettings/images/win_xp.png")
       self.mIcons[LINUX] = QtGui.QIcon(":/ClusterSettings/images/linux2.png")
 
    def data(self, index, role=QtCore.Qt.DisplayRole):
@@ -71,7 +73,7 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
    getName = staticmethod(getName)
 
 def getModuleInfo():
-   icon = QtGui.QIcon(":/ClusterSettings/images/settings.png")
+   icon = QtGui.QIcon(":/ClusterSettings/images/tools.gif")
    return (ClusterSettings, icon)
 
 if __name__ == "__main__":

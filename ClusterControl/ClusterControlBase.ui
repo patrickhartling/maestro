@@ -15,6 +15,15 @@
   <property name="windowTitle" >
    <string>Infiscape Cluster Control</string>
   </property>
+  <property name="windowIcon" >
+   <iconset resource="ClusterControlResource.qrc" >:/images/construction.png</iconset>
+  </property>
+  <property name="autoFillBackground" >
+   <bool>true</bool>
+  </property>
+  <property name="toolButtonStyle" >
+   <enum>Qt::ToolButtonIconOnly</enum>
+  </property>
   <widget class="QWidget" name="centralwidget" >
    <layout class="QHBoxLayout" >
     <property name="margin" >

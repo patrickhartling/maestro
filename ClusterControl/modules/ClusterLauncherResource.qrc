@@ -3,5 +3,6 @@
         <file>images/linux2.png</file>
         <file>images/win_xp.png</file>
         <file>images/launch.png</file>
+        <file>images/launch2.gif</file>
     </qresource>
 </RCC>

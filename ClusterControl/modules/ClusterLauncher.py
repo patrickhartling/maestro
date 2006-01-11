@@ -334,7 +334,7 @@ class Action:
 
 
 def getModuleInfo():
-   icon = QtGui.QIcon(":/ClusterLauncher/images/launch.png")
+   icon = QtGui.QIcon(":/ClusterLauncher/images/launch2.gif")
    return (ClusterLauncher, icon)
 
 def main():

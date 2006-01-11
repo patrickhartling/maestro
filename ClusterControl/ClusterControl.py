@@ -39,6 +39,8 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
 
       self.mToolboxButtonGroup = QtGui.QButtonGroup()
       widget.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.mStatusWindow)
+      self.mToolbox.setBackgroundRole(QtGui.QPalette.Base)
+      self.mToolbox.setForegroundRole(QtGui.QPalette.Base)
 
       # Load custom modules
       self.mPlugins = {}             # Dict of plugins: mod_name -> (module, ..)
