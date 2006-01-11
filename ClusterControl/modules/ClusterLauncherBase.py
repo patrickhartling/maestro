@@ -2,7 +2,6 @@
 
 # Form implementation generated from reading ui file 'modules/ClusterLauncherBase.ui'
 #
-# Created: Tue Jan 10 18:31:39 2006
 #      by: PyQt4 UI code generator v0.4
 #
 # WARNING! All changes made in this file will be lost!
