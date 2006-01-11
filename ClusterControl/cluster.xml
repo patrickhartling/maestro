@@ -2,6 +2,21 @@
 <cluster_config>
   <launcher title="App Launcher">
     <applications>
+      <app name="Test RPM Usage">
+        <command>rpm</command>
+        <tooltip>RPM package management.</tooltip>
+        <options>
+          <group name="RPM Searches">
+            <option label="List All" flag="-qa"
+                    tooltip="List all installed RPMs." />
+            <option label="List qt files" flag="-ql qt"
+                    tooltip="List all files installed with qt." />
+            <option label="List telnet RPM" flag="-qf /usr/bin/telnet"
+                    tooltip="List rpm that contains telnet." />
+          </group>
+        </options>
+      </app>
+        <helpURL>/usr/local/X11R6/lib/X11/doc/html/XvQueryAdaptors.3.html</helpURL>
       <app name="Cow with Gaussian Filter">
         <command>scripts/osgViewer-gaussian</command>
         <tooltip>Load the App Viewer application with the Cow model</tooltip>
