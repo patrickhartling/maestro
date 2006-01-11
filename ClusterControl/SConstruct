@@ -12,12 +12,14 @@ pj = os.path.join;
 
 # Pyuic builder
 def registerPyuicBuilder(env):
-  pyuic_build_str = 'pyuic4 -x -i3 -o $TARGET $SOURCE';
+  #pyuic_build_str = 'pyuic4 -x -i3 -o $TARGET $SOURCE';
+  pyuic_build_str = 'pyuic4 -x -i3 $SOURCE | grep -v "# Created: " > $TARGET';
   pyuic_builder = Builder(action = pyuic_build_str,
                           src_suffix = '.ui',
                           suffix = '.py');                            env.Append(BUILDERS = {'Pyuic' : pyuic_builder});
 
-  pyuic_build_str = 'pyrcc4 -compress 5 -o $TARGET $SOURCE';
+  #pyuic_build_str = 'pyrcc4 -compress 5 -o $TARGET $SOURCE';
+  pyuic_build_str = 'pyrcc4 -compress 5 $SOURCE | grep -v "# Created: " > $TARGET';
   pyuic_builder = Builder(action = pyuic_build_str,
                           src_suffix = '.qrc',
                           suffix = '.py');                            env.Append(BUILDERS = {'Pyrcc' : pyuic_builder});
