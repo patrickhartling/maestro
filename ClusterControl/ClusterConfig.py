@@ -52,12 +52,14 @@ class ClusterConfig(QtCore.QObject):
       self.mElement.remove(node.mElement)
       # Remove node data structure
       self.mNodes.remove(node)
+      self.emit(QtCore.SIGNAL("nodeRemoved()"), node)
 
    def addNode(self):
       new_element = ET.SubElement(self.mElement, "cluster_node", name="NewNode", hostname="NewNode")
       new_node = ClusterNode(new_element)
       self.mNodes.append(new_node)
       self.refreshConnections()
+      self.emit(QtCore.SIGNAL("nodeAdded()"), new_node)
       return new_node
 
    def refreshOutputLogger(self):

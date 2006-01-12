@@ -79,7 +79,7 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <widget class="QWidget" name="page" >
+        <widget class="QWidget" name="mOldPage" >
          <property name="sizePolicy" >
           <sizepolicy>
            <hsizetype>5</hsizetype>
@@ -96,16 +96,16 @@
            <number>6</number>
           </property>
           <item>
-           <widget class="QSplitter" name="splitter" >
+           <widget class="QSplitter" name="mOldSplitter" >
             <property name="orientation" >
              <enum>Qt::Horizontal</enum>
             </property>
-            <widget class="QPushButton" name="pushButton" >
+            <widget class="QPushButton" name="mOldBtn1" >
              <property name="text" >
               <string>PushButton</string>
              </property>
             </widget>
-            <widget class="QWidget" name="widget" >
+            <widget class="QWidget" name="mOldFrame" >
              <layout class="QVBoxLayout" >
               <property name="margin" >
                <number>0</number>
@@ -114,14 +114,14 @@
                <number>6</number>
               </property>
               <item>
-               <widget class="QPushButton" name="pushButton_3" >
+               <widget class="QPushButton" name="mOldBtn3" >
                 <property name="text" >
                  <string>PushButton</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_2" >
+               <widget class="QPushButton" name="mOldBtn2" >
                 <property name="text" >
                  <string>PushButton</string>
                 </property>
@@ -207,7 +207,7 @@
    <attribute name="dockWidgetArea" >
     <number>8</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents" >
+   <widget class="QWidget" name="mDockWidgetContents" >
     <layout class="QVBoxLayout" >
      <property name="margin" >
       <number>9</number>
@@ -216,10 +216,10 @@
       <number>6</number>
      </property>
      <item>
-      <widget class="QTabWidget" name="tabWidget" >
-       <widget class="QWidget" name="tab" >
+      <widget class="QTabWidget" name="mTabPane" >
+       <widget class="QWidget" name="mOldTab" >
         <attribute name="title" >
-         <string>Tab 1</string>
+         <string>Old Tab</string>
         </attribute>
         <layout class="QHBoxLayout" >
          <property name="margin" >
@@ -229,23 +229,7 @@
           <number>6</number>
          </property>
          <item>
-          <widget class="QTextEdit" name="mTextEdit" />
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="tab_2" >
-        <attribute name="title" >
-         <string>Tab 2</string>
-        </attribute>
-        <layout class="QHBoxLayout" >
-         <property name="margin" >
-          <number>9</number>
-         </property>
-         <property name="spacing" >
-          <number>6</number>
-         </property>
-         <item>
-          <widget class="QTextBrowser" name="textBrowser_2" />
+          <widget class="QTextBrowser" name="mOldTextBrowser" />
          </item>
         </layout>
        </widget>

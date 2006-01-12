@@ -26,13 +26,45 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
    def __init__(self, parent = None):
       QtGui.QMainWindow.__init__(self, parent)
       self.setupUi(self)
+      self.mClusterConfig = None
 
    def configure(self, clusterConfig):
+      # Set the new cluster configuration
+      if not None == self.mClusterConfig:
+         self.disconnect(self.mClusterConfig, QtCore.SIGNAL("nodeAdded()"), self.onNodeAdded)
+         self.disconnect(self.mClusterConfig, QtCore.SIGNAL("nodeRemoved()"), self.onNodeRemoved)
+      self.mClusterConfig = clusterConfig
+      self.connect(self.mClusterConfig, QtCore.SIGNAL("nodeAdded()"), self.onNodeAdded)
+      self.connect(self.mClusterConfig, QtCore.SIGNAL("nodeRemoved()"), self.onNodeRemoved)
+      
       for module in self.mModulePanels:
          module.configure(clusterConfig)
-      
-      clusterConfig.getOutputLogger().subscribeMatch(".*", self.mTextEdit.append)
 
+      for n in self.mClusterConfig.mNodes:
+         self.addOutputTab(n)
+      
+
+   def addOutputTab(self, node):
+      tab = QtGui.QWidget()
+      tab.setObjectName("tab")
+      
+      hboxlayout2 = QtGui.QHBoxLayout(tab)
+      hboxlayout2.setMargin(9)
+      hboxlayout2.setSpacing(6)
+      hboxlayout2.setObjectName("hboxlayout2")
+      
+      textedit = QtGui.QTextEdit(tab)
+      textedit.setObjectName("TextEdit")
+      hboxlayout2.addWidget(textedit)
+      self.mTabPane.addTab(tab, "")
+      self.mTabPane.setTabText(self.mTabPane.indexOf(tab), node.getName())
+      self.mClusterConfig.getOutputLogger().subscribeMatch(".*", textedit.append)
+
+   def onNodeAdded(self, node):
+      print "Added: ", node
+
+   def onNodeRemoved(self, node):
+      print "Removed, ", node
 
    def setupUi(self, widget):
       ClusterControlBase.Ui_ClusterControlBase.setupUi(self, widget)
