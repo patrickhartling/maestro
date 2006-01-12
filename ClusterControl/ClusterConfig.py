@@ -10,8 +10,9 @@ from Queue import Queue
 
 import copy
 
-class ClusterConfig:
+class ClusterConfig(QtCore.QObject):
    def __init__(self, xmlTree):
+      QtCore.QObject.__init__(self)
       # Store cluster XML element
       self.mElement = xmlTree.getroot()
       assert self.mElement.tag == "cluster_config"
@@ -52,9 +53,16 @@ class ClusterConfig:
 
    def refreshConnections(self):
       """Try to connect to all nodes."""
+
+      new_connections = False
+
       for n in self.mNodes:
          if None == n.mProxy:
-            n.connect()
+            if n.connect():
+               new_connections = True
+
+      if new_connections:
+         self.emit(QtCore.SIGNAL("newConnections()"))
 
    def runRemoteCommand(self, masterCommand, slaveCommand):
       """Run commands on cluster."""
@@ -74,18 +82,27 @@ class ClusterNode:
    def getName(self):
       return self.mElement.get("name")
 
+   def setName(self, newName):
+      return self.mElement.set("name", newName)
+
    def getHostname(self):
       return self.mElement.get("hostname")
+
+   def setHostname(self, newHostname):
+      return self.mElement.set("hostname", newHostname)
 
    def connect(self):
       if None == self.mProxy:
          try:
             self.mProxy = Pyro.core.getProxyForURI("PYROLOC://" + self.getHostname() + ":7766/cluster_server")
+            print "Connected to [%s]" % (self.getName())
+            return True
          except:
             self.mProxy = None
             print "Error connecting proxy to [%s]" % (self.getHostname())
       else:
          print "Cluster node [%s] already has an active proxy." % (self.getName())
+      return False
 
    def proxy(self):
       return self.mProxy

@@ -11,6 +11,8 @@ import popen2
 
 from Queue import Queue
 
+import SettingsService
+
 #platform.system()
 #os.uname()
 #sys.platform
@@ -45,6 +47,16 @@ class ClusterServer(Pyro.core.ObjBase):
    def __init__(self):
       Pyro.core.ObjBase.__init__(self)
       self.mQueue = Queue()
+
+   def registerInitialServices(self):
+      # Register initial services
+      self.mServices = {}
+      settings = SettingsService.SettingsService()
+      self.getDaemon().connect(settings)
+      self.mServices["Settings"] = settings.getProxy()
+
+   def getService(self, name):
+      return self.mServices[name]
 
    def getPlatform(self):
       """Returns tuple with error code and platform code.
@@ -125,13 +137,19 @@ if os.name == 'nt':
 
 def RunServer():
    Pyro.core.initServer()
-   daemon=Pyro.core.Daemon()
-   uri=daemon.connect(ClusterServer(),"cluster_server")
+   daemon = Pyro.core.Daemon()
+   cluster_server = ClusterServer()
+   uri = daemon.connect(cluster_server, "cluster_server")
+   cluster_server.registerInitialServices()
 
    print "The daemon runs on port:",daemon.port
    print "The object's uri is:",uri
 
-   daemon.requestLoop()
+   try:
+      daemon.requestLoop()
+   except:
+      print "Unregistering Pyro objects"
+      daemon.shutdown(True)
 
 def daemonize (stdin='/dev/null', stdout='/dev/null', stderr=None, pidfile=None):
    """This forks the current process into a daemon. The stdin, stdout,
