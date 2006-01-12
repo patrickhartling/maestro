@@ -76,8 +76,10 @@ class OutputTabWidget(QtGui.QTabWidget, QtGui.QAbstractItemView):
    
    def dataChanged(self, index):
       node = self.mClusterModel.mNodes[index]
+      old_name = self.getTabText(index)
+      
       self.setTabText(index, node.getName())
-
+      
    def addOutputTab(self, node, index):
       tab = QtGui.QWidget()
       tab.setObjectName("tab")
@@ -92,7 +94,7 @@ class OutputTabWidget(QtGui.QTabWidget, QtGui.QAbstractItemView):
       hboxlayout2.addWidget(textedit)
       self.insertTab(index, tab, "")
       self.setTabText(self.indexOf(tab), node.getName())
-      self.mClusterModel.getOutputLogger().subscribeMatch(".*", textedit.append)
+      self.mClusterModel.getOutputLogger().subscribeForNode(node, textedit.append)
       return tab
 
 class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase):

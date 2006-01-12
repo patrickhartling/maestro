@@ -189,7 +189,7 @@ class ClusterNode:
    def runCommand(self, command, outputLogger):
       if not None == self.mProxy:
          self.mProxy.runCommand(command)
-         ot = OutputThread(copy.copy(self.mProxy), self.getName(), outputLogger)
+         ot = OutputThread(copy.copy(self.mProxy), self, outputLogger)
          ot.start()
       else:
          print "Cluster node [%s] is not connected." % (self.getName())
@@ -200,24 +200,25 @@ class ClusterNode:
          self.mProxy = None
 
 class OutputThread(threading.Thread):
-   def __init__(self, proxy, subject, outputLogger):
+   def __init__(self, proxy, node, outputLogger):
       threading.Thread.__init__(self)
       self.mProxy = proxy
-      self.mSubject = subject
+      self.mNode = node
       self.mOutputLogger = outputLogger
 
    def run(self):
       line = self.mProxy.getOutput()
       while not "" == line:
          # Strip the trailing newline char
-         self.mOutputLogger.output(self.mSubject, line[:-1])
+         self.mOutputLogger.output(self.mNode, line[:-1])
          line = self.mProxy.getOutput()
       print "Done running command."
 
 class OutputLogger(QtCore.QObject):
    def __init__(self):
       QtCore.QObject.__init__(self)
-      self.subscribersMatch={}
+      self.subscribersMatch = {}
+      self.nodeSubscribers = {}
       self.mQueue = Queue()
 
    def _mksequence(self, seq):
@@ -233,6 +234,15 @@ class OutputLogger(QtCore.QObject):
          matcher = re.compile(subject, re.IGNORECASE)
          self.subscribersMatch.setdefault(matcher, []).append(callback)
 
+   def subscribeForNode(self, node, callback):
+      self.nodeSubscribers.setdefault(node, []).append(callback)
+
+   def unsubscribeForNode(self, node, callback):
+      try:
+         self.nodeSubscribers[node].remove(callback)
+      except ValueError, x:
+         pass
+
    def unsubscribe(self, subjects, callback):
       if not subjects: return
       for subject in self._mksequence(subjects):
@@ -242,22 +252,23 @@ class OutputLogger(QtCore.QObject):
          except ValueError, x:
             pass
 
-   def output(self, subjects, message):
-      self.mQueue.put((subjects, message))
+   def output(self, node, message):
+      self.mQueue.put((node, message))
       
    def publishEvents(self):
       try:
          # Run a maximum up 100 times.
          for x in xrange(100):
-            (subjects, message) = self.mQueue.get(block=False)
-            if not subjects: return
-            # publish a message. Subjects must be exact strings
-            for subject in self._mksequence(subjects):
-               # process the subject patterns
-               for (m,subs) in self.subscribersMatch.items():
-                  if m.match(subject):
-                     # send event to all subscribers
-                     for cb in subs:
-                        cb(message)
+            (node, message) = self.mQueue.get(block=False)
+            if not node: return
+            # process the subject patterns
+            for (m,subs) in self.subscribersMatch.items():
+               if m.match(node.getName()):
+                  # send event to all subscribers
+                  for cb in subs:
+                     cb(message)
+            # Call all per node callbacks
+            for cb in self.nodeSubscribers[node]:
+               cb(message)
       except:
          pass
