@@ -50,7 +50,7 @@ class ClusterModel(QtCore.QAbstractListModel):
       else:
          return len(self.mClusterConfig.mNodes)
 
-   def insertRows()
+   #def insertRows(self, row, count, parent):
 
 class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase):
    def __init__(self, parent = None):
@@ -76,42 +76,34 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
       """ Called when user presses the refresh button. """
       if not None == self.mClusterConfig:
          self.mClusterConfig.refreshConnections()
-         self.verifyCB()
 
    def onAdd(self):
       """ Called when user presses the add button. """
       if not None == self.mClusterConfig:
+         
+         # Inform all views about add
+         row_count = self.mClusterModel.rowCount(QtCore.QModelIndex())
+         self.mClusterModel.beginInsertRows(QtCore.QModelIndex(), row_count, 1)
          new_node = self.mClusterConfig.addNode()
+         self.mClusterModel.endInsertRows()
+         
          self.mClusterListView.clearSelection()
          self.mSelectedNode = None
          self.onNewConnections()
-         self.verifyCB()
 
    def onRemove(self):
       """ Called when user presses the remove button. """
       if (not None == self.mClusterConfig) and (not None == self.mSelectedNode):
          self.mClusterListView.clearSelection()
+         
+         # Inform all views about remove
+         row_count = self.mClusterModel.rowCount(QtCore.QModelIndex())
+         self.mClusterModel.beginRemoveRows(QtCore.QModelIndex(), 0, row_count - 1);
          self.mClusterConfig.removeNode(self.mSelectedNode)
+         self.mClusterModel.endRemoveRows()
+         
          self.mSelectedNode = None
          self.onNewConnections()
-         self.verifyCB()
-
-   def verifyCB(self):
-      row_count = self.mClusterModel.rowCount(QtCore.QModelIndex())
-      if 0 == row_count:
-         self.mMasterCB.setEnabled(False)
-         self.mMasterCB.setModel(None)
-         return
-
-      if not self.mMasterCB.isEnabled():
-         self.mMasterCB.setEnabled(True)
-         self.mMasterCB.setModel(self.mClusterModel)
-         self.mMasterCB.setCurrentIndex(0)
-         return
-
-      if (self.mMasterCB.currentIndex() > row_count-1):
-         self.mMasterCB.setCurrentIndex(0)
-         return
 
    def nodeSettingsChanged(self):
       """ Apply any user changes. """
