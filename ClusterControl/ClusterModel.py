@@ -71,10 +71,12 @@ class ClusterModel(QtCore.QAbstractListModel):
          self.mNodes.insert(row, new_node);
       self.refreshConnections()
       self.endInsertRows()
+      self.emit(QtCore.SIGNAL("rowsInserted(int, int)"), row, count)
       return True
 
    def removeRows(self, row, count, parent):
       self.beginRemoveRows(QtCore.QModelIndex(), row, row + count - 1)
+      self.emit(QtCore.SIGNAL("rowsAboutToBeRemoved(int, int)"), row, count)
       for i in xrange(count):
          node = self.mNodes[row]
 
@@ -143,6 +145,7 @@ class ClusterModel(QtCore.QAbstractListModel):
 
    def setData(self, index, value, role):
       self.emit(QtCore.SIGNAL("dataChanged(QModelIndex,QModelIndex)"), index, index)
+      self.emit(QtCore.SIGNAL("dataChanged(int)"), index.row())
       return True
          
 class ClusterNode:

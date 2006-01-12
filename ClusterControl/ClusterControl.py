@@ -21,6 +21,79 @@ except:
 
 print "Base gui dir:", gui_base_dir
 
+class OutputTabWidget(QtGui.QTabWidget, QtGui.QAbstractItemView):
+   def __init__(self, parent):
+      QtGui.QTabWidget.__init__(self, parent)
+      self.mClusterModel = None
+      self.mTabMap = []
+
+   def setModel(self, model):
+      #if not None == self.mClusterModel:
+         #self.disconnect(self.mClusterModel, QtCore.SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+         #          self, QtCore.SLOT(dataChanged(QModelIndex,QModelIndex)));
+         #disconnect(d->model, SIGNAL(rowsInserted(QModelIndex,int,int)),
+         #          this, SLOT(rowsInserted(QModelIndex,int,int)));
+         #self.disconnect(self.mClusterModel, QtCore.SIGNAL("rowsAboutToBeRemoved(QModelIndex,int,int)"),
+         #                self, QtCore.SLOT("self.rowsAboutToBeRemoved(QModelIndex,int,int)"));
+         #disconnect(d->model, SIGNAL(columnsAboutToBeRemoved(QModelIndex,int,int)),
+         #          this, SLOT(columnsAboutToBeRemoved(QModelIndex,int,int)));
+         #disconnect(d->model, SIGNAL(modelReset()), this, SLOT(reset()));
+         #disconnect(d->model, SIGNAL(layoutChanged()), this, SLOT(doItemsLayout()));
+
+      self.mClusterModel = model
+
+      self.connect(self.mClusterModel, QtCore.SIGNAL("rowsAboutToBeRemoved(int,int)"),
+                   self.rowsAboutToBeRemoved)
+      self.connect(self.mClusterModel, QtCore.SIGNAL("rowsInserted(int,int)"),
+                   self.rowsInserted)
+      self.connect(self.mClusterModel, QtCore.SIGNAL("dataChanged(int)"),
+                   self.dataChanged)
+
+      self.reset()
+   def test(self):
+      print "TEST"
+
+   def reset(self):
+      for i in xrange(self.count()):
+         self.removeTab(0)
+      self.mTabMap = []
+         
+      for i in xrange(len(self.mClusterModel.mNodes)):
+         node = self.mClusterModel.mNodes[i]
+         tab = self.addOutputTab(node, i)
+         self.mTabMap.append(tab)
+
+   def rowsAboutToBeRemoved(self, row, count):
+      for i in xrange(count):
+         self.removeTab(row+i)
+         del self.mTabMap[row+i]
+   
+   def rowsInserted(self, row, count):
+      for i in xrange(count):
+         node = self.mClusterModel.mNodes[row+i]
+         tab = self.addOutputTab(node, row+i)
+         self.mTabMap.append(tab)
+   
+   def dataChanged(self, index):
+      node = self.mClusterModel.mNodes[index]
+      self.setTabText(index, node.getName())
+
+   def addOutputTab(self, node, index):
+      tab = QtGui.QWidget()
+      tab.setObjectName("tab")
+      
+      hboxlayout2 = QtGui.QHBoxLayout(tab)
+      hboxlayout2.setMargin(9)
+      hboxlayout2.setSpacing(6)
+      hboxlayout2.setObjectName("hboxlayout2")
+      
+      textedit = QtGui.QTextEdit(tab)
+      textedit.setObjectName("TextEdit")
+      hboxlayout2.addWidget(textedit)
+      self.insertTab(index, tab, "")
+      self.setTabText(self.indexOf(tab), node.getName())
+      self.mClusterModel.getOutputLogger().subscribeMatch(".*", textedit.append)
+      return tab
 
 class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase):
    def __init__(self, parent = None):
@@ -37,28 +110,15 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
       self.connect(self.mClusterModel, QtCore.SIGNAL("nodeAdded()"), self.onNodeAdded)
       self.connect(self.mClusterModel, QtCore.SIGNAL("nodeRemoved()"), self.onNodeRemoved)
       
+      self.mTabPane.setModel(self.mClusterModel)
+      
       for module in self.mModulePanels:
          module.configure(clusterModel)
 
-      for n in self.mClusterModel.mNodes:
-         self.addOutputTab(n)
       
 
-   def addOutputTab(self, node):
-      tab = QtGui.QWidget()
-      tab.setObjectName("tab")
-      
-      hboxlayout2 = QtGui.QHBoxLayout(tab)
-      hboxlayout2.setMargin(9)
-      hboxlayout2.setSpacing(6)
-      hboxlayout2.setObjectName("hboxlayout2")
-      
-      textedit = QtGui.QTextEdit(tab)
-      textedit.setObjectName("TextEdit")
-      hboxlayout2.addWidget(textedit)
-      self.mTabPane.addTab(tab, "")
-      self.mTabPane.setTabText(self.mTabPane.indexOf(tab), node.getName())
-      self.mClusterModel.getOutputLogger().subscribeMatch(".*", textedit.append)
+
+
 
    def onNodeAdded(self, node):
       print "Added: ", node
@@ -73,6 +133,9 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
       widget.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.mStatusWindow)
       self.mToolbox.setBackgroundRole(QtGui.QPalette.Base)
       self.mToolbox.setForegroundRole(QtGui.QPalette.Base)
+      
+      self.mTabPane = OutputTabWidget(self.mDockWidgetContents)
+      self.vboxlayout3.addWidget(self.mTabPane)
 
       # Load custom modules
       self.mPlugins = {}             # Dict of plugins: mod_name -> (module, ..)
