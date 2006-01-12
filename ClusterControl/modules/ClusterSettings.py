@@ -15,48 +15,11 @@ HPUX = 6
 AIX = 7
 SOLARIS = 8
 
-class ClusterModel(QtCore.QAbstractListModel):
-   """Create a new cluster element"""
-   def __init__(self, clusterConfig, parent=None):
-      QtCore.QAbstractListModel.__init__(self, parent)
-      self.mClusterConfig = clusterConfig
-      self.mIcons = {}
-      self.mIcons[ERROR] = QtGui.QIcon(":/ClusterSettings/images/error2.png")
-      self.mIcons[WIN] = QtGui.QIcon(":/ClusterSettings/images/win_xp.png")
-      self.mIcons[WINXP] = QtGui.QIcon(":/ClusterSettings/images/win_xp.png")
-      self.mIcons[LINUX] = QtGui.QIcon(":/ClusterSettings/images/linux2.png")
-
-   def data(self, index, role=QtCore.Qt.DisplayRole):
-      if not index.isValid():
-         return QtCore.QVariant()
-        
-      if role == QtCore.Qt.DecorationRole:
-         cluster_node = self.mClusterConfig.mNodes[index.row()]
-         try:
-            index = cluster_node.proxy().getService("Settings").getPlatform()
-            return QtCore.QVariant(self.mIcons[index])
-         except:
-            return QtCore.QVariant(self.mIcons[ERROR])
-      elif role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
-         return QtCore.QVariant(str(self.mClusterConfig.mNodes[index.row()].getName()))
-      elif role == QtCore.Qt.UserRole:
-         return self.mClusterConfig.mNodes[index.row()]
-       
-      return QtCore.QVariant()
-
-   def rowCount(self, parent):
-      if parent.isValid():
-         return 0
-      else:
-         return len(self.mClusterConfig.mNodes)
-
-   #def insertRows(self, row, count, parent):
-
 class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase):
    def __init__(self, parent = None):
       QtGui.QWidget.__init__(self, parent)
       self.setupUi(self)
-      self.mClusterConfig = None
+      self.mClusterModel = None
       self.mSelectedNode = None
 
    def setupUi(self, widget):
@@ -74,17 +37,17 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
    
    def onRefresh(self):
       """ Called when user presses the refresh button. """
-      if not None == self.mClusterConfig:
-         self.mClusterConfig.refreshConnections()
+      if not None == self.mClusterModel:
+         self.mClusterModel.refreshConnections()
 
    def onAdd(self):
       """ Called when user presses the add button. """
-      if not None == self.mClusterConfig:
+      if not None == self.mClusterModel:
          
          # Inform all views about add
          row_count = self.mClusterModel.rowCount(QtCore.QModelIndex())
          self.mClusterModel.beginInsertRows(QtCore.QModelIndex(), row_count, 1)
-         new_node = self.mClusterConfig.addNode()
+         new_node = self.mClusterModel.addNode()
          self.mClusterModel.endInsertRows()
          
          self.mClusterListView.clearSelection()
@@ -93,13 +56,13 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
 
    def onRemove(self):
       """ Called when user presses the remove button. """
-      if (not None == self.mClusterConfig) and (not None == self.mSelectedNode):
+      if (not None == self.mClusterModel) and (not None == self.mSelectedNode):
          self.mClusterListView.clearSelection()
          
          # Inform all views about remove
          row_count = self.mClusterModel.rowCount(QtCore.QModelIndex())
          self.mClusterModel.beginRemoveRows(QtCore.QModelIndex(), 0, row_count - 1);
-         self.mClusterConfig.removeNode(self.mSelectedNode)
+         self.mClusterModel.removeNode(self.mSelectedNode)
          self.mClusterModel.endRemoveRows()
          
          self.mSelectedNode = None
@@ -125,12 +88,15 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
 
          # Disconnect and try to connect to new hostname.
          self.mSelectedNode.disconnect()
-         self.mClusterConfig.refreshConnections()
+         self.mClusterModel.refreshConnections()
 
       # Only update gui if something really changed.
       if modified:
          self.refreshNodeInfo()
-         self.mClusterListView.reset()
+         #self.mClusterListView.reset()
+         self.mClusterListView.model().setData(self.mClusterListView.currentIndex(), QtCore.QVariant(), QtCore.Qt.UserRole)
+         self.mClusterListView.model().setData(self.mClusterListView.currentIndex(), QtCore.QVariant(), QtCore.Qt.DisplayRole)
+#      elif role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
 
    def onNodeSelected(self):
       """ Called when a cluster node in the list is selected. """
@@ -174,15 +140,13 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
       self.mClusterListView.reset()
       self.refreshNodeInfo()
 
-   def configure(self, clusterConfig):
+   def configure(self, clusterModel):
       """ Configure the user interface with data in cluster configuration. """
       # Set the new cluster configuration
-      if not None == self.mClusterConfig:
-         self.disconnect(self.mClusterConfig, QtCore.SIGNAL("newConnections()"), self.onNewConnections)
-      self.mClusterConfig = clusterConfig
-      self.connect(self.mClusterConfig, QtCore.SIGNAL("newConnections()"), self.onNewConnections)
-
-      self.mClusterModel = ClusterModel(clusterConfig)
+      if not None == self.mClusterModel:
+         self.disconnect(self.mClusterModel, QtCore.SIGNAL("newConnections()"), self.onNewConnections)
+      self.mClusterModel = clusterModel
+      self.connect(self.mClusterModel, QtCore.SIGNAL("newConnections()"), self.onNewConnections)
 
       # If selection model already exists then disconnect signal
       if not None == self.mClusterListView.selectionModel():

@@ -6,7 +6,7 @@ pj = os.path.join
 from PyQt4 import QtGui, QtCore
 import ClusterControlBase
 import ClusterControlResource
-import ClusterConfig
+import ClusterModel
 import elementtree.ElementTree as ET
 
 import modules
@@ -26,21 +26,21 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
    def __init__(self, parent = None):
       QtGui.QMainWindow.__init__(self, parent)
       self.setupUi(self)
-      self.mClusterConfig = None
+      self.mClusterModel = None
 
-   def configure(self, clusterConfig):
+   def configure(self, clusterModel):
       # Set the new cluster configuration
-      if not None == self.mClusterConfig:
-         self.disconnect(self.mClusterConfig, QtCore.SIGNAL("nodeAdded()"), self.onNodeAdded)
-         self.disconnect(self.mClusterConfig, QtCore.SIGNAL("nodeRemoved()"), self.onNodeRemoved)
-      self.mClusterConfig = clusterConfig
-      self.connect(self.mClusterConfig, QtCore.SIGNAL("nodeAdded()"), self.onNodeAdded)
-      self.connect(self.mClusterConfig, QtCore.SIGNAL("nodeRemoved()"), self.onNodeRemoved)
+      if not None == self.mClusterModel:
+         self.disconnect(self.mClusterModel, QtCore.SIGNAL("nodeAdded()"), self.onNodeAdded)
+         self.disconnect(self.mClusterModel, QtCore.SIGNAL("nodeRemoved()"), self.onNodeRemoved)
+      self.mClusterModel = clusterModel
+      self.connect(self.mClusterModel, QtCore.SIGNAL("nodeAdded()"), self.onNodeAdded)
+      self.connect(self.mClusterModel, QtCore.SIGNAL("nodeRemoved()"), self.onNodeRemoved)
       
       for module in self.mModulePanels:
-         module.configure(clusterConfig)
+         module.configure(clusterModel)
 
-      for n in self.mClusterConfig.mNodes:
+      for n in self.mClusterModel.mNodes:
          self.addOutputTab(n)
       
 
@@ -58,7 +58,7 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
       hboxlayout2.addWidget(textedit)
       self.mTabPane.addTab(tab, "")
       self.mTabPane.setTabText(self.mTabPane.indexOf(tab), node.getName())
-      self.mClusterConfig.getOutputLogger().subscribeMatch(".*", textedit.append)
+      self.mClusterModel.getOutputLogger().subscribeMatch(".*", textedit.append)
 
    def onNodeAdded(self, node):
       print "Added: ", node
@@ -250,14 +250,14 @@ def main():
       tree = ET.ElementTree(file=sys.argv[1])
 
       # Create cluster configuration
-      cluster_config = ClusterConfig.ClusterConfig(tree);
+      cluster_model = ClusterModel.ClusterModel(tree);
 
       # Try to make inital connections
-      cluster_config.refreshConnections()
+      cluster_model.refreshConnections()
 
       # Create and display GUI
       cc = ClusterControl()
-      cc.configure(cluster_config)
+      cc.configure(cluster_model)
       cc.show()
       sys.exit(app.exec_())
    except IOError, ex:

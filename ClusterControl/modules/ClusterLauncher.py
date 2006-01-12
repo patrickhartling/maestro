@@ -5,7 +5,7 @@ from PyQt4 import QtGui, QtCore
 import ClusterLauncherBase
 import ClusterLauncherResource
 import elementtree.ElementTree as ET
-import ClusterConfig
+import ClusterModel
 #class ClusterTableModel(QAbstractTableModel):
 #   pass
 
@@ -26,9 +26,9 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       self.actionDict          = {}   # Storage for user-defined action slots
       self.activeThread        = None
 
-   def configure(self, clusterConfig):
-      self.mClusterConfig = clusterConfig
-      self.xmlTree = clusterConfig.mElement
+   def configure(self, clusterModel):
+      self.mClusterModel = clusterModel
+      self.xmlTree = clusterModel.mElement
       top_element = self.xmlTree.find("./launcher")
       assert top_element.tag == "launcher"
 
@@ -204,8 +204,8 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
 
       if cmd != "" and cmd != None:
          print "running command: ", cmd
-         self.mClusterConfig.runRemoteCommand(cmd, cmd)
-#         self.mClusterConfig.runRemoteCommand('rpm -qa', 'rpm -qa')
+         self.mClusterModel.runRemoteCommand(cmd, cmd)
+#         self.mClusterModel.runRemoteCommand('rpm -qa', 'rpm -qa')
 #         self.launchButton.setEnabled(False)
 #         self.killButton.setEnabled(True)
       else:
@@ -341,7 +341,7 @@ def main():
    try:
       app = QtGui.QApplication(sys.argv)
       tree = ET.ElementTree(file=sys.argv[1])
-      cluster_config = ClusterConfig.ClusterConfig(tree);
+      cluster_config = ClusterModel.ClusterModel(tree);
       cs = ClusterLauncher()
       cs.configure(cluster_config)
       cs.show()

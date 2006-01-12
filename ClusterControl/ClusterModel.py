@@ -5,14 +5,26 @@ from Pyro.protocol import getHostname
 import threading
 import time, types, re, sys
 
-from PyQt4 import QtCore
+from PyQt4 import QtCore, QtGui
 from Queue import Queue
 
 import copy
 
-class ClusterConfig(QtCore.QObject):
-   def __init__(self, xmlTree):
-      QtCore.QObject.__init__(self)
+import modules.ClusterSettingsResource
+
+ERROR = 0
+LINUX = 1
+WIN = 2
+WINXP = 3
+MACOS = 4
+MACOSX = 5
+HPUX = 6
+AIX = 7
+SOLARIS = 8
+
+class ClusterModel(QtCore.QAbstractListModel):
+   def __init__(self, xmlTree, parent=None):
+      QtCore.QAbstractListModel.__init__(self, parent)
       # Store cluster XML element
       self.mElement = xmlTree.getroot()
       assert self.mElement.tag == "cluster_config"
@@ -39,6 +51,12 @@ class ClusterConfig(QtCore.QObject):
       self.refreshTimer.setInterval(2000)
       self.refreshTimer.start()
       QtCore.QObject.connect(self.refreshTimer, QtCore.SIGNAL("timeout()"), self.refreshConnections)
+
+      self.mIcons = {}
+      self.mIcons[ERROR] = QtGui.QIcon(":/ClusterSettings/images/error2.png")
+      self.mIcons[WIN] = QtGui.QIcon(":/ClusterSettings/images/win_xp.png")
+      self.mIcons[WINXP] = QtGui.QIcon(":/ClusterSettings/images/win_xp.png")
+      self.mIcons[LINUX] = QtGui.QIcon(":/ClusterSettings/images/linux2.png")
 
 
       # Simple callback to print all output to stdout
@@ -85,6 +103,34 @@ class ClusterConfig(QtCore.QObject):
       """Run commands on cluster."""
       for n in self.mNodes:
          n.runCommand(masterCommand, self.mOutputLogger)
+
+   def data(self, index, role=QtCore.Qt.DisplayRole):
+      if not index.isValid():
+         return QtCore.QVariant()
+        
+      if role == QtCore.Qt.DecorationRole:
+         cluster_node = self.mNodes[index.row()]
+         try:
+            index = cluster_node.proxy().getService("Settings").getPlatform()
+            return QtCore.QVariant(self.mIcons[index])
+         except:
+            return QtCore.QVariant(self.mIcons[ERROR])
+      elif role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
+         return QtCore.QVariant(str(self.mNodes[index.row()].getName()))
+      elif role == QtCore.Qt.UserRole:
+         return self.mNodes[index.row()]
+       
+      return QtCore.QVariant()
+
+   def rowCount(self, parent):
+      if parent.isValid():
+         return 0
+      else:
+         return len(self.mNodes)
+
+   def setData(self, index, value, role):
+      self.emit(QtCore.SIGNAL("dataChanged(QModelIndex,QModelIndex)"), index, index)
+      return True
          
 class ClusterNode:
    def __init__(self, xmlElt):
