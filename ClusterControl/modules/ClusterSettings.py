@@ -37,7 +37,7 @@ class ClusterModel(QtCore.QAbstractListModel):
             return QtCore.QVariant(self.mIcons[index])
          except:
             return QtCore.QVariant(self.mIcons[ERROR])
-      elif role == QtCore.Qt.DisplayRole:
+      elif role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
          return QtCore.QVariant(str(self.mClusterConfig.mNodes[index.row()].getName()))
       elif role == QtCore.Qt.UserRole:
          return self.mClusterConfig.mNodes[index.row()]
@@ -86,8 +86,8 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
    def onRemove(self):
       """ Called when user presses the remove button. """
       if (not None == self.mClusterConfig) and (not None == self.mSelectedNode):
-         self.mClusterConfig.removeNode(self.mSelectedNode)
          self.mClusterListView.clearSelection()
+         self.mClusterConfig.removeNode(self.mSelectedNode)
          self.mSelectedNode = None
          self.onNewConnections()
 
@@ -175,6 +175,7 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
          QtCore.QObject.disconnect(self.mClusterListView.selectionModel(),
             QtCore.SIGNAL("selectionChanged(QItemSelection,QItemSelection)"), self.onNodeSelected)
       self.mClusterListView.setModel(self.mClusterModel)
+      self.mMasterCB.setModel(self.mClusterModel)
 
       # Connect new selection model
       QtCore.QObject.connect(self.mClusterListView.selectionModel(),
