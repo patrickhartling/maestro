@@ -63,22 +63,35 @@ class ClusterModel(QtCore.QAbstractListModel):
       def debugCallback(message):
          sys.stdout.write("DEBUG: " + message)
 
+   def insertRows(self, row, count, parent):
+      self.beginInsertRows(QtCore.QModelIndex(), row, row + count - 1)
+      for i in xrange(count):
+         new_element = ET.SubElement(self.mElement, "cluster_node", name="NewNode", hostname="NewNode")
+         new_node = ClusterNode(new_element)
+         self.mNodes.insert(row, new_node);
+      self.refreshConnections()
+      self.endInsertRows()
+      return True
+
+   def removeRows(self, row, count, parent):
+      self.beginRemoveRows(QtCore.QModelIndex(), row, row + count - 1)
+      for i in xrange(count):
+         node = self.mNodes[row]
+
+         # Remove node's element from XML tree.
+         self.mElement.remove(node.mElement)
+         # Remove node data structure
+         self.mNodes.remove(node)
+      self.endRemoveRows()
+      return True
+
    def removeNode(self, node):
       assert not None == node
-
-      # Remove node's element from XML tree.
-      self.mElement.remove(node.mElement)
-      # Remove node data structure
-      self.mNodes.remove(node)
-      self.emit(QtCore.SIGNAL("nodeRemoved()"), node)
+      index = self.mNodes.index(node)
+      self.removeRow(index, QtCore.QModelIndex())
 
    def addNode(self):
-      new_element = ET.SubElement(self.mElement, "cluster_node", name="NewNode", hostname="NewNode")
-      new_node = ClusterNode(new_element)
-      self.mNodes.append(new_node)
-      self.refreshConnections()
-      self.emit(QtCore.SIGNAL("nodeAdded()"), new_node)
-      return new_node
+      self.insertRow(self.rowCount())
 
    def refreshOutputLogger(self):
       self.mOutputLogger.publishEvents()
@@ -122,7 +135,7 @@ class ClusterModel(QtCore.QAbstractListModel):
        
       return QtCore.QVariant()
 
-   def rowCount(self, parent):
+   def rowCount(self, parent=QtCore.QModelIndex()):
       if parent.isValid():
          return 0
       else:

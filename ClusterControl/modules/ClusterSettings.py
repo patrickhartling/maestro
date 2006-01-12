@@ -20,7 +20,6 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
       QtGui.QWidget.__init__(self, parent)
       self.setupUi(self)
       self.mClusterModel = None
-      self.mSelectedNode = None
 
    def setupUi(self, widget):
       """
@@ -43,65 +42,47 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
    def onAdd(self):
       """ Called when user presses the add button. """
       if not None == self.mClusterModel:
-         
-         # Inform all views about add
-         row_count = self.mClusterModel.rowCount(QtCore.QModelIndex())
-         self.mClusterModel.beginInsertRows(QtCore.QModelIndex(), row_count, 1)
-         new_node = self.mClusterModel.addNode()
-         self.mClusterModel.endInsertRows()
-         
-         self.mClusterListView.clearSelection()
-         self.mSelectedNode = None
-         self.onNewConnections()
+         self.mClusterModel.insertRow(self.mClusterModel.rowCount())
 
    def onRemove(self):
       """ Called when user presses the remove button. """
-      if (not None == self.mClusterModel) and (not None == self.mSelectedNode):
-         self.mClusterListView.clearSelection()
-         
-         # Inform all views about remove
-         row_count = self.mClusterModel.rowCount(QtCore.QModelIndex())
-         self.mClusterModel.beginRemoveRows(QtCore.QModelIndex(), 0, row_count - 1);
-         self.mClusterModel.removeNode(self.mSelectedNode)
-         self.mClusterModel.endRemoveRows()
-         
-         self.mSelectedNode = None
-         self.onNewConnections()
+      row = self.mClusterListView.currentIndex().row()
+      if (not None == self.mClusterModel) and row >= 0:
+         self.mClusterModel.removeRow(row)
 
    def nodeSettingsChanged(self):
       """ Apply any user changes. """
 
+      # Get the currently selected node.
+      selected_node = self.mClusterListView.model().data(self.mClusterListView.currentIndex(), QtCore.Qt.UserRole)
+      
       # Can't get a change if a node is not selected
-      assert not None == self.mSelectedNode
+      assert not None == selected_node
 
       modified = False
       # Process changes
       if self.mNameEdit.isModified():
-         self.mSelectedNode.setName(str(self.mNameEdit.text()))
+         selected_node.setName(str(self.mNameEdit.text()))
          self.mNameEdit.setModified(False)
          modified = True
 
       if self.mHostnameEdit.isModified():
-         self.mSelectedNode.setHostname(str(self.mHostnameEdit.text()))
+         selected_node.setHostname(str(self.mHostnameEdit.text()))
          self.mHostnameEdit.setModified(False)
          modified = True
 
          # Disconnect and try to connect to new hostname.
-         self.mSelectedNode.disconnect()
+         selected_node.disconnect()
          self.mClusterModel.refreshConnections()
 
       # Only update gui if something really changed.
       if modified:
          self.refreshNodeInfo()
-         #self.mClusterListView.reset()
-         self.mClusterListView.model().setData(self.mClusterListView.currentIndex(), QtCore.QVariant(), QtCore.Qt.UserRole)
+         # Force the cluster model to generate a dataChanged signal.
          self.mClusterListView.model().setData(self.mClusterListView.currentIndex(), QtCore.QVariant(), QtCore.Qt.DisplayRole)
-#      elif role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
 
    def onNodeSelected(self):
       """ Called when a cluster node in the list is selected. """
-      node = self.mClusterListView.model().data(self.mClusterListView.currentIndex(), QtCore.Qt.UserRole)
-      self.mSelectedNode = node
       self.refreshNodeInfo()
 
    def refreshNodeInfo(self):
@@ -113,25 +94,26 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
       self.mHostnameEdit.clear()
       self.mCurrentOsEdit.clear()
       self.mIpAddressEdit.clear()
-      if None == self.mSelectedNode:
-         return
+      
+      # Get the currently selected node.
+      selected_node = self.mClusterListView.model().data(self.mClusterListView.currentIndex(), QtCore.Qt.UserRole)
       
       # Set node information that we know
-      self.mNameEdit.setText(self.mSelectedNode.getName())
-      self.mHostnameEdit.setText(self.mSelectedNode.getHostname())
+      self.mNameEdit.setText(selected_node.getName())
+      self.mHostnameEdit.setText(selected_node.getHostname())
 
       # Get IP address
       try:
-         (hostname, alias_list, ipaddrlist) = socket.gethostbyaddr(self.mSelectedNode.getHostname())
+         (hostname, alias_list, ipaddrlist) = socket.gethostbyaddr(selected_node.getHostname())
          self.mIpAddressEdit.setText(ipaddrlist[0])
       except:
          self.mIpAddressEdit.setText('Unknown')
 
       # Get information from proxy
-      if not None == self.mSelectedNode.proxy():
+      if not None == selected_node.proxy():
          # Get operating system
          try:
-            platform = self.mSelectedNode.proxy().getService("Settings").getPlatformName()
+            platform = selected_node.proxy().getService("Settings").getPlatformName()
             self.mCurrentOsEdit.setText(platform)
          except:
             self.mCurrentOsEdit.setText("Unknown")
