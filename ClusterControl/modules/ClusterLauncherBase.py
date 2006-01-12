@@ -12,56 +12,86 @@ from PyQt4 import QtGui, QtCore
 class Ui_ClusterLauncherBase(object):
    def setupUi(self, ClusterLauncherBase):
       ClusterLauncherBase.setObjectName("ClusterLauncherBase")
-      ClusterLauncherBase.resize(QtCore.QSize(QtCore.QRect(0,0,290,368).size()).expandedTo(ClusterLauncherBase.minimumSizeHint()))
+      ClusterLauncherBase.resize(QtCore.QSize(QtCore.QRect(0,0,635,563).size()).expandedTo(ClusterLauncherBase.minimumSizeHint()))
       
       self.vboxlayout = QtGui.QVBoxLayout(ClusterLauncherBase)
       self.vboxlayout.setMargin(9)
       self.vboxlayout.setSpacing(6)
       self.vboxlayout.setObjectName("vboxlayout")
       
-      self.appFrame = QtGui.QFrame(ClusterLauncherBase)
-      self.appFrame.setFrameShape(QtGui.QFrame.StyledPanel)
-      self.appFrame.setFrameShadow(QtGui.QFrame.Raised)
-      self.appFrame.setObjectName("appFrame")
+      self.mTitleLbl = QtGui.QLabel(ClusterLauncherBase)
       
-      self.vboxlayout1 = QtGui.QVBoxLayout(self.appFrame)
+      font = QtGui.QFont(self.mTitleLbl.font())
+      font.setFamily("Sans Serif")
+      font.setPointSize(12)
+      font.setWeight(50)
+      font.setItalic(False)
+      font.setUnderline(False)
+      font.setStrikeOut(False)
+      font.setBold(False)
+      self.mTitleLbl.setFont(font)
+      self.mTitleLbl.setAutoFillBackground(True)
+      self.mTitleLbl.setFrameShape(QtGui.QFrame.StyledPanel)
+      self.mTitleLbl.setFrameShadow(QtGui.QFrame.Sunken)
+      self.mTitleLbl.setLineWidth(2)
+      self.mTitleLbl.setObjectName("mTitleLbl")
+      self.vboxlayout.addWidget(self.mTitleLbl)
+      
+      self.mAppFrame = QtGui.QFrame(ClusterLauncherBase)
+      
+      sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(5),QtGui.QSizePolicy.Policy(5))
+      sizePolicy.setHorizontalStretch(0)
+      sizePolicy.setVerticalStretch(1)
+      sizePolicy.setHeightForWidth(self.mAppFrame.sizePolicy().hasHeightForWidth())
+      self.mAppFrame.setSizePolicy(sizePolicy)
+      self.mAppFrame.setFrameShape(QtGui.QFrame.StyledPanel)
+      self.mAppFrame.setFrameShadow(QtGui.QFrame.Raised)
+      self.mAppFrame.setObjectName("mAppFrame")
+      
+      self.vboxlayout1 = QtGui.QVBoxLayout(self.mAppFrame)
       self.vboxlayout1.setMargin(9)
       self.vboxlayout1.setSpacing(6)
       self.vboxlayout1.setObjectName("vboxlayout1")
       
-      self.appComboBox = QtGui.QComboBox(self.appFrame)
+      self.appComboBox = QtGui.QComboBox(self.mAppFrame)
       self.appComboBox.setObjectName("appComboBox")
       self.vboxlayout1.addWidget(self.appComboBox)
       
       spacerItem = QtGui.QSpacerItem(20,40,QtGui.QSizePolicy.Minimum,QtGui.QSizePolicy.Expanding)
       self.vboxlayout1.addItem(spacerItem)
-      self.vboxlayout.addWidget(self.appFrame)
+      self.vboxlayout.addWidget(self.mAppFrame)
       
       self.cmdFrame = QtGui.QFrame(ClusterLauncherBase)
       self.cmdFrame.setFrameShape(QtGui.QFrame.StyledPanel)
       self.cmdFrame.setFrameShadow(QtGui.QFrame.Raised)
       self.cmdFrame.setObjectName("cmdFrame")
       
-      self.vboxlayout2 = QtGui.QVBoxLayout(self.cmdFrame)
-      self.vboxlayout2.setMargin(9)
-      self.vboxlayout2.setSpacing(6)
-      self.vboxlayout2.setObjectName("vboxlayout2")
+      self.hboxlayout = QtGui.QHBoxLayout(self.cmdFrame)
+      self.hboxlayout.setMargin(9)
+      self.hboxlayout.setSpacing(6)
+      self.hboxlayout.setObjectName("hboxlayout")
       
       self.launchButton = QtGui.QPushButton(self.cmdFrame)
       self.launchButton.setObjectName("launchButton")
-      self.vboxlayout2.addWidget(self.launchButton)
+      self.hboxlayout.addWidget(self.launchButton)
       
       self.killButton = QtGui.QPushButton(self.cmdFrame)
       self.killButton.setEnabled(False)
       self.killButton.setObjectName("killButton")
-      self.vboxlayout2.addWidget(self.killButton)
+      self.hboxlayout.addWidget(self.killButton)
       
       self.helpButton = QtGui.QPushButton(self.cmdFrame)
-      self.helpButton.setObjectName("helpButton")
-      self.vboxlayout2.addWidget(self.helpButton)
       
-      spacerItem1 = QtGui.QSpacerItem(20,40,QtGui.QSizePolicy.Minimum,QtGui.QSizePolicy.Expanding)
-      self.vboxlayout2.addItem(spacerItem1)
+      sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(1),QtGui.QSizePolicy.Policy(0))
+      sizePolicy.setHorizontalStretch(0)
+      sizePolicy.setVerticalStretch(0)
+      sizePolicy.setHeightForWidth(self.helpButton.sizePolicy().hasHeightForWidth())
+      self.helpButton.setSizePolicy(sizePolicy)
+      self.helpButton.setObjectName("helpButton")
+      self.hboxlayout.addWidget(self.helpButton)
+      
+      spacerItem1 = QtGui.QSpacerItem(40,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Minimum)
+      self.hboxlayout.addItem(spacerItem1)
       self.vboxlayout.addWidget(self.cmdFrame)
       
       self.retranslateUi(ClusterLauncherBase)
@@ -72,6 +102,7 @@ class Ui_ClusterLauncherBase(object):
    
    def retranslateUi(self, ClusterLauncherBase):
       ClusterLauncherBase.setWindowTitle(self.tr("Form"))
+      self.mTitleLbl.setText(self.tr("Application Launcher"))
       self.launchButton.setText(self.tr("&Launch"))
       self.killButton.setText(self.tr("&Kill Application"))
       self.helpButton.setText(self.tr("&Help"))

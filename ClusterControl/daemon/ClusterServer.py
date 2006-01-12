@@ -94,6 +94,7 @@ class ClusterServer(Pyro.core.ObjBase):
       return 0
 
    def runCommand(self, command):
+      print "Running command: ", command
       (cmd_stdin, cmd_stdout) = os.popen4(command)
       self.activeThread = LogThread.LogThread(cmd_stdout, self.mQueue)
       self.activeThread.start()

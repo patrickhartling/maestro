@@ -5,6 +5,7 @@
       <app name="Test RPM Usage">
         <command>rpm</command>
         <tooltip>RPM package management.</tooltip>
+        <helpURL>/usr/local/X11R6/lib/X11/doc/html/XvQueryAdaptors.3.html</helpURL>
         <options>
           <group name="RPM Searches">
             <option label="List All" flag="-qa"
@@ -16,7 +17,32 @@
           </group>
         </options>
       </app>
-        <helpURL>/usr/local/X11R6/lib/X11/doc/html/XvQueryAdaptors.3.html</helpURL>
+      <app name="ls">
+        <command>ls</command>
+        <tooltip>ls</tooltip>
+        <helpURL></helpURL>
+        <options>
+          <group name="Dirs">
+            <option label="~/" flag="-l ~/"
+                    tooltip="" />
+            <option label="/home" flag="-l /home"
+                    tooltip="" />
+          </group>
+        </options>
+      </app>
+      <app name="Test RPM Usage">
+        <command>glxgears</command>
+        <tooltip>GLX Gears</tooltip>
+        <helpURL></helpURL>
+        <options>
+          <group name="glxgears">
+            <option label="One" flag=""
+                    tooltip="" />
+            <option label="Two" flag=""
+                    tooltip="" />
+          </group>
+        </options>
+      </app>
       <app name="Cow with Gaussian Filter">
         <command>scripts/osgViewer-gaussian</command>
         <tooltip>Load the App Viewer application with the Cow model</tooltip>
@@ -67,13 +93,10 @@
       </app>
     </applications>
     <controls>
-      <action name="Reset Graphics">
-        <command>scripts/reset</command>
-        <tooltip>Click me to reset the graphics</tooltip>
-      </action>
     </controls>
     <global_options>
       <group name="VR Juggler Configuration">
+         <option label="Simulator" flag="sim.base.jconf sim.wand.mixin.jconf" tooltip="CAVE Configuration" />
          <option label="CAVE" flag="cave.jconf" tooltip="CAVE Configuration" />
          <option label="Power Wall" flag="pwall.jconf" tooltip="Power Wall Configuration" />
       </group>

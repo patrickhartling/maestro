@@ -37,6 +37,7 @@ class Ui_ClusterControlBase(object):
       sizePolicy.setVerticalStretch(0)
       sizePolicy.setHeightForWidth(self.mToolbox.sizePolicy().hasHeightForWidth())
       self.mToolbox.setSizePolicy(sizePolicy)
+      self.mToolbox.setAutoFillBackground(True)
       self.mToolbox.setFrameShape(QtGui.QFrame.StyledPanel)
       self.mToolbox.setFrameShadow(QtGui.QFrame.Sunken)
       self.mToolbox.setLineWidth(3)
@@ -132,23 +133,6 @@ class Ui_ClusterControlBase(object):
       self.vboxlayout3.setMargin(9)
       self.vboxlayout3.setSpacing(6)
       self.vboxlayout3.setObjectName("vboxlayout3")
-      
-      #self.mTabPane = QtGui.QTabWidget(self.mDockWidgetContents)
-      #self.mTabPane.setObjectName("mTabPane")
-      
-      #self.mOldTab = QtGui.QWidget()
-      #self.mOldTab.setObjectName("mOldTab")
-      
-      #self.hboxlayout2 = QtGui.QHBoxLayout(self.mOldTab)
-      #self.hboxlayout2.setMargin(9)
-      #self.hboxlayout2.setSpacing(6)
-      #self.hboxlayout2.setObjectName("hboxlayout2")
-      
-      #self.mOldTextBrowser = QtGui.QTextBrowser(self.mOldTab)
-      #self.mOldTextBrowser.setObjectName("mOldTextBrowser")
-      #self.hboxlayout2.addWidget(self.mOldTextBrowser)
-      #self.mTabPane.addTab(self.mOldTab, "")
-      #self.vboxlayout3.addWidget(self.mTabPane)
       self.mStatusWindow.setWidget(self.mDockWidgetContents)
       
       self.actionReload = QtGui.QAction(ClusterControlBase)
@@ -201,7 +185,6 @@ class Ui_ClusterControlBase(object):
       self.menuHelp.setTitle(self.tr("&Help"))
       self.toolBar.setWindowTitle(self.tr("Toolbar"))
       self.mStatusWindow.setWindowTitle(self.tr("Status Window"))
-      #self.mTabPane.setTabText(self.mTabPane.indexOf(self.mOldTab), self.tr("Old Tab"))
       self.actionReload.setText(self.tr("&Reload"))
       self.actionNew.setText(self.tr("&New"))
       self.actionOpen.setText(self.tr("&Open"))

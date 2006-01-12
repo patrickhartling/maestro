@@ -76,8 +76,6 @@ class OutputTabWidget(QtGui.QTabWidget, QtGui.QAbstractItemView):
    
    def dataChanged(self, index):
       node = self.mClusterModel.mNodes[index]
-      old_name = self.getTabText(index)
-      
       self.setTabText(index, node.getName())
       
    def addOutputTab(self, node, index):
@@ -133,8 +131,7 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
 
       self.mToolboxButtonGroup = QtGui.QButtonGroup()
       widget.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.mStatusWindow)
-      self.mToolbox.setBackgroundRole(QtGui.QPalette.Base)
-      self.mToolbox.setForegroundRole(QtGui.QPalette.Base)
+      self.mToolbox.setBackgroundRole(QtGui.QPalette.Mid)
       
       self.mTabPane = OutputTabWidget(self.mDockWidgetContents)
       self.vboxlayout3.addWidget(self.mTabPane)

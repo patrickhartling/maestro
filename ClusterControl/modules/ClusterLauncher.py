@@ -87,7 +87,7 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
          opt = all_opts[i]
 
          if isinstance(opt, AppExclusiveOption):
-            group = QtGui.QGroupBox(str(opt.group_name), self.appFrame)
+            group = QtGui.QGroupBox(str(opt.group_name), self.mAppFrame)
         
             group_layout = QtGui.QVBoxLayout(group)
             group_layout.setMargin(9)
@@ -115,12 +115,12 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
             group.show()
          else:
 #            print "Adding checkbox %i labeled '%s'" % (i, opt.tip)
-            cb = QtGui.QCheckBox(str(opt.label), self.appFrame)
+            cb = QtGui.QCheckBox(str(opt.label), self.mAppFrame)
             cb.setObjectName("checkbox" + str(i))
             cb.setEnabled(opt.enabled)
             cb.setChecked(opt.selected)
 
-            self.appFrame.layout().insertWidget(i + 1, cb)
+            self.mAppFrame.layout().insertWidget(i + 1, cb)
             self.connect(cb, QtCore.SIGNAL("clicked()"), self.onOptionBox)
             self.selectedAppOptions[cb] = opt
             self.appSpecificChildren.append(cb)
@@ -139,7 +139,7 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
    def _resetAppState(self):
       """ Resets the information associated with the selected application. """
       for w in self.appSpecificChildren:
-         self.appFrame.layout().removeWidget(w)
+         self.mAppFrame.layout().removeWidget(w)
          w.deleteLater()
 
       self.commandOptions      = []
@@ -213,6 +213,8 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
 
    def setupUi(self, widget):
       ClusterLauncherBase.Ui_ClusterLauncherBase.setupUi(self, widget)
+      self.mTitleLbl.setBackgroundRole(QtGui.QPalette.Mid)
+      self.mTitleLbl.setForegroundRole(QtGui.QPalette.Shadow)
       
       #self.connect(self.fileExitAction,QtCore.SIGNAL("activated()"),self.fileExit)
       self.connect(self.appComboBox,QtCore.SIGNAL("activated(int)"),self.appSelect)

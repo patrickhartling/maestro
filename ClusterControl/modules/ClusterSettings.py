@@ -26,6 +26,9 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
       Setup all initial gui settings that don't need to know about the cluster configuration.
       """
       ClusterSettingsBase.Ui_ClusterSettingsBase.setupUi(self, widget)
+      self.mTitleLbl.setBackgroundRole(QtGui.QPalette.Mid)
+      self.mTitleLbl.setForegroundRole(QtGui.QPalette.Shadow)
+      
       QtCore.QObject.connect(self.mRefreshBtn,QtCore.SIGNAL("clicked()"), self.onRefresh)
       QtCore.QObject.connect(self.mAddBtn,QtCore.SIGNAL("clicked()"), self.onAdd)
       QtCore.QObject.connect(self.mRemoveBtn,QtCore.SIGNAL("clicked()"), self.onRemove)

@@ -50,6 +50,9 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="autoFillBackground" >
+         <bool>true</bool>
+        </property>
         <property name="frameShape" >
          <enum>QFrame::StyledPanel</enum>
         </property>
@@ -215,26 +218,6 @@
      <property name="spacing" >
       <number>6</number>
      </property>
-     <item>
-      <widget class="QTabWidget" name="mTabPane" >
-       <widget class="QWidget" name="mOldTab" >
-        <attribute name="title" >
-         <string>Old Tab</string>
-        </attribute>
-        <layout class="QHBoxLayout" >
-         <property name="margin" >
-          <number>9</number>
-         </property>
-         <property name="spacing" >
-          <number>6</number>
-         </property>
-         <item>
-          <widget class="QTextBrowser" name="mOldTextBrowser" />
-         </item>
-        </layout>
-       </widget>
-      </widget>
-     </item>
     </layout>
    </widget>
   </widget>
