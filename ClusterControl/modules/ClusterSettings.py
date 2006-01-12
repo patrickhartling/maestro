@@ -50,6 +50,8 @@ class ClusterModel(QtCore.QAbstractListModel):
       else:
          return len(self.mClusterConfig.mNodes)
 
+   def insertRows()
+
 class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase):
    def __init__(self, parent = None):
       QtGui.QWidget.__init__(self, parent)
@@ -74,6 +76,7 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
       """ Called when user presses the refresh button. """
       if not None == self.mClusterConfig:
          self.mClusterConfig.refreshConnections()
+         self.verifyCB()
 
    def onAdd(self):
       """ Called when user presses the add button. """
@@ -82,6 +85,7 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
          self.mClusterListView.clearSelection()
          self.mSelectedNode = None
          self.onNewConnections()
+         self.verifyCB()
 
    def onRemove(self):
       """ Called when user presses the remove button. """
@@ -90,6 +94,24 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
          self.mClusterConfig.removeNode(self.mSelectedNode)
          self.mSelectedNode = None
          self.onNewConnections()
+         self.verifyCB()
+
+   def verifyCB(self):
+      row_count = self.mClusterModel.rowCount(QtCore.QModelIndex())
+      if 0 == row_count:
+         self.mMasterCB.setEnabled(False)
+         self.mMasterCB.setModel(None)
+         return
+
+      if not self.mMasterCB.isEnabled():
+         self.mMasterCB.setEnabled(True)
+         self.mMasterCB.setModel(self.mClusterModel)
+         self.mMasterCB.setCurrentIndex(0)
+         return
+
+      if (self.mMasterCB.currentIndex() > row_count-1):
+         self.mMasterCB.setCurrentIndex(0)
+         return
 
    def nodeSettingsChanged(self):
       """ Apply any user changes. """
