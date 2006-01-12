@@ -62,11 +62,34 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
       Setup all initial gui settings that don't need to know about the cluster configuration.
       """
       ClusterSettingsBase.Ui_ClusterSettingsBase.setupUi(self, widget)
-      QtCore.QObject.connect(self.mRefreshButton,QtCore.SIGNAL("clicked()"), self.onRefresh)
+      QtCore.QObject.connect(self.mRefreshBtn,QtCore.SIGNAL("clicked()"), self.onRefresh)
+      QtCore.QObject.connect(self.mAddBtn,QtCore.SIGNAL("clicked()"), self.onAdd)
+      QtCore.QObject.connect(self.mRemoveBtn,QtCore.SIGNAL("clicked()"), self.onRemove)
       # Call if you want an icon view
       #self.mClusterListView.setViewMode(QtGui.QListView.IconMode)
       self.connect(self.mNameEdit, QtCore.SIGNAL("editingFinished()"), self.nodeSettingsChanged)
       self.connect(self.mHostnameEdit, QtCore.SIGNAL("editingFinished()"), self.nodeSettingsChanged)
+   
+   def onRefresh(self):
+      """ Called when user presses the refresh button. """
+      if not None == self.mClusterConfig:
+         self.mClusterConfig.refreshConnections()
+
+   def onAdd(self):
+      """ Called when user presses the add button. """
+      if not None == self.mClusterConfig:
+         new_node = self.mClusterConfig.addNode()
+         self.mClusterListView.clearSelection()
+         self.mSelectedNode = None
+         self.onNewConnections()
+
+   def onRemove(self):
+      """ Called when user presses the remove button. """
+      if (not None == self.mClusterConfig) and (not None == self.mSelectedNode):
+         self.mClusterConfig.removeNode(self.mSelectedNode)
+         self.mClusterListView.clearSelection()
+         self.mSelectedNode = None
+         self.onNewConnections()
 
    def nodeSettingsChanged(self):
       """ Apply any user changes. """
@@ -132,11 +155,6 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
             self.mCurrentOsEdit.setText(platform)
          except:
             self.mCurrentOsEdit.setText("Unknown")
-
-   def onRefresh(self):
-      """ Called when user presses the refresh button. """
-      if not None == self.mClusterConfig:
-         self.mClusterConfig.refreshConnections()
 
    def onNewConnections(self):
       self.mClusterListView.reset()

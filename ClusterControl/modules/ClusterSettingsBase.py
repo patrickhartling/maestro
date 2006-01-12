@@ -42,9 +42,9 @@ class Ui_ClusterSettingsBase(object):
       spacerItem = QtGui.QSpacerItem(40,20,QtGui.QSizePolicy.Maximum,QtGui.QSizePolicy.Minimum)
       self.hboxlayout1.addItem(spacerItem)
       
-      self.mRefreshButton = QtGui.QPushButton(ClusterSettingsBase)
-      self.mRefreshButton.setObjectName("mRefreshButton")
-      self.hboxlayout1.addWidget(self.mRefreshButton)
+      self.mRefreshBtn = QtGui.QPushButton(ClusterSettingsBase)
+      self.mRefreshBtn.setObjectName("mRefreshBtn")
+      self.hboxlayout1.addWidget(self.mRefreshBtn)
       
       self.mAddBtn = QtGui.QPushButton(ClusterSettingsBase)
       self.mAddBtn.setObjectName("mAddBtn")
@@ -141,8 +141,8 @@ class Ui_ClusterSettingsBase(object):
       
       self.retranslateUi(ClusterSettingsBase)
 
-      ClusterSettingsBase.setTabOrder(self.mClusterListView,self.mRefreshButton)
-      ClusterSettingsBase.setTabOrder(self.mRefreshButton,self.mAddBtn)
+      ClusterSettingsBase.setTabOrder(self.mClusterListView,self.mRefreshBtn)
+      ClusterSettingsBase.setTabOrder(self.mRefreshBtn,self.mAddBtn)
       ClusterSettingsBase.setTabOrder(self.mAddBtn,self.mRemoveBtn)
       ClusterSettingsBase.setTabOrder(self.mRemoveBtn,self.mMasterCB)
       ClusterSettingsBase.setTabOrder(self.mMasterCB,self.mNameEdit)
@@ -155,7 +155,7 @@ class Ui_ClusterSettingsBase(object):
    
    def retranslateUi(self, ClusterSettingsBase):
       ClusterSettingsBase.setWindowTitle(self.tr("Cluster Settings"))
-      self.mRefreshButton.setText(self.tr("&Refresh"))
+      self.mRefreshBtn.setText(self.tr("&Refresh"))
       self.mAddBtn.setToolTip(self.tr("<html><head><meta name=\"qrichtext\" content=\"1\" /></head><body style=\" white-space: pre-wrap; font-family:Sans Serif; font-size:9pt; font-weight:400; font-style:normal; text-decoration:none;\"><p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Add a cluster node.</p></body></html>"))
       self.mAddBtn.setWhatsThis(self.tr("<html><head><meta name=\"qrichtext\" content=\"1\" /></head><body style=\" white-space: pre-wrap; font-family:Sans Serif; font-size:9pt; font-weight:400; font-style:normal; text-decoration:none;\"><p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Add a cluster node.</p></body></html>"))
       self.mAddBtn.setText(self.tr("Add"))

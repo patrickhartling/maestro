@@ -67,7 +67,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="mRefreshButton" >
+        <widget class="QPushButton" name="mRefreshBtn" >
          <property name="text" >
           <string>&amp;Refresh</string>
          </property>
@@ -257,7 +257,7 @@
  <pixmapfunction></pixmapfunction>
  <tabstops>
   <tabstop>mClusterListView</tabstop>
-  <tabstop>mRefreshButton</tabstop>
+  <tabstop>mRefreshBtn</tabstop>
   <tabstop>mAddBtn</tabstop>
   <tabstop>mRemoveBtn</tabstop>
   <tabstop>mMasterCB</tabstop>
