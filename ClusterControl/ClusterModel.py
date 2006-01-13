@@ -119,6 +119,10 @@ class ClusterModel(QtCore.QAbstractListModel):
       for n in self.mNodes:
          n.runCommand(masterCommand, self.mOutputLogger)
 
+   def killCommand(self):
+      for n in self.mNodes:
+         n.stopCommand()
+
    def data(self, index, role=QtCore.Qt.DisplayRole):
       if not index.isValid():
          return QtCore.QVariant()
@@ -157,6 +161,8 @@ class ClusterNode:
       self.mProxy = None
       self.mName = self.mElement.get("name")
       self.mHostname = self.mElement.get("hostname")
+      self.mOutputThread = None
+      self.mRunningCommand = ""
 
    def getName(self):
       return self.mElement.get("name")
@@ -186,11 +192,29 @@ class ClusterNode:
    def proxy(self):
       return self.mProxy
 
+   def isOutputThreadRunning(self):
+      if not None == self.mOutputThread:
+         result = self.mOutputThread.isAlive()
+         if not result:
+            self.mOutputThread = None
+            self.mRunningCommand = ""
+         return result
+      return False
+
    def runCommand(self, command, outputLogger):
+      if not None == self.mOutputThread:
+         print "Cluster node [%s] is already running [%s]" % (self.getName(), self.mRunningCommand)
       if not None == self.mProxy:
+         self.mRunningCommand = command
          self.mProxy.runCommand(command)
          ot = OutputThread(copy.copy(self.mProxy), self, outputLogger)
          ot.start()
+      else:
+         print "Cluster node [%s] is not connected." % (self.getName())
+
+   def stopCommand(self):
+      if not None == self.mProxy:
+         self.mProxy.stopCommand()
       else:
          print "Cluster node [%s] is not connected." % (self.getName())
 

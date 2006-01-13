@@ -76,7 +76,7 @@ class Ui_ClusterLauncherBase(object):
       self.hboxlayout.addWidget(self.launchButton)
       
       self.killButton = QtGui.QPushButton(self.cmdFrame)
-      self.killButton.setEnabled(False)
+      self.killButton.setEnabled(True)
       self.killButton.setObjectName("killButton")
       self.hboxlayout.addWidget(self.killButton)
       

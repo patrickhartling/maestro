@@ -1,21 +1,12 @@
 #! /usr/bin/env python2
 
-#import SimpleXMLRPCServer
 import sys, os, types, platform
-import LogThread
-#import essf
-#import rvp
 import Pyro.core
 import Pyro.naming
-import popen2
-
-from Queue import Queue
 
 import SettingsService
+import process
 
-#platform.system()
-#os.uname()
-#sys.platform
 ERROR = 0
 LINUX = 1
 WIN = 2
@@ -46,7 +37,6 @@ if os.name == 'nt':
 class ClusterServer(Pyro.core.ObjBase):
    def __init__(self):
       Pyro.core.ObjBase.__init__(self)
-      self.mQueue = Queue()
 
    def registerInitialServices(self):
       # Register initial services
@@ -54,6 +44,7 @@ class ClusterServer(Pyro.core.ObjBase):
       settings = SettingsService.SettingsService()
       self.getDaemon().connect(settings)
       self.mServices["Settings"] = settings.getProxy()
+      self.mProcess = None
 
    def getService(self, name):
       return self.mServices[name]
@@ -61,7 +52,6 @@ class ClusterServer(Pyro.core.ObjBase):
    def getPlatform(self):
       """Returns tuple with error code and platform code.
          1 is Linux, 2 is Windows, and 0 is unknown."""
-      print "Platform: ", platform.system()
       if platform.system() == 'Linux':
          return LINUX
       elif os.name == 'nt':
@@ -93,14 +83,36 @@ class ClusterServer(Pyro.core.ObjBase):
          os.system('shutdown -h now')
       return 0
 
+   def stopCommand(self):
+      if not None == self.mProcess:
+         return self.mProcess.kill()
+
+   def isCommandRunning(self):
+      try:
+         # poll to see if is process still running
+         if sys.platform.startswith("win"):
+            timeout = 0
+         else:
+            timeout = os.WNOHANG
+         self.mProcess.wait(timeout)
+      except process.ProcessError, ex:
+         if ex.errno == process.ProcessProxy.WAIT_TIMEOUT:
+            return True
+         else:
+            raise
+      return False
+
    def runCommand(self, command):
-      print "Running command: ", command
-      (cmd_stdin, cmd_stdout) = os.popen4(command)
-      self.activeThread = LogThread.LogThread(cmd_stdout, self.mQueue)
-      self.activeThread.start()
+      if not None == self.mProcess and self.isCommandRunning():
+         print "Command already running."
+         return False
+      else:
+         self.mProcess = process.ProcessProxy(command)
+         return True
 
    def getOutput(self):
-      return self.mQueue.get()
+      if not None == self.mProcess:
+         return self.mProcess.stdout.readline()
 
 if os.name == 'nt':
    class vrjclusterserver(win32serviceutil.ServiceFramework):
@@ -204,11 +216,9 @@ def daemonize (stdin='/dev/null', stdout='/dev/null', stderr=None, pidfile=None)
       pf.close()
 
 if __name__ == '__main__':
-   print "1"
    if '-debug' in sys.argv:
       # For debugging, it is handy to be able to run the servers
       # without being a service on Windows or a daemon on Linux.
-      print "2"
       RunServer()
    elif os.name == 'nt':
       # Install as a Windows Service on NT

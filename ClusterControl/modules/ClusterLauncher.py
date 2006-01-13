@@ -192,6 +192,11 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       else:
          assert "This should never happen"
 
+   def onKillApp(self):
+      self.mClusterModel.killCommand()
+      #self.launchButton.setEnabled(True)
+      #self.killButton.setEnabled(False)
+
    def launchApp(self):
       """ Invoked when the built-in Launch button is clicked. """
       cmd = self.apps[self.selectedApp].getCommand()
@@ -206,8 +211,8 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
          print "running command: ", cmd
          self.mClusterModel.runRemoteCommand(cmd, cmd)
 #         self.mClusterModel.runRemoteCommand('rpm -qa', 'rpm -qa')
-#         self.launchButton.setEnabled(False)
-#         self.killButton.setEnabled(True)
+         #self.launchButton.setEnabled(False)
+         #self.killButton.setEnabled(True)
       else:
          assert "This should never happen"
 
@@ -219,7 +224,7 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       #self.connect(self.fileExitAction,QtCore.SIGNAL("activated()"),self.fileExit)
       self.connect(self.appComboBox,QtCore.SIGNAL("activated(int)"),self.appSelect)
       self.connect(self.launchButton,QtCore.SIGNAL("clicked()"),self.launchApp)
-      #self.connect(self.killButton,QtCore.SIGNAL("clicked()"),self.killApp)
+      self.connect(self.killButton,QtCore.SIGNAL("clicked()"),self.onKillApp)
       #self.connect(self.helpButton,QtCore.SIGNAL("clicked()"),self.loadHelp)
       
       self.icon = QtGui.QIcon(":/linux2.png")
