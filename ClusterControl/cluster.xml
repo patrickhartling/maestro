@@ -39,11 +39,11 @@
           <option name="Directory To List" editable="false" tooltip="">
             <choice label="User Directory" selected="true">
               <value class="Linux" flag="">-l ~/</value>
-              <value class="Windows XP" flag="">C:\\Documents\ and\ Settings\\aronb</value>
+              <value class="Windows XP" flag='"C:\"'></value>
             </choice>
             <choice label="Root Dir" tooltip="">
               <value class="Linux" flag="">/</value>
-              <value class="Windows XP" flag="">C:\\ </value>
+              <value class="Windows XP" flag='"C:\"'></value>
             </choice>
           </option>
           <!-- Combobox (maybe editable) -->

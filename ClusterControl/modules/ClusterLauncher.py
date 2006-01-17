@@ -52,7 +52,7 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
 
       # State information for the selected application.
       self.selectedApp         = None
-      self.commandOptions      = []
+      self.commandChoices      = []
       self.selectedAppOptions  = {}
       self.mComboBoxes         = {}
       self.appSpecificWidgets  = []
@@ -171,7 +171,7 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
             if opt.tip != None and opt.tip != "":
                cb.setToolTip(self.tr(str(opt.tip)))
 
-      # Forcibly populate self.commandOptions so that anything that is selected
+      # Forcibly populate self.commandChoices so that anything that is selected
       # by default will show up in the list.
       self._setCommandOptions()
 
@@ -183,7 +183,7 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       #for l in self.appSpecificLayouts:
       #   l.deleteLater()
 
-      self.commandOptions      = []
+      self.commandChoices      = []
       self.selectedApp         = None
       self.selectedAppOptions  = {}
       self.mComboBoxes         = {}
@@ -220,30 +220,32 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       help.show()
 
    def onOptionBox(self):
-      self.commandOptions = []
+      self.commandChoices = []
       self._setCommandOptions()
 
    def onComboBox(self, index):
       print "A: ", index
-      self.commandOptions = []
+      self.commandChoices = []
       self._setCommandOptions()
 
    def _setCommandOptions(self):
       for w, opt in self.selectedAppOptions.items():
          if w.isChecked():
-            pass
-            #self.commandOptions.append(opt.flag)
+            self.commandChoices.append(opt.mChoices[0])
          label = opt.mChoices[0].label
          print "%s = %s" % (label, w.isChecked())
+
+      # Get combo box options.
       for cb, opt in self.mComboBoxes.items():
          index = cb.currentIndex()
          result = ""
+         # XXX: Since this is not a choice, it is not yet supported.
          if index >= len(opt.mChoices):
             result = cb.currentText()
          else:
+            self.commandChoices.append(opt.mChoices[index])
             result = opt.mChoices[index].label
          print "%s = %s" % (opt.group_name, result)
-#      print self.commandOptions
 
    def onCommandButton(self, action):
       if action.command != "" and action.command != None:
@@ -261,17 +263,32 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       for node in self.mClusterModel.mNodes:
          command_map = self.apps[self.selectedApp].getCommandMap()
          command = getMaxMatchValue(command_map, node.getClass())
-         print "\n Node: [%s] [%s]" % (node.getName(), command)
+
+         opts = ""
+         for c in self.commandChoices:
+            opt = getMaxMatchValue(c.getValueMap(), node.getClass())
+
+            if not None == opt:
+               # Add flag
+               if not None == opt[0]:
+                  opts = opts + " " + opt[0]
+               # Add value
+               if not None == opt[1]:
+                  opts = opts + " " + opt[1]
+
+         print "\n Node: [%s] [%s] [%s]" % (node.getName(), command, opts)
          if not None == command:
             try:
-               node.runCommand(command[0], self.mClusterModel.mOutputLogger)
+               cmd = command[0] + opts
+               print "Final command:", cmd
+               node.runCommand(cmd, self.mClusterModel.mOutputLogger)
             except:
                pass
 
       
       # Construct the list of options as a single string.
       #opts = ""
-      #for o in self.commandOptions:
+      #for o in self.commandChoices:
       #   opts += " " + o
       #cmd = cmd + opts
 
@@ -306,13 +323,16 @@ class Choice:
       self.label = xmlElt.get("label")
       values = xmlElt.findall("./value")
       print "Choice: ", self.label
-      self.mValues = {}
+      self.mValueMap = {}
       for v in values:
          node_class = v.get("class")
          flag = v.get("flag")
          val = v.text
-         self.mValues[node_class] = (flag, val)
+         self.mValueMap[node_class] = (flag, val)
          print "Class: %s flag: %s val: %s" % (node_class, flag, val)
+
+   def getValueMap(self):
+      return self.mValueMap
 
 class AppOption:
    """ Encapsulation of command-line options that may be passed to apps. """
