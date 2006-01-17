@@ -3,93 +3,82 @@
   <launcher title="App Launcher">
     <applications>
       <app name="Test RPM Usage">
-        <command>rpm</command>
+        <commands>
+          <command class="master">vrjuggler_app</command>
+          <command class="slave">slaveViewer</command>
+        </commands>
         <tooltip>RPM package management.</tooltip>
         <helpURL>/usr/local/X11R6/lib/X11/doc/html/XvQueryAdaptors.3.html</helpURL>
         <options>
-          <group name="RPM Searches">
-            <option label="List All" flag="-qa"
-                    tooltip="List all installed RPMs." />
-            <option label="List qt files" flag="-ql qt"
-                    tooltip="List all files installed with qt." />
-            <option label="List telnet RPM" flag="-qf /usr/bin/telnet"
-                    tooltip="List rpm that contains telnet." />
-          </group>
+          <option name="RPM Searches">
+            <choice label="List All" selected="true" tooltip="List all installed RPMs.">
+               <value class="linux" flag="-qa" />
+            </choice>
+            <choice label="List qt files" tooltip="List all files installed with qt.">
+               <value class="linux" flag="-ql qt" />
+            </choice>
+            <choice label="List telnet RPM" tooltip="List rpm that contains telnet.">
+               <value class="linux" flag="-qf /usr/bin/telnet" />
+            </choice>
+          </option>
         </options>
       </app>
-      <app name="ls">
-        <command>ls</command>
+      <app name="Directory Listing">
+        <exec_envs>
+          <exec_env name="verbose_linux" parent="linux_base">
+            <env_var label="VR Juggler Debug Level" key="VPR_DEBUG_NFY_LEVEL" value="6" append="false"/>
+          </exec_env>
+        </exec_envs>
+        <commands>
+          <command class="Windows XP" env="windows_base">dir</command>
+          <command class="Linux" env="linux_base">ls -l</command>
+        </commands>
         <tooltip>ls</tooltip>
         <helpURL></helpURL>
         <options>
-          <group name="Dirs">
-            <option label="~/" flag="-l ~/"
-                    tooltip="" />
-            <option label="/home" flag="-l /home"
-                    tooltip="" />
-          </group>
+          <option name="Directory To List" editable="false" tooltip="">
+            <choice label="User Directory" selected="true">
+              <value class="Linux" flag="">-l ~/</value>
+              <value class="Windows XP" flag="">C:\\Documents\ and\ Settings\\aronb</value>
+            </choice>
+            <choice label="Root Dir" tooltip="">
+              <value class="Linux" flag="">/</value>
+              <value class="Windows XP" flag="">C:\\ </value>
+            </choice>
+          </option>
+          <!-- Combobox (maybe editable) -->
+          <option name="VR Juggler Debug Level" editable="true" tooltip="VR Juggler Debug Level">
+            <choice label="Nothing">
+              <value class="linux">0</value>
+            </choice>
+            <choice label="Verbose">
+              <value class="linux">6</value>
+            </choice>
+          </option>
+          <!-- Check box (w/wo text field)-->
+          <option editable="false" visible="true" tooltip="Brads nifty glove">
+            <choice label="Brad's nifty glove">
+              <value class="windows" flag="">win_left_glove.jconf</value>
+              <value class="linux.*" flag="">linux_left_glove.jconf</value>
+            </choice>
+          </option>
+          <!-- Check box (w/wo text field)-->
+          <option editable="true" visible="false" tooltip="plugin">
+            <choice label="SONIX plugin">
+              <value class="windows,timmy" flag="-plugin">C:\\path\\to\\openal</value>
+              <value class="linux.*" flag="-plugin">/path/to/openal</value>
+            </choice>
+          </option>
         </options>
       </app>
-      <app name="Test RPM Usage">
-        <command>glxgears</command>
+      <app name="GLX Gears">
+        <commands>
+          <command class="Linux" env="linux_base">glxgears</command>
+        </commands>
         <tooltip>GLX Gears</tooltip>
         <helpURL></helpURL>
         <options>
-          <group name="glxgears">
-            <option label="One" flag=""
-                    tooltip="" />
-            <option label="Two" flag=""
-                    tooltip="" />
-          </group>
         </options>
-      </app>
-      <app name="Cow with Gaussian Filter">
-        <command>scripts/osgViewer-gaussian</command>
-        <tooltip>Load the App Viewer application with the Cow model</tooltip>
-        <helpURL>/usr/local/X11R6/lib/X11/doc/html/XvQueryAdaptors.3.html</helpURL>
-        <options>
-          <option label="Stereo" flag="--stereo"
-                  tooltip="Enable stereoscopic rendering" />
-        </options>
-      </app>
-      <app name="Cow with Mitchell Filter">
-        <command>scripts/osgViewer-mitchell</command>
-        <tooltip>Load the App Viewer application with the Cow model</tooltip>
-        <helpURL>http://www.137.org/patrick/work.html</helpURL>
-        <options>
-          <option label="Stereo" flag="--stereo"
-                  tooltip="Enable stereoscopic rendering" />
-        </options>
-      </app>
-      <app name="Cow with cylinder Filter">
-        <command>scripts/osgViewer-cylinder</command>
-        <tooltip>Load the App Viewer application with the Cow model</tooltip>
-        <helpURL>http://www.137.org/patrick/work.html</helpURL>
-        <options>
-          <option label="Stereo" flag="--stereo"
-                  tooltip="Enable stereoscopic rendering" />
-        </options>
-      </app>
-      <app name="Cow with catmull Filter">
-        <command>scripts/osgViewer-catmull</command>
-        <tooltip>Load the App Viewer application with the Cow model</tooltip>
-          <helpURL>http://www.137.org/patrick/work.html</helpURL>
-        <options>
-          <option label="Stereo" flag="--stereo"
-                  tooltip="Enable stereoscopic rendering" />
-          </options>
-      </app>
-      <app name="Another Test App">
-          <command>scripts/something</command>
-        <tooltip>I am another test application.  Run me!</tooltip>
-        <helpURL>http://www.137.org/patrick/resume.html</helpURL>
-        <options>
-          <option label="Things" flag="-t" tooltip="Enable things" />
-          <option label="Features" flag="-f" tooltip="Enable features" />
-          </options>
-      </app>
-      <app name="Pipe test">
-        <command>yes</command>
       </app>
     </applications>
     <controls>
@@ -101,7 +90,20 @@
          <option label="Power Wall" flag="pwall.jconf" tooltip="Power Wall Configuration" />
       </group>
     </global_options>
+    <global_environments>
+      <env label="Linux" name="linux">
+        <env_var label="VR Juggler Location" key="VJ_BASE_DIR" value="/home/aronb/Source/CurrentJuggler" append="false"/>
+        <env_var label="PATH" key="PATH" value="${VJ_BASE_DIR}/bin" append="true"/>
+        <env_var label="LD_LIBRARY_PATH" key="LD_LIBRARY_PATH" value="${VJ_BASE_DIR}/lib" append="true"/>
+      </env>
+      <env label="Windows" name="windows">
+        <env_var label="VR Juggler Location" key="VJ_BASE_DIR" value="C:\\Source\\juggler\\" append="false"/>
+        <env_var label="PATH" key="PATH" value="%(VJ_BASE_DIR)\bin" append="true"/>
+        <env_var label="PATH" key="PATH" value="%(VJ_BASE_DIR)\lib" append="true"/>
+      </env>
+    </global_environments>
   </launcher>
-  <cluster_node name="Timmy" hostname="timmy.infiscape.com"/>
-  <cluster_node name="slave1" hostname="slave1"/>
+  <cluster_node name="Timmy" hostname="timmy.infiscape.com" sub_class="master"/>
+  <cluster_node name="Morpheus" hostname="morpheus.infiscape.com" sub_class="slave"/>
+  <cluster_node name="Tofu" hostname="tofu.infiscape.com" sub_class="slave"/>
 </cluster_config>

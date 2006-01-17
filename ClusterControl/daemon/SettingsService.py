@@ -41,7 +41,6 @@ class SettingsService(Pyro.core.ObjBase):
    def getPlatform(self):
       """Returns tuple with error code and platform code.
          1 is Linux, 2 is Windows, and 0 is unknown."""
-      print "Platform: ", platform.system()
       if platform.system() == 'Linux':
          return LINUX
       elif os.name == 'nt':
@@ -54,9 +53,6 @@ class SettingsService(Pyro.core.ObjBase):
          return OsNameMap[self.getPlatform()]
       except:
          return 'Unknown'
-
-   def getHostByName(self):
-      return socket.gethostbyname_ex
 
    def rebootSystem(self):
       if os.name == 'nt':

@@ -161,8 +161,18 @@ class ClusterNode:
       self.mProxy = None
       self.mName = self.mElement.get("name")
       self.mHostname = self.mElement.get("hostname")
+      self.mClass = self.mElement.get("sub_class")
       self.mOutputThread = None
       self.mRunningCommand = ""
+
+   def getClass(self):
+      if not None == self.mProxy:
+         try:
+            platform = self.mProxy.getService("Settings").getPlatformName()
+            return platform + "," + self.mClass
+         except:
+            pass
+      return self.mClass
 
    def getName(self):
       return self.mElement.get("name")

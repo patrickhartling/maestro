@@ -49,40 +49,6 @@ class ClusterServer(Pyro.core.ObjBase):
    def getService(self, name):
       return self.mServices[name]
 
-   def getPlatform(self):
-      """Returns tuple with error code and platform code.
-         1 is Linux, 2 is Windows, and 0 is unknown."""
-      if platform.system() == 'Linux':
-         return LINUX
-      elif os.name == 'nt':
-         return WINXP
-      else:
-         return ERROR
-
-   def rebootSystem(self):
-      if os.name == 'nt':
-         AdjustPrivilege(ntsecuritycon.SE_SHUTDOWN_NAME, 1)
-         message = 'The system is rebooting now'
-         try:
-            win32api.InitiateSystemShutdown(None, message, 0, 1, 1)
-         finally:
-            AdjustPrivilege(ntsecuritycon.SE_SHUTDOWN_NAME, 0)
-      else:
-         os.system('shutdown -r now')
-      return 0
-
-   def shutdownSystem(self):
-      if os.name == 'nt':
-         AdjustPrivilege(ntsecuritycon.SE_SHUTDOWN_NAME, 1)
-         message = 'The system is rebooting now'
-         try:
-            win32api.InitiateSystemShutdown(None, message, 0, 1, 0)
-         finally:
-            AdjustPrivilege(ntsecuritycon.SE_SHUTDOWN_NAME, 0)
-      else:
-         os.system('shutdown -h now')
-      return 0
-
    def stopCommand(self):
       if not None == self.mProcess:
          return self.mProcess.kill()
