@@ -255,7 +255,10 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
 
    def onCommandButton(self, action):
       if action.command != "" and action.command != None:
-         self._runCommandWithLog(action.command)
+         for node in self.mClusterModel.mNodes:
+            print "\n Node: [%s] [%s]" % (node.getName(), action.command)
+            temp_env = {'DISPLAY':':0.0'}
+            node.runCommand(command=action.command, cwd=None, envMap=temp_env, outputLogger=self.mClusterModel.mOutputLogger)
       else:
          assert "This should never happen"
 
@@ -477,9 +480,9 @@ class Action:
    """
    def __init__(self, xmlElt):
       self.name    = xmlElt.get("name")
-      self.command = xmlElt.findall("./command")[0].text
+      self.command = xmlElt.get("command")
 
-      tip = xmlElt.findall("./tooltip")[0].text
+      tip = xmlElt.get("tooltip")
 
       if tip == "" or tip == None:
          tip = self.name

@@ -140,6 +140,9 @@
         <env_var label="VR Juggler Location" key="DISPLAY" value=":0.0" append="false"/>
       </env>
     </global_environments>
+    <controls>
+      <action name="Test" command="/usr/X11R6/bin/xset" tooltip="Test"/>
+    </controls>
   </launcher>
   <!--
   <cluster_node name="infiscape1" hostname="infiscape1" sub_class="master"/>
