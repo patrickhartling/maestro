@@ -2,7 +2,7 @@
 <cluster_config>
   <launcher title="App Launcher">
     <applications>
-      <app name="Directory Listing">
+      <app name="Directory Listing" use_global_options="false">
         <exec_envs>
           <exec_env name="verbose_linux" parent="linux_base">
             <env_var label="VR Juggler Debug Level" key="VPR_DEBUG_NFY_LEVEL" value="6" append="false"/>
@@ -10,49 +10,26 @@
         </exec_envs>
         <commands>
           <command class="Windows XP" env="windows_base">dir</command>
-          <command class="Linux" env="linux_base">export</command>
+          <command class="Linux" env="linux_base">ls</command>
         </commands>
         <tooltip>ls</tooltip>
         <helpURL></helpURL>
         <options>
           <option name="Directory To List" editable="false" tooltip="">
             <choice label="User Directory" selected="true">
-              <value class="Linux" flag=""></value>
+              <value class="Linux" flag="-l">~</value>
               <value class="Windows XP" flag='"C:\"'></value>
             </choice>
             <choice label="Root Dir" tooltip="">
-              <value class="Linux" flag="">/</value>
+              <value class="Linux" flag="-l">/</value>
               <value class="Windows XP" flag='"C:\"'></value>
-            </choice>
-          </option>
-          <!-- Combobox (maybe editable) -->
-          <option name="VR Juggler Debug Level" editable="true" tooltip="VR Juggler Debug Level">
-            <choice label="Nothing">
-              <value class="linux">0</value>
-            </choice>
-            <choice label="Verbose">
-              <value class="linux">6</value>
-            </choice>
-          </option>
-          <!-- Check box (w/wo text field)-->
-          <option editable="false" visible="true" tooltip="Brads nifty glove">
-            <choice label="Brad's nifty glove">
-              <value class="windows" flag="">win_left_glove.jconf</value>
-              <value class="linux.*" flag="">linux_left_glove.jconf</value>
-            </choice>
-          </option>
-          <!-- Check box (w/wo text field)-->
-          <option editable="true" visible="false" tooltip="plugin">
-            <choice label="SONIX plugin">
-              <value class="windows,timmy" flag="-plugin">C:\\path\\to\\openal</value>
-              <value class="linux.*" flag="-plugin">/path/to/openal</value>
             </choice>
           </option>
         </options>
       </app>
-      <app name="GLX Gears">
+      <app name="GLX Gears" use_global_options="false">
         <commands>
-          <command class="Linux" env="linux_base">/usr/X11R6/bin/glxgears</command>
+          <command class="Linux" env="linux_base">glxgears</command>
         </commands>
         <tooltip>GLX Gears</tooltip>
         <helpURL></helpURL>
@@ -61,7 +38,8 @@
       </app>
       <app name="Cubes">
         <commands>
-          <command class="Linux" env="linux_base">/home/dmns/runcubes.sh</command>
+          <command class="Linux.shell" env="linux_base">/home/dmns/runcubes.sh</command>
+          <command class="Linux" env="linux_base">/home/dmns/Source/juggler/build.linux/modules/vrjuggler/test/Draw/OGL/cubes/cubes</command>
         </commands>
         <tooltip>Cubes test application</tooltip>
         <helpURL></helpURL>
@@ -83,18 +61,16 @@
     </global_options>
     <global_environments>
       <env label="Linux" name="linux_base">
-        <env_var label="LD_LIBRARY_PATH" key="LD_LIBRARY_PATH" value="${VJ_BASE_DIR}/lib" append="true"/>
-        <env_var label="PATH" key="PATH" value="/usr/bin:$VJ_BASE_DIR/bin" append="true"/>
-        <env_var label="VR Juggler Location" key="VJ_BASE_DIR" value="/home/aronb/Source/CurrentJuggler" append="false"/>
-      </env>
-      <env label="Windows" name="windows">
-        <env_var label="VR Juggler Location" key="VJ_BASE_DIR" value="C:\\Source\\juggler\\" append="false"/>
-        <env_var label="PATH" key="PATH" value="%(VJ_BASE_DIR)\bin" append="true"/>
-        <env_var label="PATH" key="PATH" value="%(VJ_BASE_DIR)\lib" append="true"/>
+        <env_var label="LD_LIBRARY_PATH" key="LD_LIBRARY_PATH" value="/home/dmns/Source/juggler/build.linux/instlinks/lib:/home/dmns/deps/lib:/home/dmns/deps/lib/opt:/home/dmns/deps/lib" append="false"/>
+        <env_var label="PATH" key="PATH" value="/home/dmns/deps/bin:/usr/kerberos/bin:/usr/local/bin:/usr/bin:/bin:/usr/X11R6/bin:/usr/java/jdk1.5.0_06/bin:/home/dmns/Source/juggler/build.linux/instlinks/bin" append="false"/>
+        <env_var label="VR Juggler Location" key="VJ_BASE_DIR" value="/home/dmns/Source/juggler/build.linux/instlinks" append="false"/>
+        <env_var label="VR Juggler Location" key="DISPLAY" value=":0.0" append="false"/>
       </env>
     </global_environments>
   </launcher>
+  <!--
   <cluster_node name="infiscape1" hostname="infiscape1" sub_class="master"/>
   <cluster_node name="infiscape2" hostname="infiscape2" sub_class="master"/>
+  -->
   <cluster_node name="infiscape3" hostname="infiscape3" sub_class="master"/>
 </cluster_config>

@@ -124,7 +124,8 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
 
       app_opts = app.getOptions()
       all_opts = []
-      all_opts.extend(self.globaloptions)
+      if app.mUseGlobalOptions:
+         all_opts.extend(self.globaloptions)
       all_opts.extend(app_opts)
 
       for i in range(0, len(all_opts)):
@@ -423,6 +424,15 @@ class Application:
 
    def __init__(self, xmlElt):
       self.name = xmlElt.get("name")
+
+      # Should we inherit the global options
+      use_global = xmlElt.get("use_global_options")
+      if use_global == "" or use_global == None:
+         self.mUseGlobalOptions = True
+      elif use_global == "true" or use_global == "1":
+         self.mUseGlobalOptions = True
+      else:
+         self.mUseGlobalOptions = False
 
       self.mCommandMap = {}
       commands = xmlElt.findall("./commands/command")
