@@ -2,27 +2,6 @@
 <cluster_config>
   <launcher title="App Launcher">
     <applications>
-      <app name="Test RPM Usage">
-        <commands>
-          <command class="master">vrjuggler_app</command>
-          <command class="slave">slaveViewer</command>
-        </commands>
-        <tooltip>RPM package management.</tooltip>
-        <helpURL>/usr/local/X11R6/lib/X11/doc/html/XvQueryAdaptors.3.html</helpURL>
-        <options>
-          <option name="RPM Searches">
-            <choice label="List All" selected="true" tooltip="List all installed RPMs.">
-               <value class="linux" flag="-qa" />
-            </choice>
-            <choice label="List qt files" tooltip="List all files installed with qt.">
-               <value class="linux" flag="-ql qt" />
-            </choice>
-            <choice label="List telnet RPM" tooltip="List rpm that contains telnet.">
-               <value class="linux" flag="-qf /usr/bin/telnet" />
-            </choice>
-          </option>
-        </options>
-      </app>
       <app name="Directory Listing">
         <exec_envs>
           <exec_env name="verbose_linux" parent="linux_base">
@@ -31,14 +10,14 @@
         </exec_envs>
         <commands>
           <command class="Windows XP" env="windows_base">dir</command>
-          <command class="Linux" env="linux_base">ls -l</command>
+          <command class="Linux" env="linux_base">export</command>
         </commands>
         <tooltip>ls</tooltip>
         <helpURL></helpURL>
         <options>
           <option name="Directory To List" editable="false" tooltip="">
             <choice label="User Directory" selected="true">
-              <value class="Linux" flag="">-l ~/</value>
+              <value class="Linux" flag=""></value>
               <value class="Windows XP" flag='"C:\"'></value>
             </choice>
             <choice label="Root Dir" tooltip="">
@@ -73,9 +52,18 @@
       </app>
       <app name="GLX Gears">
         <commands>
-          <command class="Linux" env="linux_base">glxgears</command>
+          <command class="Linux" env="linux_base">/usr/X11R6/bin/glxgears</command>
         </commands>
         <tooltip>GLX Gears</tooltip>
+        <helpURL></helpURL>
+        <options>
+        </options>
+      </app>
+      <app name="Cubes">
+        <commands>
+          <command class="Linux" env="linux_base">/home/dmns/runcubes.sh</command>
+        </commands>
+        <tooltip>Cubes test application</tooltip>
         <helpURL></helpURL>
         <options>
         </options>
@@ -84,17 +72,20 @@
     <controls>
     </controls>
     <global_options>
-      <group name="VR Juggler Configuration">
-         <option label="Simulator" flag="sim.base.jconf sim.wand.mixin.jconf" tooltip="CAVE Configuration" />
-         <option label="CAVE" flag="cave.jconf" tooltip="CAVE Configuration" />
-         <option label="Power Wall" flag="pwall.jconf" tooltip="Power Wall Configuration" />
-      </group>
+      <option name="VR Juggler Configuration" editable="editable" tooltip="VR Juggler configuration">
+        <choice label="Simulator Configuration">
+          <value class="Linux" flag="">sim.base.jconf sim.wand.mixin.jconf</value>
+        </choice>
+        <choice label="Dome Configuration">
+          <value class="Linux" flag="">/home/dmns/jconf/cluster_dome.jconf</value>
+        </choice>
+      </option>
     </global_options>
     <global_environments>
-      <env label="Linux" name="linux">
-        <env_var label="VR Juggler Location" key="VJ_BASE_DIR" value="/home/aronb/Source/CurrentJuggler" append="false"/>
-        <env_var label="PATH" key="PATH" value="${VJ_BASE_DIR}/bin" append="true"/>
+      <env label="Linux" name="linux_base">
         <env_var label="LD_LIBRARY_PATH" key="LD_LIBRARY_PATH" value="${VJ_BASE_DIR}/lib" append="true"/>
+        <env_var label="PATH" key="PATH" value="/usr/bin:$VJ_BASE_DIR/bin" append="true"/>
+        <env_var label="VR Juggler Location" key="VJ_BASE_DIR" value="/home/aronb/Source/CurrentJuggler" append="false"/>
       </env>
       <env label="Windows" name="windows">
         <env_var label="VR Juggler Location" key="VJ_BASE_DIR" value="C:\\Source\\juggler\\" append="false"/>
@@ -103,7 +94,7 @@
       </env>
     </global_environments>
   </launcher>
-  <cluster_node name="Timmy" hostname="timmy.infiscape.com" sub_class="master"/>
-  <cluster_node name="Morpheus" hostname="morpheus.infiscape.com" sub_class="slave"/>
-  <cluster_node name="Tofu" hostname="tofu.infiscape.com" sub_class="slave"/>
+  <cluster_node name="infiscape1" hostname="infiscape1" sub_class="master"/>
+  <cluster_node name="infiscape2" hostname="infiscape2" sub_class="master"/>
+  <cluster_node name="infiscape3" hostname="infiscape3" sub_class="master"/>
 </cluster_config>

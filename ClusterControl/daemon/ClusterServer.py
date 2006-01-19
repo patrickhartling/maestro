@@ -46,6 +46,9 @@ class ClusterServer(Pyro.core.ObjBase):
       self.mServices["Settings"] = settings.getProxy()
       self.mProcess = None
 
+   def test(self):
+      print "Test"
+
    def getService(self, name):
       return self.mServices[name]
 

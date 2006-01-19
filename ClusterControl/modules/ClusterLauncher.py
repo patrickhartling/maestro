@@ -49,6 +49,7 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       self.apps    = []
       self.actions = []
       self.globaloptions = []
+      self.mGlobalEnvs = {}
 
       # State information for the selected application.
       self.selectedApp         = None
@@ -72,10 +73,19 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       for action_elt in top_element.findall("./controls/action"):
          self.actions.append(Action(action_elt))
 
-      #for n in top_element.findall("./global_options/option"):
-      #   self.globaloptions.append(AppOption(n))
-      #for n in top_element.findall("./global_options/group"):
-      #   self.globaloptions.append(AppExclusiveOption(n))
+      option_elts = top_element.findall("./global_options/option")
+      if None != option_elts: #and len(tip_elts) > 0:
+         for n in option_elts:
+            if len(n) > 1:
+               self.globaloptions.append(AppExclusiveOption(n))
+            else:
+               self.globaloptions.append(AppOption(n))
+
+
+      for elt in top_element.findall("./global_environments/env"):
+         name = elt.get("name")
+         print "ENV: ", name
+         self.mGlobalEnvs[name] = Environment(elt)
 
       self._fillInApps()
       self._fillInControls()
@@ -275,13 +285,22 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
                # Add value
                if not None == opt[1]:
                   opts = opts + " " + opt[1]
+         
+         env_map = None
+         try:
+            env = self.mGlobalEnvs[command[1]]
+            env_map = env.mEnvMap
+         except:
+            pass
+
+         print env_map
 
          print "\n Node: [%s] [%s] [%s]" % (node.getName(), command, opts)
          if not None == command:
             try:
                cmd = command[0] + opts
                print "Final command:", cmd
-               node.runCommand(cmd, self.mClusterModel.mOutputLogger)
+               node.runCommand(cmd, env_map, self.mClusterModel.mOutputLogger)
             except:
                pass
 
@@ -387,6 +406,18 @@ class Command:
       self.mEnv = xmlElt.get("elt")
       self.mCommand = xmlElt.text
 
+class Environment:
+   def __init__(self, xmlElt):
+      self.mElement = xmlElt
+      
+      self.mEnvMap = {}
+
+      vars = xmlElt.findall("./env_var")
+      for elt in vars:
+         key = elt.get("key")
+         value = elt.get("value")
+         self.mEnvMap[key] = value
+      
 class Application:
    """ Representation of an application that can be launched. """
 
@@ -418,7 +449,6 @@ class Application:
       self.options = []
       option_elts = xmlElt.findall("./options/option")
       if None != option_elts: #and len(tip_elts) > 0:
-
          for n in option_elts:
             if len(n) > 1:
                self.options.append(AppExclusiveOption(n))
@@ -464,7 +494,7 @@ class Action:
 
 
 def getModuleInfo():
-   icon = QtGui.QIcon(":/ClusterLauncher/images/launch2.gif")
+   icon = QtGui.QIcon(":/ClusterLauncher/images/launch2.png")
    return (ClusterLauncher, icon)
 
 def main():

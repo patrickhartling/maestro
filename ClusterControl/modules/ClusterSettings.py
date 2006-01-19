@@ -115,11 +115,12 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
       # Get information from proxy
       if not None == selected_node.proxy():
          # Get operating system
-         try:
-            platform = selected_node.proxy().getService("Settings").getPlatformName()
-            self.mCurrentOsEdit.setText(platform)
-         except:
-            self.mCurrentOsEdit.setText("Unknown")
+         #try:
+         platform = selected_node.proxy().getService("Settings").getPlatformName()
+         #   
+         #   self.mCurrentOsEdit.setText(platform)
+         #except:
+         #   self.mCurrentOsEdit.setText("Unknown")
 
    def onNewConnections(self):
       self.mClusterListView.reset()
@@ -149,7 +150,7 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
    getName = staticmethod(getName)
 
 def getModuleInfo():
-   icon = QtGui.QIcon(":/ClusterSettings/images/tools.gif")
+   icon = QtGui.QIcon(":/ClusterSettings/images/tools.png")
    return (ClusterSettings, icon)
 
 if __name__ == "__main__":

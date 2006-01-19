@@ -112,6 +112,7 @@ class ClusterModel(QtCore.QAbstractListModel):
                new_connections = True
 
       if new_connections:
+         print "We had new connections"
          self.emit(QtCore.SIGNAL("newConnections()"))
 
    def runRemoteCommand(self, masterCommand, slaveCommand):
@@ -189,6 +190,7 @@ class ClusterNode:
    def connect(self):
       if None == self.mProxy:
          try:
+            print "Trying to connect to: PYROLOC://%s:7766/cluster_server" % (self.getHostname())
             self.mProxy = Pyro.core.getProxyForURI("PYROLOC://" + self.getHostname() + ":7766/cluster_server")
             print "Connected to [%s]" % (self.getName())
             return True
@@ -211,12 +213,12 @@ class ClusterNode:
          return result
       return False
 
-   def runCommand(self, command, outputLogger):
+   def runCommand(self, command, envMap, outputLogger):
       if not None == self.mOutputThread:
          print "Cluster node [%s] is already running [%s]" % (self.getName(), self.mRunningCommand)
       if not None == self.mProxy:
          self.mRunningCommand = command
-         self.mProxy.runCommand(command)
+         self.mProxy.runCommand(command, envMap)
          ot = OutputThread(copy.copy(self.mProxy), self, outputLogger)
          ot.start()
       else:
