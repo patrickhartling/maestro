@@ -6,6 +6,8 @@ import Pyro.naming
 
 import SettingsService
 import process
+import datetime
+import signal
 
 ERROR = 0
 LINUX = 1
@@ -46,15 +48,17 @@ class ClusterServer(Pyro.core.ObjBase):
       self.mServices["Settings"] = settings.getProxy()
       self.mProcess = None
 
-   def test(self):
-      print "Test"
-
    def getService(self, name):
       return self.mServices[name]
+
+   def test(self):
+      print "Test"
 
    def stopCommand(self):
       if not None == self.mProcess:
          return self.mProcess.kill()
+         #return self.mProcess.kill(sig=signal.SIGTERM)
+         #return self.mProcess.kill(sig=signal.SIGSTOP)
 
    def isCommandRunning(self):
       try:
@@ -71,17 +75,22 @@ class ClusterServer(Pyro.core.ObjBase):
             raise
       return False
 
-   def runCommand(self, command):
+   def runCommand(self, command, envMap):
       if not None == self.mProcess and self.isCommandRunning():
          print "Command already running."
          return False
       else:
-         self.mProcess = process.ProcessProxy(command)
+         print "Running command: ", command
+         print "With env:", envMap
+         self.mBuffer = process.IOBuffer(name='<stdout>')
+         #self.mProcess = process.ProcessProxy(command, stdout=self.mBuffer, stderr=self.mBuffer, env={'DISPLAY':':0.0'})
+         self.mProcess = process.ProcessProxy(command, stdout=self.mBuffer, stderr=self.mBuffer, env=envMap)
          return True
 
    def getOutput(self):
       if not None == self.mProcess:
-         return self.mProcess.stdout.readline()
+         #return self.mProcess.stdout.readline()
+         return self.mBuffer.readline()
 
 if os.name == 'nt':
    class vrjclusterserver(win32serviceutil.ServiceFramework):
@@ -179,6 +188,8 @@ def daemonize (stdin='/dev/null', stdout='/dev/null', stderr=None, pidfile=None)
    os.dup2(so.fileno(), sys.stdout.fileno())
    os.dup2(se.fileno(), sys.stderr.fileno())
 
+   print "\n\nStarted Infiscape Cluster Control on [%s]\n" % (str(datetime.datetime.today()))
+
    if pidfile:
       pf = file(pidfile, 'w+')
       pf.write('%d\n' % os.getpid())
@@ -194,12 +205,13 @@ if __name__ == '__main__':
       win32serviceutil.HandleCommandLine(vrjclusterserver)
    elif platform.system() == 'Linux':
       if '-log' in sys.argv:
-         log = '/var/log/vrjclusterserver.log'
+         log = '/var/log/infclustercontrold.log'
+         print "Using log file: ", log
       else:
          log = '/dev/null'
 
       # Run as a daemon on Linux
-      daemonize(pidfile='/var/run/vrjclusterserver.pid', stdout=log)
+      daemonize(pidfile='/var/run/infclustercontrold.pid', stdout=log)
 
       # Now that we've successfully forked as a daemon, run the server
       RunServer()
