@@ -81,10 +81,9 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
             else:
                self.globaloptions.append(AppOption(n))
 
-
+      # Parse all global environments
       for elt in top_element.findall("./global_environments/env"):
          name = elt.get("name")
-         print "ENV: ", name
          self.mGlobalEnvs[name] = Environment(elt)
 
       self._fillInApps()
@@ -164,7 +163,6 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
             lbl.show()
             group_cb.show()
          else:
-#            print "Adding checkbox %i labeled '%s'" % (i, opt.tip)
             label = opt.mChoices[0].label
             cb = QtGui.QCheckBox(str(label), self.mAppFrame)
             cb.setObjectName("checkbox" + str(i))
@@ -235,7 +233,6 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       self._setCommandOptions()
 
    def onComboBox(self, index):
-      print "A: ", index
       self.commandChoices = []
       self._setCommandOptions()
 
@@ -244,7 +241,6 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
          if w.isChecked():
             self.commandChoices.append(opt.mChoices[0])
          label = opt.mChoices[0].label
-         print "%s = %s" % (label, w.isChecked())
 
       # Get combo box options.
       for cb, opt in self.mComboBoxes.items():
@@ -256,7 +252,6 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
          else:
             self.commandChoices.append(opt.mChoices[index])
             result = opt.mChoices[index].label
-         print "%s = %s" % (opt.group_name, result)
 
    def onCommandButton(self, action):
       if action.command != "" and action.command != None:
@@ -272,9 +267,9 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
    def launchApp(self):
       """ Invoked when the built-in Launch button is clicked. """
       for node in self.mClusterModel.mNodes:
-         command_map = self.apps[self.selectedApp].getCommandMap()
+         app = self.apps[self.selectedApp]
+         command_map = app.getCommandMap()
          command = getMaxMatchValue(command_map, node.getClass())
-
          opts = ""
          for c in self.commandChoices:
             opt = getMaxMatchValue(c.getValueMap(), node.getClass())
@@ -287,23 +282,23 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
                if not None == opt[1]:
                   opts = opts + " " + opt[1]
          
-         env_map = None
-         try:
-            env = self.mGlobalEnvs[command[1]]
-            env_map = env.mEnvMap
-         except:
-            pass
-
-         print env_map
-
-         print "\n Node: [%s] [%s] [%s]" % (node.getName(), command, opts)
          if not None == command:
+            cmd = command[0] + opts
+            cwd = command[1]
+            env_name =command[2]
+            env_map = None
+            # Try to get the correct environment
             try:
-               cmd = command[0] + opts
-               print "Final command:", cmd
-               node.runCommand(cmd, env_map, self.mClusterModel.mOutputLogger)
+               env = self.mGlobalEnvs[env_name]
+               env_map = env.mEnvMap
             except:
                pass
+
+            #try:
+            print "\n Node: [%s] [%s] [%s] [%s]" % (node.getName(), cmd, cwd, env_map)
+            node.runCommand(command=cmd, cwd=cwd, envMap=env_map, outputLogger=self.mClusterModel.mOutputLogger)
+            #except:
+            #   pass
 
       
       # Construct the list of options as a single string.
@@ -342,14 +337,12 @@ class Choice:
    def __init__(self, xmlElt):
       self.label = xmlElt.get("label")
       values = xmlElt.findall("./value")
-      print "Choice: ", self.label
       self.mValueMap = {}
       for v in values:
          node_class = v.get("class")
          flag = v.get("flag")
          val = v.text
          self.mValueMap[node_class] = (flag, val)
-         print "Class: %s flag: %s val: %s" % (node_class, flag, val)
 
    def getValueMap(self):
       return self.mValueMap
@@ -357,11 +350,7 @@ class Choice:
 class AppOption:
    """ Encapsulation of command-line options that may be passed to apps. """
    def __init__(self, xmlElt):
-      #self.label = xmlElt.get("name")
-      #self.flag  = xmlElt.get("flag")
       self.tip   = xmlElt.get("tooltip")
-      #print "name: ", self.label
-      print "tip: ", self.tip
 
       # Can the user edit the options value
       editable = xmlElt.get("editable")
@@ -440,7 +429,8 @@ class Application:
          sub_class = elt.get("class")
          command = elt.text
          env = elt.get("env")
-         self.mCommandMap[sub_class] = [command, env]
+         cwd = elt.get("working_dir")
+         self.mCommandMap[sub_class] = [command, cwd, env]
 
       help_elts = xmlElt.findall("./helpURL")
       if None != help_elts and len(help_elts) > 0 and help_elts[0].text:

@@ -75,16 +75,17 @@ class ClusterServer(Pyro.core.ObjBase):
             raise
       return False
 
-   def runCommand(self, command, envMap):
+   def runCommand(self, command, cwd, envMap):
       if not None == self.mProcess and self.isCommandRunning():
          print "Command already running."
          return False
       else:
          print "Running command: ", command
          print "With env:", envMap
+         print "Working Dir: ", cwd
          self.mBuffer = process.IOBuffer(name='<stdout>')
          #self.mProcess = process.ProcessProxy(command, stdout=self.mBuffer, stderr=self.mBuffer, env={'DISPLAY':':0.0'})
-         self.mProcess = process.ProcessProxy(command, stdout=self.mBuffer, stderr=self.mBuffer, env=envMap)
+         self.mProcess = process.ProcessProxy(cmd=command, cwd=cwd, env=envMap, stdout=self.mBuffer, stderr=self.mBuffer)
          return True
 
    def getOutput(self):

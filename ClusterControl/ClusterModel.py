@@ -213,12 +213,12 @@ class ClusterNode:
          return result
       return False
 
-   def runCommand(self, command, envMap, outputLogger):
+   def runCommand(self, command, envMap, cwd, outputLogger):
       if not None == self.mOutputThread:
          print "Cluster node [%s] is already running [%s]" % (self.getName(), self.mRunningCommand)
       if not None == self.mProxy:
          self.mRunningCommand = command
-         self.mProxy.runCommand(command, envMap)
+         self.mProxy.runCommand(command=command, cwd=cwd, envMap=envMap)
          ot = OutputThread(copy.copy(self.mProxy), self, outputLogger)
          ot.start()
       else:
