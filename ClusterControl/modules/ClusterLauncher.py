@@ -258,7 +258,8 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
          for node in self.mClusterModel.mNodes:
             print "\n Node: [%s] [%s]" % (node.getName(), action.command)
             temp_env = {'DISPLAY':':0.0'}
-            node.runCommand(command=action.command, cwd=None, envMap=temp_env, outputLogger=self.mClusterModel.mOutputLogger)
+            print "Running single shot command:", action.command
+            node.runSingleShotCommand(command=action.command, cwd=None, envMap=temp_env, outputLogger=self.mClusterModel.mOutputLogger)
       else:
          assert "This should never happen"
 
@@ -377,16 +378,16 @@ class AppOption:
       choices = xmlElt.findall("./choice")
       for c in choices:
          self.mChoices.append(Choice(c))
-      #
-      #selected = xmlElt.get("selected")
+
+      selected = xmlElt.get("selected")
 
       self.selected = False
-      #if selected == "" or selected == None:
-      #   self.selected = False
-      #elif selected == "true" or selected == "1":
-      #   self.selected = True
-      #else:
-      #   self.selected = False
+      if selected == "" or selected == None:
+         self.selected = False
+      elif selected == "true" or selected == "1":
+         self.selected = True
+      else:
+         self.selected = False
 
 class AppExclusiveOption(AppOption):
    def __init__(self, xmlElt):

@@ -75,6 +75,12 @@ class ClusterServer(Pyro.core.ObjBase):
             raise
       return False
 
+   def runSingleShotCommand(self, command, cwd, envMap):
+      print "Running single shot command: ", command
+      print "With env:", envMap
+      print "Working Dir: ", cwd
+      temp_process = process.ProcessProxy(cmd=command, cwd=cwd, env=envMap)
+   
    def runCommand(self, command, cwd, envMap):
       if not None == self.mProcess and self.isCommandRunning():
          print "Command already running."

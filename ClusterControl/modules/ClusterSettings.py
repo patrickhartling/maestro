@@ -115,12 +115,11 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
       # Get information from proxy
       if not None == selected_node.proxy():
          # Get operating system
-         #try:
-         platform = selected_node.proxy().getService("Settings").getPlatformName()
-         #   
-         #   self.mCurrentOsEdit.setText(platform)
-         #except:
-         #   self.mCurrentOsEdit.setText("Unknown")
+         try:
+            platform = selected_node.proxy().getService("Settings").getPlatformName()   
+            self.mCurrentOsEdit.setText(platform)
+         except:
+            self.mCurrentOsEdit.setText("Unknown")
 
    def onNewConnections(self):
       self.mClusterListView.reset()

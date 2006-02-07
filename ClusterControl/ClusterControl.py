@@ -1,5 +1,6 @@
-# Copyright (C) Infiscape Corporation 2006
+#!/bin/env python
 
+# Copyright (C) Infiscape Corporation 2006
 import sys, os, os.path, time, traceback
 pj = os.path.join
 
