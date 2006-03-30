@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cluster_config>
+  <launcher title="App Launcher">
+    <applications>
+      <app label="Example Volume Renderer" global_options="Configuration Files,VR Juggler 2.0" tooltip="Example Volume Renderer" helpUrl="">
+        <command class="Linux" visible="true">./Denver_VolRen_vrj</command>
+        <command class="Linux,slave" visible="true">./slave_viewer</command>
+        <cwd class="Linux" visible="true">/home/dmns/Source/SimpleVolRen</cwd>
+        <choice label="VR Juggler Configuration" parent_path="Configuration Files" tooltip="" type="one">
+          <arg label="Sim Config" visible="true" class="Linux,master" flag="-j">/home/dmns/jconf/sim.jconf</arg>
+          <group label="CAVE Configuration">
+            <arg label="Base Config" visible="true" class="Linux,master" flag="-j">/home/dmns/jconf/cave.base.jconf</arg>
+            <arg label="Display Config" visible="true" class="Linux,master" flag="-j">/home/dmns/jconf/cave.displays.jconf</arg>
+            <choice label="Tracker Configuration" parent_path="Configuration Files" tooltip="" type="one">
+              <arg label="Motionstar" visible="false" class="Linux,master" flag="-j">/home/dmns/jconf/mstar.jconf</arg>
+              <arg label="Intersense" visible="true" class="Linux,master" flag="-j">/home/dmns/jconf/isense.jconf</arg>
+              <arg label="Other" visible="true" editable="true" class="Linux,master" flag="-j">/home/dmns/jconf/</arg>
+            </choice>
+          </group>
+        </choice>
+        <choice label="VR Juggler Version">
+          <group label="VR Juggler 2.0">
+            <env_var class="" visible="true" label="VR Juggler Location" key="VJ_BASE_DIR">/path/to/vrjuggler2.0</env_var>
+            <env_var class="" visible="true" label="PATH" key="PATH">${VJ_BASE_DIR}/bin:${PATH}</env_var>
+            <env_var class="" visible="true" label="LD_LIBRARY_PATH" key="LD_LIBRARY_PATH">${VJ_BASE_DIR}/lib:${LD_LIBRARY_PATH}</env_var>
+          </group>
+          <group label="VR Juggler 2.2">
+            <env_var class="" visible="true" label="VR Juggler Location" key="VJ_BASE_DIR">/path/to/vrjuggler2.2</env_var>
+            <env_var class="" visible="true" label="PATH" key="PATH">${VJ_BASE_DIR}/bin:${PATH}</env_var>
+            <env_var class="" visible="true" label="LD_LIBRARY_PATH" key="LD_LIBRARY_PATH">${VJ_BASE_DIR}/lib:${LD_LIBRARY_PATH}</env_var>
+          </group>
+        </choice>
+        <choice label="Debug Output Level" parent_path="" tooltip="" type="one">
+           <env_var class="" visible="false" editable="false" label="Critical Messages" key="VPR_DEBUG_NFY_LEVEL">0</env_var>
+           <env_var class="" visible="false" editable="false" label="Warning Messages" key="VPR_DEBUG_NFY_LEVEL">1</env_var>
+           <env_var class="" visible="false" editable="false" label="System Configuration Results" key="VPR_DEBUG_NFY_LEVEL">2</env_var>
+           <env_var class="" visible="false" editable="false" label="System Configuration Details" key="VPR_DEBUG_NFY_LEVEL">3</env_var>
+           <env_var class="" visible="false" editable="false" label="State Changes" key="VPR_DEBUG_NFY_LEVEL">4</env_var>
+           <env_var class="" visible="false" editable="false" label="Verbose" key="VPR_DEBUG_NFY_LEVEL">5</env_var>
+           <env_var class="" visible="false" editable="false" label="Highly Verbose" key="VPR_DEBUG_NFY_LEVEL">6</env_var>
+           <env_var class="" visible="false" editable="false" label="Detailed" key="VPR_DEBUG_NFY_LEVEL">7</env_var>
+           <env_var class="" visible="true" editable="false" label="Hexidecimal" key="VPR_DEBUG_NFY_LEVEL">8</env_var>
+           <env_var class="" visible="true" editable="true" label="Other" key="VPR_DEBUG_NFY_LEVEL">0</env_var>
+        </choice>
+      </app>
+      <app label="Test1" global_options="VR Juggler 2.0" tooltip="Test 1" helpUrl="">
+      </app>
+    </applications>
+    <global_options>
+       <global_option label="Configuration Files">
+         <choice label="VR Juggler Configuration" parent_path="Configuration Files" tooltip="" type="one">
+          <group label="Simulator Configuration">
+            <arg label="Simulator Configuration" class="Linux,master" flag="-j">/home/dmns/jconf/sim_joystick.jconf</arg>
+          </group>
+          <group label="Dome Configuration">
+            <arg label="Dome Configuration" class="Linux,master" flag="-j">/home/dmns/jconf/cluster_joystick.jconf</arg>
+          </group>
+        </choice>
+       </global_option>
+       <global_option label="VR Juggler 2.0">
+          <env_var class="" label="VR Juggler Location" key="VJ_BASE_DIR">/path/to/vrjuggler2.0</env_var>
+          <env_var class="" label="PATH" key="PATH">${VJ_BASE_DIR}/bin:${PATH}</env_var>
+          <env_var class="" label="LD_LIBRARY_PATH" key="LD_LIBRARY_PATH">${VJ_BASE_DIR}/lib:${LD_LIBRARY_PATH}</env_var>
+       </global_option>
+    </global_options>
+    <controls>
+      <action name="Test" command="/usr/X11R6/bin/xset" tooltip="Test"/>
+    </controls>
+  </launcher>
+  <!--
+  <cluster_node name="infiscape1" hostname="infiscape1" sub_class="master"/>
+  <cluster_node name="infiscape2" hostname="infiscape2" sub_class="master"/>
+  -->
+  <cluster_node name="infiscape3" hostname="infiscape3" sub_class="master"/>
+</cluster_config>
