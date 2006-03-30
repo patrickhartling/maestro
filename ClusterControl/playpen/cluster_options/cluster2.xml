@@ -18,7 +18,7 @@
             </choice>
           </group>
         </choice>
-        <choice label="VR Juggler Version">
+        <choice label="VR Juggler Version" type="one">
           <group label="VR Juggler 2.0">
             <env_var class="" visible="true" label="VR Juggler Location" key="VJ_BASE_DIR">/path/to/vrjuggler2.0</env_var>
             <env_var class="" visible="true" label="PATH" key="PATH">${VJ_BASE_DIR}/bin:${PATH}</env_var>
@@ -31,7 +31,7 @@
           </group>
         </choice>
         <choice label="Debug Output Level" parent_path="" tooltip="" type="one">
-           <env_var class="" visible="false" editable="false" label="Critical Messages" key="VPR_DEBUG_NFY_LEVEL">0</env_var>
+           <env_var class="" visible="false" selected="true" editable="false" label="Critical Messages" key="VPR_DEBUG_NFY_LEVEL">0</env_var>
            <env_var class="" visible="false" editable="false" label="Warning Messages" key="VPR_DEBUG_NFY_LEVEL">1</env_var>
            <env_var class="" visible="false" editable="false" label="System Configuration Results" key="VPR_DEBUG_NFY_LEVEL">2</env_var>
            <env_var class="" visible="false" editable="false" label="System Configuration Details" key="VPR_DEBUG_NFY_LEVEL">3</env_var>

@@ -120,10 +120,13 @@ class ClusterEditor(QtGui.QWidget, ClusterEditorBase.Ui_ClusterEditor):
       #self.appSpecificLayouts = []
 
 
+NO_BUTTON = 0
+RADIO_BUTTON = 1
+CHECK_BUTTON = 2
 
-def _buildWidget(obj):
+def _buildWidget(obj, buttonType = NO_BUTTON):
    name = obj.getName()
-
+   widget = None
    if isinstance(obj, ClusterModel.Application):
       pass
    #   print "Building Application Sheet... ", name
@@ -135,107 +138,105 @@ def _buildWidget(obj):
    #   print "Building Global Option Sheet... ", name
    elif isinstance(obj, ClusterModel.Group):
       print "Building Group Sheet... ", name
-      sh = GroupSheet(obj)
-      return sh
+      widget = GroupSheet(obj, buttonType)
    elif isinstance(obj, ClusterModel.Choice):
       print "Building Choice Sheet... ", name
-      sh = ChoiceSheet(obj)
-      return sh
+      widget = ChoiceSheet(obj, buttonType)
    if isinstance(obj, ClusterModel.Arg):
       print "Building Arg Sheet... ", name
-      sh = ArgSheet(obj)
-      return sh
+      widget = ArgSheet(obj, buttonType)
    elif isinstance(obj, ClusterModel.Command):
       print "Building Command Sheet... ", name
-      sh = CommandSheet(obj)
-      return sh
+      widget = CommandSheet(obj, buttonType)
    elif isinstance(obj, ClusterModel.Cwd):
       print "Building CWD Sheet... ", name
-      sh = CwdSheet(obj)
-      return sh
+      widget = CwdSheet(obj, buttonType)
    elif isinstance(obj, ClusterModel.EnvVar):
       print "Building EnvVar Sheet... ", name
-      sh = EnvVarSheet(obj)
-      return sh
+      widget = EnvVarSheet(obj, buttonType)
+   widget.config()
+   return widget
 
-class ChoiceSheet(QtGui.QFrame):
-   def __init__(self, obj, parent = None):
-      QtGui.QFrame.__init__(self, parent)
-
+class Sheet(QtGui.QWidget):
+   def __init__(self, obj, buttonType, parent = None):
+      QtGui.QWidget.__init__(self, parent)
+      
       self.mObj = obj
+      
+      if RADIO_BUTTON == buttonType:
+         self.mLabel = QtGui.QRadioButton(self)
+      elif CHECK_BUTTON == buttonType:
+         self.mLabel = QtGui.QCheckBox(self)
+      else:
+         self.mLabel = QtGui.QLabel(self)
+
+   def config(self):
+      if isinstance(self.mLabel, QtGui.QAbstractButton):
+         self.connect(self.mLabel, QtCore.SIGNAL("toggled(bool)"), self.onToggled)
+         self.mLabel.setChecked(self.mObj.mSelected)
+         self.setEnabled(self.mObj.mSelected)
+         
+   def setEnabled(self, val):
+      pass
+
+   def onToggled(self, val):
+      print "Changing selected state[%s]: %s" % (self.mObj.getName(), val)
+      self.mObj.mSelected = val
+      self.setEnabled(val)
+
+class ChoiceSheet(Sheet):
+   def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
+      Sheet.__init__(self, obj, buttonType, parent)
+
       self.mSelectedFrame = None
 
       # XXX: Might want to put some where else.
       self.setupUi()
-      self._fillCombo()
-      self.connect(self.mChoice, QtCore.SIGNAL("activated(int)"), self.choiceSelected)
+      self.mOptionSheets = []
+      self._fillForm()
 
    def setupUi(self):
-
       self.gridlayout = QtGui.QGridLayout(self)
       self.gridlayout.setMargin(1)
       self.gridlayout.setSpacing(1)
       self.gridlayout.setObjectName("gridlayout")
       
-      self.mChoiceLabel = QtGui.QLabel(self)
-      
-      sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(5),QtGui.QSizePolicy.Policy(5))
-      sizePolicy.setHorizontalStretch(0)
-      sizePolicy.setVerticalStretch(0)
-      sizePolicy.setHeightForWidth(self.mChoiceLabel.sizePolicy().hasHeightForWidth())
-      self.mChoiceLabel.setSizePolicy(sizePolicy)
-      self.mChoiceLabel.setObjectName("mChoiceLabel")
-      self.mChoiceLabel.setText(self.mObj.mLabel)
-      self.gridlayout.addWidget(self.mChoiceLabel,0,0,1,2)
+      self.mLabel.setObjectName("mChoiceLabel")
+      self.mLabel.setText(self.mObj.mLabel)
+      self.gridlayout.addWidget(self.mLabel,0,0,1,2)
       
       spacerItem = QtGui.QSpacerItem(40,20,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Minimum)
       self.gridlayout.addItem(spacerItem,1,0,1,1)
       
-      self.mChoice = QtGui.QComboBox(self)
-      
-      sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(3),QtGui.QSizePolicy.Policy(0))
-      sizePolicy.setHorizontalStretch(0)
-      sizePolicy.setVerticalStretch(0)
-      sizePolicy.setHeightForWidth(self.mChoice.sizePolicy().hasHeightForWidth())
-      self.mChoice.setSizePolicy(sizePolicy)
-      self.mChoice.setObjectName("mChoice")
-      self.gridlayout.addWidget(self.mChoice,0,2,1,1)
-
-   def _fillCombo(self):
+   def _fillForm(self):
+      current_row = 1
+      self.mButtonGroup = QtGui.QButtonGroup()
       for c in self.mObj.mChildren:
          print c.getName()
-         self.mChoice.addItem(c.getName())
-   
-      if len(self.mObj.mChildren) > 0:
-         self.mChoice.setCurrentIndex(0)
-         self._setChoice(0)
-      else:
-         print "ERROR: No choices defined!"
-         QApplication.exit(0)
 
-   
-   def choiceSelected(self):
-     self._setChoice(self.mChoice.currentIndex())
+         # Create the correct type of sheets.
+         if self.mObj.mChoiceType == ClusterModel.ONE:
+            w = _buildWidget(c, RADIO_BUTTON)
+         elif self.mObj.mChoiceType == ClusterModel.ANY:
+            w = _buildWidget(c, CHECK_BUTTON)
+         else:
+            w = _buildWidget(c, NO_BUTTON)
+         
+         # Get label from sheet to add to group if needed.
+         lbl = w.mLabel
+         if self.mObj.mChoiceType == ClusterModel.ONE \
+               and lbl is not None \
+               and isinstance(lbl, QtGui.QAbstractButton):
+            self.mButtonGroup.addButton(lbl)
+         
+         self.mOptionSheets.append(w)
+         w.setParent(self)
+         self.gridlayout.addWidget(w,current_row,1,1,2)
+         current_row += 1
 
-   def _setChoice(self, index):
-      if self.mSelectedFrame is not None:
-         self.layout().removeWidget(self.mSelectedFrame)
-         self.mSelectedFrame.deleteLater()
-
-      self.mSelectedFrame = None
-      # XXX: Add error testing
-      self.mObj.mSelected = index
-      obj = self.mObj.mChildren[index]
-      if obj is not None and obj.mVisible:
-         self.mSelectedFrame = _buildWidget(obj)
-         self.mSelectedFrame.setParent(self)
-         self.gridlayout.addWidget(self.mSelectedFrame,1,1,1,2)
-      
-class GroupSheet(QtGui.QGroupBox):
-   def __init__(self, obj, parent = None):
-      QtGui.QFrame.__init__(self, parent)
-
-      self.mObj = obj
+class GroupSheet(Sheet):
+   def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
+      Sheet.__init__(self, obj, buttonType, parent)
 
       #sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(3),QtGui.QSizePolicy.Policy(3))
       #sizePolicy.setHorizontalStretch(0)
@@ -250,26 +251,39 @@ class GroupSheet(QtGui.QGroupBox):
       self.setupUi()
 
    def setupUi(self):
-      self.setTitle(self.mObj.mLabel)
+      self.hboxlayout = QtGui.QHBoxLayout(self)
+      self.hboxlayout.setMargin(1)
+      self.hboxlayout.setSpacing(1)
+      self.hboxlayout.setObjectName("hboxlayout1")
 
-      self.vboxlayout1 = QtGui.QVBoxLayout(self)
+      # If we have a selection button, then use it.
+      if self.mLabel is not None:
+         self.hboxlayout.addWidget(self.mLabel)
+
+      # Create group box to contain all sub options.
+      self.mGroupBox = QtGui.QGroupBox(self)
+      self.hboxlayout.addWidget(self.mGroupBox)
+      self.mGroupBox.setTitle(self.mObj.mLabel)
+
+      # Create layout for group box.
+      self.vboxlayout1 = QtGui.QVBoxLayout(self.mGroupBox)
       self.vboxlayout1.setMargin(1)
       self.vboxlayout1.setSpacing(1)
       self.vboxlayout1.setObjectName("vboxlayout1")
 
+      # Add all sub options to group box.
       for c in self.mObj.mChildren:
          if c.mVisible:
             sh = _buildWidget(c)
-            sh.setParent(self);
-            self.layout().addWidget(sh)
-            #self.mAppSpecificWidgets.append(sh)
-            #sh.show()
+            sh.setParent(self.mGroupBox);
+            self.mGroupBox.layout().addWidget(sh)
 
-class CommandSheet(QtGui.QWidget):
-   def __init__(self, obj, parent = None):
-      QtGui.QFrame.__init__(self, parent)
+   def setEnabled(self, val):
+      self.mGroupBox.setEnabled(val)
 
-      self.mObj = obj
+class CommandSheet(Sheet):
+   def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
+      Sheet.__init__(self, obj, buttonType, parent)
 
       # XXX: Might want to put some where else.
       self.setupUi()
@@ -280,11 +294,10 @@ class CommandSheet(QtGui.QWidget):
       self.hboxlayout.setSpacing(1)
       self.hboxlayout.setObjectName("hboxlayout")
       
-      self.mCommandLabel = QtGui.QLabel(self)
-      self.mCommandLabel.setObjectName("mCommandLabel")
+      self.mLabel.setObjectName("mCommandLabel")
       command_text = "Command [" + self.mObj.mClass + "]:"
-      self.mCommandLabel.setText(command_text)
-      self.hboxlayout.addWidget(self.mCommandLabel)
+      self.mLabel.setText(command_text)
+      self.hboxlayout.addWidget(self.mLabel)
       
       self.mCommand = QtGui.QLineEdit(self)
       self.mCommand.setObjectName("mCommand")
@@ -293,15 +306,17 @@ class CommandSheet(QtGui.QWidget):
       self.hboxlayout.addWidget(self.mCommand)
       self.connect(self.mCommand, QtCore.SIGNAL("editingFinished()"),self.onEdited)
 
+   def setEnabled(self, val):
+      self.mCommand.setEnabled(val)
+
    def onEdited(self):
       print self.mCommand.text()
       self.mObj.mValue = self.mCommand.text()
 
-class CwdSheet(QtGui.QWidget):
-   def __init__(self, obj, parent = None):
+class CwdSheet(Sheet):
+   def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
       QtGui.QFrame.__init__(self, parent)
-
-      self.mObj = obj
+      Sheet.__init__(self, obj, buttonType, parent)
 
       # XXX: Might want to put some where else.
       self.setupUi()
@@ -312,11 +327,10 @@ class CwdSheet(QtGui.QWidget):
       self.hboxlayout.setSpacing(1)
       self.hboxlayout.setObjectName("hboxlayout")
       
-      self.mCwdLabel = QtGui.QLabel(self)
-      self.mCwdLabel.setObjectName("mCurrentWorkingDirLabel")
+      self.mLabel.setObjectName("mCurrentWorkingDirLabel")
       command_text = "Current Working Directory [" + self.mObj.mClass + "]:"
-      self.mCwdLabel.setText(command_text)
-      self.hboxlayout.addWidget(self.mCwdLabel)
+      self.mLabel.setText(command_text)
+      self.hboxlayout.addWidget(self.mLabel)
       
       self.mCwd = QtGui.QLineEdit(self)
       self.mCwd.setObjectName("mCwd")
@@ -325,15 +339,16 @@ class CwdSheet(QtGui.QWidget):
       self.hboxlayout.addWidget(self.mCwd)
       self.connect(self.mCwd, QtCore.SIGNAL("editingFinished()"),self.onEdited)
 
+   def setEnabled(self, val):
+      self.mCwd.setEnabled(val)
+
    def onEdited(self):
       print self.mCwd.text()
       self.mObj.mValue = self.mCwd.text()
 
-class ArgSheet(QtGui.QWidget):
-   def __init__(self, obj, parent = None):
-      QtGui.QFrame.__init__(self, parent)
-
-      self.mObj = obj
+class ArgSheet(Sheet):
+   def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
+      Sheet.__init__(self, obj, buttonType, parent)
 
       # XXX: Might want to put some where else.
       self.setupUi()
@@ -344,11 +359,10 @@ class ArgSheet(QtGui.QWidget):
       self.hboxlayout.setSpacing(1)
       self.hboxlayout.setObjectName("hboxlayout")
       
-      self.mArgLabel = QtGui.QLabel(self)
-      self.mArgLabel.setObjectName("mCurrentWorkingDirLabel")
+      self.mLabel.setObjectName("mCurrentWorkingDirLabel")
       command_text = self.mObj.mLabel + "[" + self.mObj.mClass + "]:"
-      self.mArgLabel.setText(command_text)
-      self.hboxlayout.addWidget(self.mArgLabel)
+      self.mLabel.setText(command_text)
+      self.hboxlayout.addWidget(self.mLabel)
       
       self.mArg = QtGui.QLineEdit(self)
       self.mArg.setObjectName("mArg")
@@ -357,15 +371,16 @@ class ArgSheet(QtGui.QWidget):
       self.hboxlayout.addWidget(self.mArg)
       self.connect(self.mArg, QtCore.SIGNAL("editingFinished()"),self.onEdited)
 
+   def setEnabled(self, val):
+      self.mArg.setEnabled(val)
+
    def onEdited(self):
       print self.mArg.text()
       self.mObj.mValue = self.mArg.text()
 
-class EnvVarSheet(QtGui.QWidget):
-   def __init__(self, obj, parent = None):
-      QtGui.QFrame.__init__(self, parent)
-
-      self.mObj = obj
+class EnvVarSheet(Sheet):
+   def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
+      Sheet.__init__(self, obj, buttonType, parent)
 
       # XXX: Might want to put some where else.
       self.setupUi()
@@ -376,11 +391,11 @@ class EnvVarSheet(QtGui.QWidget):
       self.hboxlayout.setSpacing(1)
       self.hboxlayout.setObjectName("hboxlayout")
       
-      self.mEnvVarLabel = QtGui.QLabel(self)
-      self.mEnvVarLabel.setObjectName("mCurrentWorkingDirLabel")
       command_text = self.mObj.mLabel + "[" + self.mObj.mClass + "]:"
-      self.mEnvVarLabel.setText(command_text)
-      self.hboxlayout.addWidget(self.mEnvVarLabel)
+      self.mLabel.setObjectName("mCurrentWorkingDirLabel")
+      self.mLabel.setText(command_text)
+      self.hboxlayout.addWidget(self.mLabel)
+         
       
       self.mEnvVar = QtGui.QLineEdit(self)
       self.mEnvVar.setObjectName("mEnvVar")
@@ -388,6 +403,9 @@ class EnvVarSheet(QtGui.QWidget):
       self.mEnvVar.setEnabled(self.mObj.mEditable)
       self.hboxlayout.addWidget(self.mEnvVar)
       self.connect(self.mEnvVar, QtCore.SIGNAL("editingFinished()"),self.onEdited)
+
+   def setEnabled(self, val):
+      self.mEnvVar.setEnabled(val)
 
    def onEdited(self):
       print self.mEnvVar.text()

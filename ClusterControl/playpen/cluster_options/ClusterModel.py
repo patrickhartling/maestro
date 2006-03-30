@@ -12,6 +12,16 @@ class TreeItem:
       self.mRow = row
       self.mChildren = []
       self.mVisible = True
+      self.mSelected = False
+
+      # Can the user edit the arg value
+      selected = xmlElt.get("selected")
+      if selected == "" or selected == None:
+         self.mSelected = False
+      elif selected == "true" or selected == "1":
+         self.mSelected = True
+      else:
+         self.mSelected = False
 
       elts = xmlElt.getchildren()
       if elts is not None:
@@ -241,14 +251,16 @@ class Group(TreeItem):
       return "<Group: label:%s>" % (self.mLabel)
 
 
+ANY = 0
+ONE = 1
+
 class Choice(TreeItem):
    def __init__(self, xmlElt, parent, row):
       TreeItem.__init__(self, xmlElt, parent, row)
       self.mLabel = "Unknown"
       self.mParentPath = ""
       self.mTooltip = "Unknown"
-      self.mType = "Unknown"
-      self.mSelected = 0
+      self.mChoiceType = ANY
 
       label = xmlElt.get("label")
       if None is not label:
@@ -263,8 +275,8 @@ class Choice(TreeItem):
          self.mTooltip = tooltip
 
       type = xmlElt.get("type")
-      if None is not type:
-         self.mType = type
+      if type is not None and type == "one":
+         self.mChoiceType = ONE
 
    def dataCount(self):
       return 4
@@ -292,7 +304,7 @@ class Choice(TreeItem):
             if 0 == column:
                return QtCore.QVariant("Type")
             if 1 == column:
-               return QtCore.QVariant(str(self.mType))
+               return QtCore.QVariant(str(self.mChoiceType))
       return QtCore.QVariant()
 
    def setData(self, index, value, role):
@@ -304,7 +316,7 @@ class Choice(TreeItem):
       elif 2 == row:
          self.mTooltip = value.toString()
       elif 3 == row:
-         self.mType = value.toString()
+         self.mChoiceType = value.toString()
       return True
 
    def getName(self):
@@ -315,7 +327,7 @@ class Choice(TreeItem):
 
    def __repr__(self):
       return "<Choice: label:%s parent_path: %s tooltip: %s type: %s>"\
-               % (self.mLabel, self.mParentPath, self.mTooltip, self.mType)
+               % (self.mLabel, self.mParentPath, self.mTooltip, self.mChoiceType)
 
 class Arg(TreeItem):
    def __init__(self, xmlElt, parent, row):
