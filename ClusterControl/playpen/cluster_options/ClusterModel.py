@@ -223,6 +223,15 @@ class Group(TreeItem):
       label = xmlElt.get("label")
       if None is not label:
          self.mLabel = label
+   
+      # Can the user see the arg value
+      visible = xmlElt.get("visible")
+      if visible == "" or visible == None:
+         self.mVisible = True
+      elif visible == "false" or visible == "0":
+         self.mVisible = False
+      else:
+         self.mVisible = True
 
    def dataCount(self):
       return 1
@@ -253,6 +262,7 @@ class Group(TreeItem):
 
 ANY = 0
 ONE = 1
+ONE_CB = 2
 
 class Choice(TreeItem):
    def __init__(self, xmlElt, parent, row):
@@ -277,6 +287,8 @@ class Choice(TreeItem):
       type = xmlElt.get("type")
       if type is not None and type == "one":
          self.mChoiceType = ONE
+      if type is not None and type == "one_cb":
+         self.mChoiceType = ONE_CB
 
    def dataCount(self):
       return 4
