@@ -139,25 +139,30 @@ def _buildWidget(obj, buttonType = NO_BUTTON):
    elif isinstance(obj, ClusterModel.Group):
       print "Building Group Sheet... ", name
       widget = GroupSheet(obj, buttonType)
+      widget.config()
    elif isinstance(obj, ClusterModel.Choice):
       print "Building Choice Sheet... ", name
       if obj.mChoiceType == ClusterModel.ONE_CB:
          widget = ChoiceSheetCB(obj, buttonType)
       else:
          widget = ChoiceSheet(obj, buttonType)
+      widget.config()
    if isinstance(obj, ClusterModel.Arg):
       print "Building Arg Sheet... ", name
-      widget = ArgSheet(obj, buttonType)
+      widget = ValueSheet(obj, buttonType)
+      widget.config(obj.mLabel)
    elif isinstance(obj, ClusterModel.Command):
       print "Building Command Sheet... ", name
-      widget = CommandSheet(obj, buttonType)
+      widget = ValueSheet(obj, buttonType)
+      widget.config("Command")
    elif isinstance(obj, ClusterModel.Cwd):
       print "Building CWD Sheet... ", name
-      widget = CwdSheet(obj, buttonType)
+      widget = ValueSheet(obj, buttonType)
+      widget.config("Current Working Directory")
    elif isinstance(obj, ClusterModel.EnvVar):
       print "Building EnvVar Sheet... ", name
-      widget = EnvVarSheet(obj, buttonType)
-   widget.config()
+      widget = ValueSheet(obj, buttonType)
+      widget.config(obj.mLabel)
    return widget
 
 class Sheet(QtGui.QWidget):
@@ -180,10 +185,15 @@ class Sheet(QtGui.QWidget):
          self.setEnabled(self.mObj.mSelected)
          
    def setEnabled(self, val):
-      pass
+      if val:
+         self.mLabel.palette().setColor(QtGui.QPalette.Foreground,
+            self.mLabel.palette().buttonText().color())
+      else:
+         self.mLabel.palette().setColor(QtGui.QPalette.Foreground,
+            self.mLabel.palette().dark().color())
+      self.mLabel.update()
 
    def onToggled(self, val):
-      print "Changing selected state[%s]: %s" % (self.mObj.getName(), val)
       self.mObj.mSelected = val
       self.setEnabled(val)
 
@@ -212,6 +222,7 @@ class ChoiceSheet(Sheet):
       self.gridlayout.addItem(spacerItem,1,0,1,1)
 
    def setEnabled(self, val):
+      Sheet.setEnabled(self, val)
       for w in self.mOptionSheets:
          w.setEnabled(val)
       
@@ -255,6 +266,7 @@ class ChoiceSheetCB(Sheet):
       self.connect(self.mChoice, QtCore.SIGNAL("activated(int)"), self.choiceSelected)
 
    def setEnabled(self, val):
+      Sheet.setEnabled(self, val)
       if mSelectedFrame is not None:
          mSelectedFrame.setEnabled(val)
          mSavedEnableState = val
@@ -266,25 +278,19 @@ class ChoiceSheetCB(Sheet):
       self.gridlayout.setSpacing(1)
       self.gridlayout.setObjectName("gridlayout")
       
-      #sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(5),QtGui.QSizePolicy.Policy(5))
-      #sizePolicy.setHorizontalStretch(0)
-      #sizePolicy.setVerticalStretch(0)
-      #sizePolicy.setHeightForWidth(self.mLabel.sizePolicy().hasHeightForWidth())
-      #self.mLabel.setSizePolicy(sizePolicy)
       self.mLabel.setObjectName("mChoiceLabel")
-      self.mLabel.setText(self.mObj.mLabel)
+      self.mLabel.setText(self.mObj.mLabel + ": ")
       self.gridlayout.addWidget(self.mLabel,0,0,1,2)
       
       spacerItem = QtGui.QSpacerItem(40,20,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Minimum)
-      self.gridlayout.addItem(spacerItem,1,0,1,1)
+      self.gridlayout.addItem(spacerItem,0,0,1,1)
       
       self.mChoice = QtGui.QComboBox(self)
-      
-      sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(3),QtGui.QSizePolicy.Policy(0))
+      sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
       sizePolicy.setHorizontalStretch(0)
       sizePolicy.setVerticalStretch(0)
-      sizePolicy.setHeightForWidth(self.mChoice.sizePolicy().hasHeightForWidth())
       self.mChoice.setSizePolicy(sizePolicy)
+      
       self.mChoice.setObjectName("mChoice")
       self.gridlayout.addWidget(self.mChoice,0,2,1,1)
 
@@ -324,6 +330,8 @@ class ChoiceSheetCB(Sheet):
          self.mSelectedFrame.setParent(self)
          self.mSelectedFrame.setEnabled(True)
          self.gridlayout.addWidget(self.mSelectedFrame,1,1,1,2)
+         #self.mSelectedFrame.show()
+         self.gridlayout.update()
 
 class GroupSheet(Sheet):
    def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
@@ -342,7 +350,6 @@ class GroupSheet(Sheet):
       if self.mLabel is not None:
          self.hboxlayout.addWidget(self.mLabel)
 
-      print "TEST",  self.mObj.mVisible
       if self.mObj.mVisible == True:
          # Create group box to contain all sub options.
          self.mGroupBox = QtGui.QGroupBox(self)
@@ -363,137 +370,43 @@ class GroupSheet(Sheet):
                self.mGroupBox.layout().addWidget(sh)
 
    def setEnabled(self, val):
+      Sheet.setEnabled(self, val)
       self.mGroupBox.setEnabled(val)
 
-class CommandSheet(Sheet):
+class ValueSheet(Sheet):
    def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
       Sheet.__init__(self, obj, buttonType, parent)
 
-      # XXX: Might want to put some where else.
-      self.setupUi()
+      # Create layout to use for sheet.
+      self.mLayout = QtGui.QHBoxLayout(self)
+      self.mLayout.setMargin(1)
+      self.mLayout.setSpacing(1)
+      self.mLayout.addWidget(self.mLabel)
 
-   def setupUi(self):
-      self.hboxlayout = QtGui.QHBoxLayout(self)
-      self.hboxlayout.setMargin(1)
-      self.hboxlayout.setSpacing(1)
-      self.hboxlayout.setObjectName("hboxlayout")
-      
-      self.mLabel.setObjectName("mCommandLabel")
-      command_text = "Command [" + self.mObj.mClass + "]:"
+      # Create editor if we want to allow the user to edit the value
+      # or we are in advanced mode.
+      if (self.mObj.mEditable or True):
+         self.mValueEditor = QtGui.QLineEdit(self)
+         self.mValueEditor.setText(self.mObj.mValue)
+         self.mValueEditor.setEnabled(self.mObj.mEditable)
+         self.mLayout.addWidget(self.mValueEditor)
+         self.connect(self.mValueEditor, QtCore.SIGNAL("editingFinished()"),self.onEdited)
+
+   def config(self, text):
+      Sheet.config(self)
+      command_text = text + " [" + self.mObj.mClass + "]:"
       self.mLabel.setText(command_text)
-      self.hboxlayout.addWidget(self.mLabel)
-      
-      self.mCommand = QtGui.QLineEdit(self)
-      self.mCommand.setObjectName("mCommand")
-      self.mCommand.setText(self.mObj.mValue)
-      self.mCommand.setEnabled(self.mObj.mEditable)
-      self.hboxlayout.addWidget(self.mCommand)
-      self.connect(self.mCommand, QtCore.SIGNAL("editingFinished()"),self.onEdited)
 
    def setEnabled(self, val):
-      self.mCommand.setEnabled(val and self.mObj.mEditable)
+      Sheet.setEnabled(self, val)
+      enable = val and self.mObj.mEditable
+      if self.mValueEditor:
+         self.mValueEditor.setEnabled(enable)
 
    def onEdited(self):
-      print self.mCommand.text()
-      self.mObj.mValue = self.mCommand.text()
-
-class CwdSheet(Sheet):
-   def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
-      QtGui.QFrame.__init__(self, parent)
-      Sheet.__init__(self, obj, buttonType, parent)
-
-      # XXX: Might want to put some where else.
-      self.setupUi()
-
-   def setupUi(self):
-      self.hboxlayout = QtGui.QHBoxLayout(self)
-      self.hboxlayout.setMargin(1)
-      self.hboxlayout.setSpacing(1)
-      self.hboxlayout.setObjectName("hboxlayout")
-      
-      self.mLabel.setObjectName("mCurrentWorkingDirLabel")
-      command_text = "Current Working Directory [" + self.mObj.mClass + "]:"
-      self.mLabel.setText(command_text)
-      self.hboxlayout.addWidget(self.mLabel)
-      
-      self.mCwd = QtGui.QLineEdit(self)
-      self.mCwd.setObjectName("mCwd")
-      self.mCwd.setText(self.mObj.mValue)
-      self.mCwd.setEnabled(self.mObj.mEditable)
-      self.hboxlayout.addWidget(self.mCwd)
-      self.connect(self.mCwd, QtCore.SIGNAL("editingFinished()"),self.onEdited)
-
-   def setEnabled(self, val):
-      self.mCwd.setEnabled(val and self.mObj.mEditable)
-
-   def onEdited(self):
-      print self.mCwd.text()
-      self.mObj.mValue = self.mCwd.text()
-
-class ArgSheet(Sheet):
-   def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
-      Sheet.__init__(self, obj, buttonType, parent)
-
-      # XXX: Might want to put some where else.
-      self.setupUi()
-
-   def setupUi(self):
-      self.hboxlayout = QtGui.QHBoxLayout(self)
-      self.hboxlayout.setMargin(1)
-      self.hboxlayout.setSpacing(1)
-      self.hboxlayout.setObjectName("hboxlayout")
-      
-      self.mLabel.setObjectName("mCurrentWorkingDirLabel")
-      command_text = self.mObj.mLabel + "[" + self.mObj.mClass + "]:"
-      self.mLabel.setText(command_text)
-      self.hboxlayout.addWidget(self.mLabel)
-      
-      self.mArg = QtGui.QLineEdit(self)
-      self.mArg.setObjectName("mArg")
-      self.mArg.setText(self.mObj.mValue)
-      self.mArg.setEnabled(self.mObj.mEditable)
-      self.hboxlayout.addWidget(self.mArg)
-      self.connect(self.mArg, QtCore.SIGNAL("editingFinished()"),self.onEdited)
-
-   def setEnabled(self, val):
-      self.mArg.setEnabled(val and self.mObj.mEditable)
-
-   def onEdited(self):
-      print self.mArg.text()
-      self.mObj.mValue = self.mArg.text()
-
-class EnvVarSheet(Sheet):
-   def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
-      Sheet.__init__(self, obj, buttonType, parent)
-
-      # XXX: Might want to put some where else.
-      self.setupUi()
-
-   def setupUi(self):
-      self.hboxlayout = QtGui.QHBoxLayout(self)
-      self.hboxlayout.setMargin(1)
-      self.hboxlayout.setSpacing(1)
-      self.hboxlayout.setObjectName("hboxlayout")
-      
-      command_text = self.mObj.mLabel + "[" + self.mObj.mClass + "]:"
-      self.mLabel.setObjectName("mCurrentWorkingDirLabel")
-      self.mLabel.setText(command_text)
-      self.hboxlayout.addWidget(self.mLabel)
-         
-      
-      self.mEnvVar = QtGui.QLineEdit(self)
-      self.mEnvVar.setObjectName("mEnvVar")
-      self.mEnvVar.setText(self.mObj.mValue)
-      self.mEnvVar.setEnabled(self.mObj.mEditable)
-      self.hboxlayout.addWidget(self.mEnvVar)
-      self.connect(self.mEnvVar, QtCore.SIGNAL("editingFinished()"),self.onEdited)
-
-   def setEnabled(self, val):
-      self.mEnvVar.setEnabled(val and self.mObj.mEditable)
-
-   def onEdited(self):
-      print self.mEnvVar.text()
-      self.mObj.mValue = self.mEnvVar.text()
+      if self.mValueEditor:
+         print self.mValueEditor.text()
+         self.mObj.mValue = self.mValueEditor.text()
 
 def main():
    try:
