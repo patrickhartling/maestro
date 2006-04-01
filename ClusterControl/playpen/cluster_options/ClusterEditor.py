@@ -24,6 +24,15 @@ class ClusterEditor(QtGui.QWidget, ClusterEditorBase.Ui_ClusterEditor):
       #self.mParentDelegate = ClusterModel.ParentDelegate()
       #self.mTreeView.setItemDelegate(self.mParentDelegate)
       self.connect(self.mAppComboBox,QtCore.SIGNAL("activated(int)"),self.onAppSelect)
+      self.connect(self.mAddBtn, QtCore.SIGNAL("clicked()"), self.onClicked)
+
+   def onClicked(self):
+      option_visitor = ClusterModel.OptionVisitor()
+      ClusterModel.traverse(self.mSelectedApp, option_visitor)
+      print option_visitor.mArgs
+      print option_visitor.mCommands
+      print option_visitor.mCwds
+      print option_visitor.mEnvVars
 
    def setTree(self, tree):
       # Create cluster configuration
@@ -74,11 +83,13 @@ class ClusterEditor(QtGui.QWidget, ClusterEditorBase.Ui_ClusterEditor):
 
    def _setApplication(self, index):
       if self.mSelectedApp != None:
+         self.mSelectedApp.mSelected = False
          self._resetAppState()
 
       apps = self.mTreeModel.mAppLabel.mChildren
       assert index < len(apps)
       self.mSelectedApp = apps[index]
+      self.mSelectedApp.mSelected = True
       print "Setting application [%s] [%s]" % (index, self.mSelectedApp.getName())
       """
       sh = QtGui.QFrame()
@@ -99,6 +110,8 @@ class ClusterEditor(QtGui.QWidget, ClusterEditorBase.Ui_ClusterEditor):
       sh.show()
       """
       for c in self.mSelectedApp.mChildren:
+         # All top level objects are selected by default.
+         c.mSelected = True
          if c.mVisible:
             sh = _buildWidget(c)
             sh.setParent(self.mLaunchFrame);
@@ -198,6 +211,7 @@ class Sheet(QtGui.QWidget):
       self.mLabel.update()
 
    def onToggled(self, val):
+      print "Setting [%s] selected: %s" % (self.mObj.getName(), val)
       self.mObj.mSelected = val
       self.setEnabled(val)
 
@@ -234,7 +248,6 @@ class ChoiceSheet(Sheet):
       current_row = 1
       self.mButtonGroup = QtGui.QButtonGroup()
       for c in self.mObj.mChildren:
-         print c.getName()
 
          # Create the correct type of sheets.
          if self.mObj.mChoiceType == ClusterModel.ONE:
@@ -262,6 +275,7 @@ class ChoiceSheetCB(Sheet):
 
       self.mObj = obj
       self.mSelectedFrame = None
+      self.mSelectedObject = None
       self.mSavedEnableState = False
 
       # XXX: Might want to put some where else.
@@ -302,7 +316,6 @@ class ChoiceSheetCB(Sheet):
       selected_index = 0
       i = 0
       for c in self.mObj.mChildren:
-         print c.getName()
          self.mChoice.addItem(c.getName())
          if c.mSelected:
             selected_index = i
@@ -320,14 +333,19 @@ class ChoiceSheetCB(Sheet):
      self._setChoice(self.mChoice.currentIndex())
 
    def _setChoice(self, index):
+      if self.mSelectedObject is not None:
+         self.mSelectedObject.mSelected = False
+         self.mSelectedObject = None
+
       if self.mSelectedFrame is not None:
          self.layout().removeWidget(self.mSelectedFrame)
          self.mSelectedFrame.deleteLater()
 
       self.mSelectedFrame = None
       # XXX: Add error testing
-      self.mObj.mSelected = index
       obj = self.mObj.mChildren[index]
+      self.mSelectedObject = obj
+      self.mSelectedObject.mSelected = True
       if obj is not None and obj.mVisible:
          if isPointless(obj):
             mSelectedFrame = None
@@ -371,6 +389,8 @@ class GroupSheet(Sheet):
 
          # Add all sub options to group box.
          for c in self.mObj.mChildren:
+            # All top level objects are selected by default.
+            c.mSelected = True
             if c.mVisible and not isPointless(c):
                sh = _buildWidget(c)
                sh.setParent(self.mGroupBox);
@@ -436,8 +456,7 @@ class ValueSheet(Sheet):
 
    def onEdited(self):
       if self.mValueEditor:
-         print self.mValueEditor.text()
-         self.mObj.mValue = self.mValueEditor.text()
+         self.mObj.mValue = str(self.mValueEditor.text())
 
 def main():
    try:

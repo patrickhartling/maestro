@@ -51,6 +51,14 @@ class TreeItem:
                print "Created: %s" % obj
                self.mChildren.append(obj)
 
+               # XXX: How should we handle this case? Should we assume that
+               #      the option should be selected?
+               if not obj.mVisible and not obj.mSelected:
+                  parent = obj.parent()
+                  if parent is not None and not isinstance(parent, Choice):
+                     print "WARNING: It is impossible to select [%s]. " \
+                            "Are you trying to hide this option?" % (obj.getName())
+
    def parent(self):
       return self.mParent
 
@@ -83,6 +91,35 @@ class TreeItem:
 
    def __repr__(self):
       assert "You must implement this method"
+
+def traverse(node, visitor):
+   if node.mSelected:
+      #print "Selected: ", node.getName()
+      visitor.visit(node)
+      for c in node.mChildren:
+         traverse(c, visitor)
+   #else:
+   #   print "NS: ", node.getName()
+
+class OptionVisitor:
+   def __init__(self):
+      self.mArgs = []
+      self.mCommands = []
+      self.mCwds = []
+      self.mEnvVars = {}
+
+   def visit(self, node):
+      assert(node.mSelected)
+      if isinstance(node, Arg):
+         self.mArgs.append(node.mFlag + " " + node.mValue)
+      elif isinstance(node, Command):
+         self.mCommands.append(node.mValue)
+      elif isinstance(node, Cwd):
+         self.mCwds.append(node.mValue)
+      elif isinstance(node, EnvVar):
+         if self.mEnvVars.has_key(node.mKey):
+            print "WARNING: Multiple values for [%s] selected." % (node.mKey)
+         self.mEnvVars[node.mKey] = node.mValue
 
 class Label(TreeItem):
    def __init__(self, xmlElt, parent, row, label):

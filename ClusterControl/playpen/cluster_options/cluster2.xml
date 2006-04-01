@@ -3,10 +3,10 @@
   <launcher title="App Launcher">
     <applications>
       <app label="Example Volume Renderer" global_options="Configuration Files,VR Juggler 2.0" tooltip="Example Volume Renderer" helpUrl="">
-        <command class="Linux" visible="false">./Denver_VolRen_vrj</command>
-        <command class="Linux,slave" visible="false">./slave_viewer</command>
-        <cwd class="Linux" visible="false">/home/dmns/Source/SimpleVolRen</cwd>
-        <choice label="VR Juggler Configuration" parent_path="Configuration Files" tooltip="" type="one_cb">
+        <command class="Linux" visible="false" selected="true">./Denver_VolRen_vrj</command>
+        <command class="Linux,slave" visible="false" selected="true">./slave_viewer</command>
+        <cwd class="Linux" visible="false" selected="true">/home/dmns/Source/SimpleVolRen</cwd>
+        <choice label="VR Juggler Configuration" parent_path="Configuration Files" tooltip="" type="one">
           <arg label="Simulator Config" visible="true" class="Linux,master" flag="-j">/home/dmns/jconf/sim.jconf</arg>
           <group label="CAVE Configuration" selected="true">
             <arg label="Base Config" visible="true" class="Linux,master" flag="-j">/home/dmns/jconf/cave.base.jconf</arg>
@@ -28,15 +28,15 @@
           </group>
         </choice>
         <choice label="VR Juggler Version" type="one_cb">
-          <group label="VR Juggler 2.0" visible="false">
-            <env_var class="" visible="false" label="VR Juggler Location" key="VJ_BASE_DIR">/path/to/vrjuggler2.0</env_var>
-            <env_var class="" visible="false" label="PATH" key="PATH">${VJ_BASE_DIR}/bin:${PATH}</env_var>
-            <env_var class="" visible="false" label="LD_LIBRARY_PATH" key="LD_LIBRARY_PATH">${VJ_BASE_DIR}/lib:${LD_LIBRARY_PATH}</env_var>
+          <group label="VR Juggler 2.0" visible="false" selected="true">
+            <env_var class="" visible="false" selected="true" label="VR Juggler Location" key="VJ_BASE_DIR">/path/to/vrjuggler2.0</env_var>
+            <env_var class="" visible="false" selected="true" label="PATH" key="PATH">${VJ_BASE_DIR}/bin:${PATH}</env_var>
+            <env_var class="" visible="false" selected="true" label="LD_LIBRARY_PATH" key="LD_LIBRARY_PATH">${VJ_BASE_DIR}/lib:${LD_LIBRARY_PATH}</env_var>
           </group>
           <group label="VR Juggler 2.2" visible="false" selected="true">
-            <env_var class="" visible="false" label="VR Juggler Location" key="VJ_BASE_DIR">/path/to/vrjuggler2.2</env_var>
-            <env_var class="" visible="false" label="PATH" key="PATH">${VJ_BASE_DIR}/bin:${PATH}</env_var>
-            <env_var class="" visible="false" label="LD_LIBRARY_PATH" key="LD_LIBRARY_PATH">${VJ_BASE_DIR}/lib:${LD_LIBRARY_PATH}</env_var>
+            <env_var class="" visible="false" selected="true" label="VR Juggler Location" key="VJ_BASE_DIR">/path/to/vrjuggler2.2</env_var>
+            <env_var class="" visible="false" selected="true" label="PATH" key="PATH">${VJ_BASE_DIR}/bin:${PATH}</env_var>
+            <env_var class="" visible="false" selected="true" label="LD_LIBRARY_PATH" key="LD_LIBRARY_PATH">${VJ_BASE_DIR}/lib:${LD_LIBRARY_PATH}</env_var>
           </group>
         </choice>
         <choice label="Debug Output Level" parent_path="" tooltip="" type="one_cb">
@@ -56,21 +56,6 @@
       </app>
     </applications>
     <global_options>
-       <global_option label="Configuration Files">
-         <choice label="VR Juggler Configuration" parent_path="Configuration Files" tooltip="" type="one">
-          <group label="Simulator Configuration">
-            <arg label="Simulator Configuration" class="Linux,master" flag="-j">/home/dmns/jconf/sim_joystick.jconf</arg>
-          </group>
-          <group label="Dome Configuration">
-            <arg label="Dome Configuration" class="Linux,master" flag="-j">/home/dmns/jconf/cluster_joystick.jconf</arg>
-          </group>
-        </choice>
-       </global_option>
-       <global_option label="VR Juggler 2.0">
-          <env_var class="" label="VR Juggler Location" key="VJ_BASE_DIR">/path/to/vrjuggler2.0</env_var>
-          <env_var class="" label="PATH" key="PATH">${VJ_BASE_DIR}/bin:${PATH}</env_var>
-          <env_var class="" label="LD_LIBRARY_PATH" key="LD_LIBRARY_PATH">${VJ_BASE_DIR}/lib:${LD_LIBRARY_PATH}</env_var>
-       </global_option>
     </global_options>
     <controls>
       <action name="Test" command="/usr/X11R6/bin/xset" tooltip="Test"/>

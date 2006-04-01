@@ -70,7 +70,7 @@ class Ui_ClusterEditor(object):
       self.vboxlayout.addWidget(self.mLaunchFrame)
       
       self.retranslateUi(ClusterEditor)
-      QtCore.QMetaObject.connectSlotsByName(ClusterEditor)
+      #QtCore.QMetaObject.connectSlotsByName(ClusterEditor)
    
    def tr(self, string):
       return QtGui.QApplication.translate("ClusterEditor", string, None, QtGui.QApplication.UnicodeUTF8)
