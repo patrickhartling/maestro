@@ -13,6 +13,7 @@ class TreeItem:
       self.mChildren = []
       self.mVisible = True
       self.mSelected = False
+      self.mEditable = True
 
       # Can the user edit the arg value
       selected = xmlElt.get("selected")

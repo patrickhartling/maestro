@@ -9,6 +9,8 @@ import ClusterEditorBase
 import ClusterModel
 import elementtree.ElementTree as ET
 
+import GlobalOptions
+
 class ClusterEditor(QtGui.QWidget, ClusterEditorBase.Ui_ClusterEditor):
    def __init__(self, parent = None):
       QtGui.QMainWindow.__init__(self, parent)
@@ -163,6 +165,8 @@ def _buildWidget(obj, buttonType = NO_BUTTON):
       print "Building EnvVar Sheet... ", name
       widget = ValueSheet(obj, buttonType)
       widget.config(obj.mLabel)
+
+   
    return widget
 
 class Sheet(QtGui.QWidget):
@@ -325,13 +329,16 @@ class ChoiceSheetCB(Sheet):
       self.mObj.mSelected = index
       obj = self.mObj.mChildren[index]
       if obj is not None and obj.mVisible:
-         self.mSelectedFrame = _buildWidget(obj)
-         self.mSelectedFrame.setEnabled(self.mSavedEnableState)
-         self.mSelectedFrame.setParent(self)
-         self.mSelectedFrame.setEnabled(True)
-         self.gridlayout.addWidget(self.mSelectedFrame,1,1,1,2)
-         #self.mSelectedFrame.show()
-         self.gridlayout.update()
+         if isPointless(obj):
+            mSelectedFrame = None
+         else:
+            self.mSelectedFrame = _buildWidget(obj)
+            self.mSelectedFrame.setEnabled(self.mSavedEnableState)
+            self.mSelectedFrame.setParent(self)
+            self.mSelectedFrame.setEnabled(True)
+            self.gridlayout.addWidget(self.mSelectedFrame,1,1,1,2)
+            #self.mSelectedFrame.show()
+            self.gridlayout.update()
 
 class GroupSheet(Sheet):
    def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
@@ -364,7 +371,7 @@ class GroupSheet(Sheet):
 
          # Add all sub options to group box.
          for c in self.mObj.mChildren:
-            if c.mVisible:
+            if c.mVisible and not isPointless(c):
                sh = _buildWidget(c)
                sh.setParent(self.mGroupBox);
                self.mGroupBox.layout().addWidget(sh)
@@ -372,6 +379,28 @@ class GroupSheet(Sheet):
    def setEnabled(self, val):
       Sheet.setEnabled(self, val)
       self.mGroupBox.setEnabled(val)
+
+      # Force the QBroupBox title to appear disabled.
+      if val:
+         self.mGroupBox.setAttribute(QtCore.Qt.WA_SetPalette, False)
+         # Don't need to set the color back.
+         #self.mGroupBox.palette().setColor(QtGui.QPalette.Foreground, \
+         #   self.mGroupBox.palette().buttonText().color())
+      else:
+         self.mGroupBox.setAttribute(QtCore.Qt.WA_SetPalette, True)
+         self.mGroupBox.palette().setColor(QtGui.QPalette.Foreground, \
+            self.mGroupBox.palette().dark().color())
+      self.mGroupBox.update()
+
+
+def isPointless(obj):
+   """ If we are not in ADVANCED user mode and an object is visible and
+       not editable then there is no point displaying it unless it is
+       in a choice.
+   """
+   user_mode = GlobalOptions.instance.mOptions["UserMode"]
+   return (GlobalOptions.ADVANCED != user_mode and obj.mVisible and not obj.mEditable)
+
 
 class ValueSheet(Sheet):
    def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
@@ -385,7 +414,9 @@ class ValueSheet(Sheet):
 
       # Create editor if we want to allow the user to edit the value
       # or we are in advanced mode.
-      if (self.mObj.mEditable or True):
+      self.mValueEditor = None
+      user_mode = GlobalOptions.instance.mOptions["UserMode"]
+      if (self.mObj.mEditable or GlobalOptions.ADVANCED == user_mode):
          self.mValueEditor = QtGui.QLineEdit(self)
          self.mValueEditor.setText(self.mObj.mValue)
          self.mValueEditor.setEnabled(self.mObj.mEditable)
