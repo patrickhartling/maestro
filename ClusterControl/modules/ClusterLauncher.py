@@ -176,6 +176,41 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
          print option_visitor.mCommands
          print option_visitor.mCwds
          print option_visitor.mEnvVars
+
+         command = ""
+         if len(option_visitor.mCommands) == 0:
+            print "ERROR: No command for node [%s].", node.getName()
+            continue
+         elif len(option_visitor.mCommands) > 1:
+            print "ERROR: More than one command for node [%s], using first command.", node.getName()
+            command = option_visitor.mCommands[0]
+         else:
+            command = option_visitor.mCommands[0]
+
+         cwd = ""
+         if len(option_visitor.mCommands) == 0:
+            print "WARNING: No working directory  for node [%s].", node.getName()
+         elif len(option_visitor.mCommands) > 1:
+            print "ERROR: More than one working directory for node [%s], using first.", node.getName()
+            cwd = option_visitor.mCwds[0]
+         else:
+            cwd = option_visitor.mCwds[0]
+
+         arg_string = ""
+         for arg in option_visitor.mArgs:
+            arg_string = arg_string + ' ' + arg
+         
+         total_command = command + arg_string
+
+         env_map = option_visitor.mEnvVars
+
+         print "\n Node [%s]" % (node.getName())
+         print "   Command   [%s]" % (command)
+         print "   Args      [%s]" % (arg_string)
+         print "   Final Cmd [%s]" % (total_command)
+         print "   Cwd       [%s]" % (cwd)
+         print "   EnvVars   [%s]" % (option_visitor.mEnvVars)
+         node.runCommand(command=total_command, cwd=cwd, envMap=env_map, outputLogger=self.mClusterModel.mOutputLogger)
       """
       for node in self.mClusterModel.mNodes:
          app = self.apps[self.selectedApp]
@@ -478,6 +513,8 @@ class GroupSheet(Sheet):
    def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
       Sheet.__init__(self, obj, buttonType, parent)
 
+      self.mGroupBox = None
+
       # XXX: Might want to put some where else.
       self.setupUi()
 
@@ -514,19 +551,21 @@ class GroupSheet(Sheet):
 
    def setEnabled(self, val):
       Sheet.setEnabled(self, val)
-      self.mGroupBox.setEnabled(val)
 
-      # Force the QBroupBox title to appear disabled.
-      if val:
-         self.mGroupBox.setAttribute(QtCore.Qt.WA_SetPalette, False)
-         # Don't need to set the color back.
-         #self.mGroupBox.palette().setColor(QtGui.QPalette.Foreground, \
-         #   self.mGroupBox.palette().buttonText().color())
-      else:
-         self.mGroupBox.setAttribute(QtCore.Qt.WA_SetPalette, True)
-         self.mGroupBox.palette().setColor(QtGui.QPalette.Foreground, \
-            self.mGroupBox.palette().dark().color())
-      self.mGroupBox.update()
+      if self.mGroupBox is not None:
+         self.mGroupBox.setEnabled(val)
+
+         # Force the QBroupBox title to appear disabled.
+         if val:
+            self.mGroupBox.setAttribute(QtCore.Qt.WA_SetPalette, False)
+            # Don't need to set the color back.
+            #self.mGroupBox.palette().setColor(QtGui.QPalette.Foreground, \
+            #   self.mGroupBox.palette().buttonText().color())
+         else:
+            self.mGroupBox.setAttribute(QtCore.Qt.WA_SetPalette, True)
+            self.mGroupBox.palette().setColor(QtGui.QPalette.Foreground, \
+               self.mGroupBox.palette().dark().color())
+         self.mGroupBox.update()
 
 
 def isPointless(obj):

@@ -1,6 +1,7 @@
 #! /usr/bin/env python2
 
 import sys, os, types, platform
+import re
 import Pyro.core
 import Pyro.naming
 
@@ -82,22 +83,88 @@ class ClusterServer(Pyro.core.ObjBase):
       temp_process = process.ProcessProxy(cmd=command, cwd=cwd, env=envMap)
    
    def runCommand(self, command, cwd, envMap):
-      if not None == self.mProcess and self.isCommandRunning():
-         print "Command already running."
+      try:
+         if not None == self.mProcess and self.isCommandRunning():
+            print "Command already running."
+            return False
+         else:
+            print "\nOriginal env:", envMap
+            self.evaluateEnvVars(envMap)
+            command = self.expandEnv(command, envMap)[0]
+            cwd     = self.expandEnv(cwd, envMap)[0]
+            #command = command.replace('\\', '\\\\')
+            print "\nRunning command: ", command
+            print "\nWorking Dir: ", cwd
+            print "\nTranslated env:", envMap
+            
+            self.mBuffer = process.IOBuffer(name='<stdout>')
+            #self.mProcess = process.ProcessProxy(command, stdout=self.mBuffer, stderr=self.mBuffer, env={'DISPLAY':':0.0'})
+            self.mProcess = process.ProcessProxy(cmd=command, cwd=cwd, env=envMap, stdout=self.mBuffer, stderr=self.mBuffer)
+            return True
+      except KeyError, ex:
+         #traceback.print_stack()
+         print "runCommand() ", ex
          return False
-      else:
-         print "Running command: ", command
-         print "With env:", envMap
-         print "Working Dir: ", cwd
-         self.mBuffer = process.IOBuffer(name='<stdout>')
-         #self.mProcess = process.ProcessProxy(command, stdout=self.mBuffer, stderr=self.mBuffer, env={'DISPLAY':':0.0'})
-         self.mProcess = process.ProcessProxy(cmd=command, cwd=cwd, env=envMap, stdout=self.mBuffer, stderr=self.mBuffer)
-         return True
 
    def getOutput(self):
       if not None == self.mProcess:
          #return self.mProcess.stdout.readline()
          return self.mBuffer.readline()
+
+   def expandEnv(self, value, envMap, key = None):
+      """
+      Expands a single entry in out environment map.
+      """
+      sEnvVarRegexBraces = re.compile('\${(\w+)}')
+
+      start_pos = 0
+      replaced = 0
+      match = sEnvVarRegexBraces.search(value, start_pos)
+
+      while match is not None:
+         print "1"
+         env_var = match.group(1)
+         env_var_ex = re.compile(r'\${%s}' % env_var)
+
+         # Try to get env_var value from location map first. If not found
+         # then try to get from os.environ
+         if envMap.has_key(env_var) and not (env_var == key):
+            new_value = env_var_ex.sub(envMap[env_var].replace('\\', '\\\\'), value)
+            print "Replaceing %s -> %s" % (value, new_value)
+            value = new_value
+            replaced = replaced + 1
+         elif os.environ.has_key(env_var):
+            #print "%s = %s" % (env_var, os.environ[env_var])
+            new_value = env_var_ex.sub(os.environ[env_var].replace('\\', '\\\\'), value)
+            print "Replaceing %s -> %s" % (value, new_value)
+            value = new_value
+            replaced = replaced + 1
+         else:
+            # Could not find env_var in either map so skip it for now.
+            start_pos = match.end(1)
+
+         match = sEnvVarRegexBraces.search(value, start_pos)
+
+      return (value, replaced)
+
+   def evaluateEnvVars(self, envMap):
+      try:
+         sEnvVarRegexBraces = re.compile('\${(\w+)}')
+         replaced = 1
+         while replaced > 0:
+            print "replaced:", replaced
+            replaced = 0
+            for k, v in envMap.iteritems():
+               print "Trying to match: ", v
+               match = sEnvVarRegexBraces.search(v)
+               if match is not None:
+                  print "Trying to replace env vars in", v
+                  (v, r) = self.expandEnv(v, envMap, k)
+                  envMap[k] = v
+                  replaced = replaced + r
+      except ex:
+         print ex
+
 
 if os.name == 'nt':
    class vrjclusterserver(win32serviceutil.ServiceFramework):

@@ -868,6 +868,7 @@ class Process:
         if isinstance(self._cmd, types.StringTypes):
             # This is easier than trying to reproduce shell interpretation to
             # separate the arguments.
+            print "TEST: ", self._cmd
             cmd = ['/bin/sh', '-c', self._cmd]
         else:
             cmd = self._cmd
@@ -1499,6 +1500,9 @@ class ProcessProxy(Process):
         log.info("ProcessProxy.__init__(cmd=%r, mode=%r, cwd=%r, env=%r, "\
                  "stdin=%r, stdout=%r, stderr=%r)",
                  cmd, mode, cwd, env, stdin, stdout, stderr)
+        
+        print "ProcessProxy.__init__(cmd=%r, mode=%r, cwd=%r, env=%r, "\
+                 "stdin=%r, stdout=%r, stderr=%r)" % (cmd, mode, cwd, env, stdin, stdout, stderr)
         self._cmd = cmd
         if not self._cmd:
             raise ProcessError("You must specify a command.")
