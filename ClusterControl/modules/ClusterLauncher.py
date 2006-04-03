@@ -6,8 +6,8 @@ import ClusterLauncherBase
 import ClusterLauncherResource
 import elementtree.ElementTree as ET
 import ClusterModel
-#class ClusterTableModel(QAbstractTableModel):
-#   pass
+import LauncherModel
+import GlobalOptions
 
 def numClassMatches(nodeClassString, subClassString):
    node_classes = nodeClassString.split(",")
@@ -46,196 +46,91 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       QtGui.QWidget.__init__(self, parent)
       self.setupUi(self)
 
-      self.apps    = []
-      self.actions = []
-      self.globaloptions = []
-      self.mGlobalEnvs = {}
-
+      self.mAppSpecificWidgets = []
+      self.mSelectedApp = None
       # State information for the selected application.
-      self.selectedApp         = None
-      self.commandChoices      = []
-      self.selectedAppOptions  = {}
-      self.mComboBoxes         = {}
-      self.appSpecificWidgets  = []
-      self.appSpecificLayouts  = []
       self.actionDict          = {}   # Storage for user-defined action slots
       self.activeThread        = None
 
    def configure(self, clusterModel):
       self.mClusterModel = clusterModel
-      self.xmlTree = clusterModel.mElement
-      top_element = self.xmlTree.find("./launcher")
-      assert top_element.tag == "launcher"
-
-      for app_elt in top_element.findall("./applications/app"):
-         self.apps.append(Application(app_elt))
-
-      for action_elt in top_element.findall("./controls/action"):
-         self.actions.append(Action(action_elt))
-
-      option_elts = top_element.findall("./global_options/option")
-      if None != option_elts: #and len(tip_elts) > 0:
-         for n in option_elts:
-            if len(n) > 1:
-               self.globaloptions.append(AppExclusiveOption(n))
-            else:
-               self.globaloptions.append(AppOption(n))
-
-      # Parse all global environments
-      for elt in top_element.findall("./global_environments/env"):
-         name = elt.get("name")
-         self.mGlobalEnvs[name] = Environment(elt)
+      self.mElement = clusterModel.mElement
+      self.mTreeModel = LauncherModel.TreeModel(self.mElement)
+      self.mTableModel = LauncherModel.TableModel()
+      self.mTreeView.setModel(self.mTreeModel)
+      self.mTableView.setModel(self.mTableModel)
 
       self._fillInApps()
-      self._fillInControls()
+
+      QtCore.QObject.connect(self.mTreeView.selectionModel(),
+         QtCore.SIGNAL("selectionChanged(QItemSelection,QItemSelection)"), self.onElementSelected)
+
+   def setupUi(self, widget):
+      ClusterLauncherBase.Ui_ClusterLauncherBase.setupUi(self, widget)
+      self.mTitleLbl.setBackgroundRole(QtGui.QPalette.Mid)
+      self.mTitleLbl.setForegroundRole(QtGui.QPalette.Shadow)
+      
+      self.connect(self.mLaunchBtn,QtCore.SIGNAL("clicked()"),self.onLaunchApp)
+      self.connect(self.mKillBtn,QtCore.SIGNAL("clicked()"),self.onKillApp)
+      self.connect(self.mAppComboBox,QtCore.SIGNAL("activated(int)"),self.onAppSelect)
+      #self.connect(self.mAddBtn, QtCore.SIGNAL("clicked()"), self.onClicked)
+
+      self.icon = QtGui.QIcon(":/linux2.png")
+
+   def onElementSelected(self, newSelection, oldSelection):
+      #print "Current row: %s" % (self.mTreeView.currentIndex().row())
+      if len(newSelection.indexes()) > 0:
+         selected_element = self.mTreeView.model().data(newSelection.indexes()[0], QtCore.Qt.UserRole)
+      else:
+         selected_element = None
+      print "Selected: %s" % (selected_element)
+      self.mTableModel.setElement(selected_element)
+      self.mTableView.reset()
+      self.mTableView.resizeColumnsToContents()
+
+   def onAppSelect(self):
+     self._setApplication(self.mAppComboBox.currentIndex())
 
    def _fillInApps(self):
       """ Fills in the application panel. """
-      self.appComboBox.clear()
+      self.mAppComboBox.clear()
+
+      apps = self.mTreeModel.mAppLabel.mChildren
    
-      for app in self.apps:
-         #self.appComboBox.insertItem(app.getName())
-         self.appComboBox.addItem(app.getName())
+      for app in apps:
+         #self.mAppComboBox.insertItem(app.getName())
+         self.mAppComboBox.addItem(app.getName())
    
-      if len(self.apps) > 0:
-         self.appComboBox.setCurrentIndex(0)
+      if len(apps) > 0:
+         self.mAppComboBox.setCurrentIndex(0)
          self._setApplication(0)
       else:
          print "ERROR: No applications defined!"
          QApplication.exit(0)
 
-   def _setApplication(self, id):
-      if self.selectedApp != None:
+
+   def _setApplication(self, index):
+      if self.mSelectedApp != None:
+         self.mSelectedApp.mSelected = False
          self._resetAppState()
-         
-      self.selectedApp = id
-      app = self.apps[id]
-      # XXX:
-      #self.statusBar().message(app.getTip())
-      self.appComboBox.setToolTip(self.tr(str(app.getTip())))
 
-      # Ensure that the "Help" button is only enabled when the current
-      # application has a help URL.
-      if app.getHelpURL() == None:
-         self.helpButton.setEnabled(False)
-      else:
-         self.helpButton.setEnabled(True)
-
-      app_opts = app.getOptions()
-      all_opts = []
-      if app.mUseGlobalOptions:
-         all_opts.extend(self.globaloptions)
-      all_opts.extend(app_opts)
-
-      for i in range(0, len(all_opts)):
-         opt = all_opts[i]
-
-         if isinstance(opt, AppExclusiveOption):
-            hboxlayout = QtGui.QHBoxLayout()
-            hboxlayout.setMargin(9)
-            hboxlayout.setSpacing(6)
-            hboxlayout.setObjectName("hboxlayout")
-
-            lbl = QtGui.QLabel(self.mAppFrame)
-            lbl.setObjectName("mCombo1Lbl")
-            lbl.setText(opt.group_name)
-            hboxlayout.addWidget(lbl)
-
-            group_cb = QtGui.QComboBox(self.mAppFrame)
-            hboxlayout.addWidget(group_cb)
-            group_cb.setEditable(opt.editable)
-               
-        
-            for c in opt.mChoices:
-               group_cb.addItem(c.label)# QtCore.QVariant(c))
-
-            self.vboxlayout1.insertLayout(i + 1, hboxlayout)
-            self.appSpecificWidgets.append(group_cb)
-            self.appSpecificWidgets.append(lbl)
-            self.appSpecificLayouts.append(hboxlayout)
-            
-            self.connect(group_cb, QtCore.SIGNAL("currentIndexChanged(int)"), self.onComboBox)
-            self.mComboBoxes[group_cb] = opt
-            #self.connect(group_cb, QtCore.SIGNAL("editTextChanged(QString)"), self.onComboboxChange)
-
-            # This is critical for making the layout update dynamically.
-            # http://mats.gmd.de/pipermail/pykde/2001-March/000932.html
-            lbl.show()
-            group_cb.show()
-         else:
-            label = opt.mChoices[0].label
-            cb = QtGui.QCheckBox(str(label), self.mAppFrame)
-            cb.setObjectName("checkbox" + str(i))
-            cb.setChecked(opt.selected)
-
-            self.mAppFrame.layout().insertWidget(i + 1, cb)
-            self.connect(cb, QtCore.SIGNAL("clicked()"), self.onOptionBox)
-            self.selectedAppOptions[cb] = opt
-            self.appSpecificWidgets.append(cb)
-
-            # This is critical for making the layout update dynamically.
-            # http://mats.gmd.de/pipermail/pykde/2001-March/000932.html
-            cb.show()
-
-            if opt.tip != None and opt.tip != "":
-               cb.setToolTip(self.tr(str(opt.tip)))
-
-      # Forcibly populate self.commandChoices so that anything that is selected
-      # by default will show up in the list.
-      self._setCommandOptions()
-
-   def _resetAppState(self):
-      """ Resets the information associated with the selected application. """
-      for w in self.appSpecificWidgets:
-         self.mAppFrame.layout().removeWidget(w)
-         w.deleteLater()
-      #for l in self.appSpecificLayouts:
-      #   l.deleteLater()
-
-      self.commandChoices      = []
-      self.selectedApp         = None
-      self.selectedAppOptions  = {}
-      self.mComboBoxes         = {}
-      self.appSpecificWidgets = []
-      self.appSpecificLayouts = []
+      apps = self.mTreeModel.mAppLabel.mChildren
+      assert index < len(apps)
+      self.mSelectedApp = apps[index]
+      self.mSelectedApp.mSelected = True
+      print "Setting application [%s] [%s]" % (index, self.mSelectedApp.getName())
+      for c in self.mSelectedApp.mChildren:
+         # All top level objects are selected by default.
+         c.mSelected = True
+         if c.mVisible:
+            sh = _buildWidget(c)
+            sh.setParent(self.mAppFrame);
+            self.mAppFrame.layout().insertWidget(self.mAppFrame.layout().count()-1, sh)
+            self.mAppSpecificWidgets.append(sh)
+            sh.show()
 
 
-   def _fillInControls(self):
-      """ Fills in the controls panel. """
-
-      for i in range(0, len(self.actions)):
-         a = self.actions[i]
-
-         button = QtGui.QPushButton(self.cmdFrame)
-         button.setObjectName("button" + str(i))
-         button.setText(str(a.name))
-
-         self.cmdFrame.layout().insertWidget(i + 3, button)
-         self.actionDict[button] = lambda action=a: self.onCommandButton(action)
-         self.connect(button, QtCore.SIGNAL("clicked()"), self.actionDict[button])
-
-         if a.tip != None and a.tip != "":
-            button.setToolTip(self.tr(str(a.tip)))
-
-   def fileExit(self):
-      QApplication.exit(0)
-
-   def appSelect(self):
-     self._setApplication(self.appComboBox.currentIndex())
-
-   def loadHelp(self):
-      help = helpdialog.HelpDialog(self)
-      help.setHelpURL(self.apps[self.selectedApp].getHelpURL())
-      help.show()
-
-   def onOptionBox(self):
-      self.commandChoices = []
-      self._setCommandOptions()
-
-   def onComboBox(self, index):
-      self.commandChoices = []
-      self._setCommandOptions()
-
+   """
    def _setCommandOptions(self):
       for w, opt in self.selectedAppOptions.items():
          if w.isChecked():
@@ -262,14 +157,26 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
             node.runSingleShotCommand(command=action.command, cwd=None, envMap=temp_env, outputLogger=self.mClusterModel.mOutputLogger)
       else:
          assert "This should never happen"
+   """
 
    def onKillApp(self):
       self.mClusterModel.killCommand()
       #self.launchButton.setEnabled(True)
       #self.killButton.setEnabled(False)
 
-   def launchApp(self):
+   def onLaunchApp(self):
       """ Invoked when the built-in Launch button is clicked. """
+
+
+      for node in self.mClusterModel.mNodes:
+         print "Node [%s] [%s]" % (node.getName(), node.getClass())
+         option_visitor = LauncherModel.OptionVisitor(node.getClass())
+         LauncherModel.traverse(self.mSelectedApp, option_visitor)
+         print option_visitor.mArgs
+         print option_visitor.mCommands
+         print option_visitor.mCwds
+         print option_visitor.mEnvVars
+      """
       for node in self.mClusterModel.mNodes:
          app = self.apps[self.selectedApp]
          command_map = app.getCommandMap()
@@ -319,182 +226,355 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       #   #self.killButton.setEnabled(True)
       #else:
       #   assert "This should never happen"
+      """
 
-   def setupUi(self, widget):
-      ClusterLauncherBase.Ui_ClusterLauncherBase.setupUi(self, widget)
-      self.mTitleLbl.setBackgroundRole(QtGui.QPalette.Mid)
-      self.mTitleLbl.setForegroundRole(QtGui.QPalette.Shadow)
-      
-      #self.connect(self.fileExitAction,QtCore.SIGNAL("activated()"),self.fileExit)
-      self.connect(self.appComboBox,QtCore.SIGNAL("activated(int)"),self.appSelect)
-      self.connect(self.launchButton,QtCore.SIGNAL("clicked()"),self.launchApp)
-      self.connect(self.killButton,QtCore.SIGNAL("clicked()"),self.onKillApp)
-      #self.connect(self.helpButton,QtCore.SIGNAL("clicked()"),self.loadHelp)
-      
-      self.icon = QtGui.QIcon(":/linux2.png")
+
 
    def getName():
         return "Cluster Launcher"
    getName = staticmethod(getName)
 
-class Choice:
-   def __init__(self, xmlElt):
-      self.label = xmlElt.get("label")
-      values = xmlElt.findall("./value")
-      self.mValueMap = {}
-      for v in values:
-         node_class = v.get("class")
-         flag = v.get("flag")
-         val = v.text
-         self.mValueMap[node_class] = (flag, val)
 
-   def getValueMap(self):
-      return self.mValueMap
+   def _resetAppState(self):
+      """ Resets the information associated with the selected application. """
+      for w in self.mAppSpecificWidgets:
+         self.mAppFrame.layout().removeWidget(w)
+         w.deleteLater()
+      #for l in self.appSpecificLayouts:
+      #   l.deleteLater()
 
-class AppOption:
-   """ Encapsulation of command-line options that may be passed to apps. """
-   def __init__(self, xmlElt):
-      self.tip   = xmlElt.get("tooltip")
+      #self.commandChoices      = []
+      #self.selectedApp         = None
+      #self.selectedAppOptions  = {}
+      #self.mComboBoxes         = {}
+      self.mAppSpecificWidgets = []
+      #self.appSpecificLayouts = []
 
-      # Can the user edit the options value
-      editable = xmlElt.get("editable")
-      if editable == "" or editable == None:
-         self.editable = True
-      elif editable == "true" or editable == "1":
-         self.editable = True
+
+NO_BUTTON = 0
+RADIO_BUTTON = 1
+CHECK_BUTTON = 2
+
+def _buildWidget(obj, buttonType = NO_BUTTON):
+   name = obj.getName()
+   widget = None
+   if isinstance(obj, LauncherModel.Application):
+      pass
+   #   print "Building Application Sheet... ", name
+   #   sh = QtGui.QLabel(self)
+   #   sh.setText("Hi")
+   #   sh.show()
+   elif isinstance(obj, LauncherModel.GlobalOption):
+      pass
+   #   print "Building Global Option Sheet... ", name
+   elif isinstance(obj, LauncherModel.Group):
+      #print "Building Group Sheet... ", name
+      widget = GroupSheet(obj, buttonType)
+      widget.config()
+   elif isinstance(obj, LauncherModel.Choice):
+      #print "Building Choice Sheet... ", name
+      if obj.mChoiceType == LauncherModel.ONE_CB:
+         widget = ChoiceSheetCB(obj, buttonType)
       else:
-         self.editable = False
+         widget = ChoiceSheet(obj, buttonType)
+      widget.config()
+   if isinstance(obj, LauncherModel.Arg):
+      #print "Building Arg Sheet... ", name
+      widget = ValueSheet(obj, buttonType)
+      widget.config(obj.mLabel)
+   elif isinstance(obj, LauncherModel.Command):
+      #print "Building Command Sheet... ", name
+      widget = ValueSheet(obj, buttonType)
+      widget.config("Command")
+   elif isinstance(obj, LauncherModel.Cwd):
+      #print "Building CWD Sheet... ", name
+      widget = ValueSheet(obj, buttonType)
+      widget.config("Current Working Directory")
+   elif isinstance(obj, LauncherModel.EnvVar):
+      #print "Building EnvVar Sheet... ", name
+      widget = ValueSheet(obj, buttonType)
+      widget.config(obj.mLabel)
+
+   
+   return widget
+
+class Sheet(QtGui.QWidget):
+   def __init__(self, obj, buttonType, parent = None):
+      QtGui.QWidget.__init__(self, parent)
+      
+      self.mObj = obj
+      
+      if RADIO_BUTTON == buttonType:
+         self.mLabel = QtGui.QRadioButton(self)
+      elif CHECK_BUTTON == buttonType:
+         self.mLabel = QtGui.QCheckBox(self)
+      else:
+         self.mLabel = QtGui.QLabel(self)
+
+   def config(self):
+      if isinstance(self.mLabel, QtGui.QAbstractButton):
+         self.connect(self.mLabel, QtCore.SIGNAL("toggled(bool)"), self.onToggled)
+         self.mLabel.setChecked(self.mObj.mSelected)
+         self.setEnabled(self.mObj.mSelected)
          
-      # Is the option visible to the user?
-      visible = xmlElt.get("visible")
-      if visible == "" or visible == None:
-         self.visible = True
-      elif visible == "true" or visible == "1":
-         self.visible = True
+   def setEnabled(self, val):
+      if val:
+         self.mLabel.palette().setColor(QtGui.QPalette.Foreground,
+            self.mLabel.palette().buttonText().color())
       else:
-         self.visible = False
+         self.mLabel.palette().setColor(QtGui.QPalette.Foreground,
+            self.mLabel.palette().dark().color())
+      self.mLabel.update()
 
-      self.mChoices = []
-      choices = xmlElt.findall("./choice")
-      for c in choices:
-         self.mChoices.append(Choice(c))
+   def onToggled(self, val):
+      print "Setting [%s] selected: %s" % (self.mObj.getName(), val)
+      self.mObj.mSelected = val
+      self.setEnabled(val)
 
-      selected = xmlElt.get("selected")
+class ChoiceSheet(Sheet):
+   def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
+      Sheet.__init__(self, obj, buttonType, parent)
 
-      self.selected = False
-      if selected == "" or selected == None:
-         self.selected = False
-      elif selected == "true" or selected == "1":
-         self.selected = True
-      else:
-         self.selected = False
+      self.mSelectedFrame = None
 
-class AppExclusiveOption(AppOption):
-   def __init__(self, xmlElt):
-      AppOption.__init__(self, xmlElt)
-      self.group_name = xmlElt.get("name")
+      # XXX: Might want to put some where else.
+      self.setupUi()
+      self.mOptionSheets = []
+      self._fillForm()
 
-class Command:
-   def __init__(self, xmlElt):
-      self.mSubClasses = xmlElt.get("class")
-      self.mEnv = xmlElt.get("elt")
-      self.mCommand = xmlElt.text
-
-class Environment:
-   def __init__(self, xmlElt):
-      self.mElement = xmlElt
+   def setupUi(self):
+      self.gridlayout = QtGui.QGridLayout(self)
+      self.gridlayout.setMargin(1)
+      self.gridlayout.setSpacing(1)
+      self.gridlayout.setObjectName("gridlayout")
       
-      self.mEnvMap = {}
-
-      vars = xmlElt.findall("./env_var")
-      for elt in vars:
-         key = elt.get("key")
-         value = elt.get("value")
-         self.mEnvMap[key] = value
+      self.mLabel.setObjectName("mChoiceLabel")
+      self.mLabel.setText(self.mObj.mLabel)
+      self.gridlayout.addWidget(self.mLabel,0,0,1,2)
       
-class Application:
-   """ Representation of an application that can be launched. """
+      spacerItem = QtGui.QSpacerItem(40,20,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Minimum)
+      self.gridlayout.addItem(spacerItem,1,0,1,1)
 
-   def __init__(self, xmlElt):
-      self.name = xmlElt.get("name")
-
-      # Should we inherit the global options
-      use_global = xmlElt.get("use_global_options")
-      if use_global == "" or use_global == None:
-         self.mUseGlobalOptions = True
-      elif use_global == "true" or use_global == "1":
-         self.mUseGlobalOptions = True
-      else:
-         self.mUseGlobalOptions = False
-
-      self.mCommandMap = {}
-      commands = xmlElt.findall("./commands/command")
-      for elt in commands:
-         sub_class = elt.get("class")
-         command = elt.text
-         env = elt.get("env")
-         cwd = elt.get("working_dir")
-         self.mCommandMap[sub_class] = [command, cwd, env]
-
-      help_elts = xmlElt.findall("./helpURL")
-      if None != help_elts and len(help_elts) > 0 and help_elts[0].text:
-         self.helpURL = help_elts[0].text
-      else:
-         self.helpURL = None
-
-      tip = self.name  # Fallback in case no tooltip is defined
-
-      tip_elts = xmlElt.findall("./tooltip")
-      if None != tip_elts and len(tip_elts) > 0:
-         tip = tip_elts[0].text
-
-      self.tip = tip
-
-      self.options = []
-      option_elts = xmlElt.findall("./options/option")
-      if None != option_elts: #and len(tip_elts) > 0:
-         for n in option_elts:
-            if len(n) > 1:
-               self.options.append(AppExclusiveOption(n))
-            else:
-               self.options.append(AppOption(n))
-
-   def getCommandMap(self):
-      return self.mCommandMap
+   def setEnabled(self, val):
+      Sheet.setEnabled(self, val)
+      for w in self.mOptionSheets:
+         w.setEnabled(val)
       
-   def getName(self):
-      return self.name
+   def _fillForm(self):
+      current_row = 1
+      self.mButtonGroup = QtGui.QButtonGroup()
+      for c in self.mObj.mChildren:
 
-   def getTip(self):
-      return self.tip
+         # Create the correct type of sheets.
+         if self.mObj.mChoiceType == LauncherModel.ONE:
+            w = _buildWidget(c, RADIO_BUTTON)
+         elif self.mObj.mChoiceType == LauncherModel.ANY:
+            w = _buildWidget(c, CHECK_BUTTON)
+         else:
+            w = _buildWidget(c, NO_BUTTON)
+         
+         # Get label from sheet to add to group if needed.
+         lbl = w.mLabel
+         if self.mObj.mChoiceType == LauncherModel.ONE \
+               and lbl is not None \
+               and isinstance(lbl, QtGui.QAbstractButton):
+            self.mButtonGroup.addButton(lbl)
+         
+         self.mOptionSheets.append(w)
+         w.setParent(self)
+         self.gridlayout.addWidget(w,current_row,1,1,2)
+         current_row += 1
 
-   def getHelpURL(self):
-      return self.helpURL
+class ChoiceSheetCB(Sheet):
+   def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
+      Sheet.__init__(self, obj, buttonType, parent)
 
-   def getOptions(self):
-      return self.options
+      self.mObj = obj
+      self.mSelectedFrame = None
+      self.mSelectedObject = None
+      self.mSavedEnableState = False
 
-class Action:
+      # XXX: Might want to put some where else.
+      self.setupUi()
+      self._fillCombo()
+      self.connect(self.mChoice, QtCore.SIGNAL("activated(int)"), self.choiceSelected)
+
+   def setEnabled(self, val):
+      Sheet.setEnabled(self, val)
+      if mSelectedFrame is not None:
+         mSelectedFrame.setEnabled(val)
+         mSavedEnableState = val
+
+   def setupUi(self):
+
+      self.gridlayout = QtGui.QGridLayout(self)
+      self.gridlayout.setMargin(1)
+      self.gridlayout.setSpacing(1)
+      self.gridlayout.setObjectName("gridlayout")
+      
+      self.mLabel.setObjectName("mChoiceLabel")
+      self.mLabel.setText(self.mObj.mLabel + ": ")
+      self.gridlayout.addWidget(self.mLabel,0,0,1,2)
+      
+      spacerItem = QtGui.QSpacerItem(40,20,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Minimum)
+      self.gridlayout.addItem(spacerItem,0,0,1,1)
+      
+      self.mChoice = QtGui.QComboBox(self)
+      sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
+      sizePolicy.setHorizontalStretch(0)
+      sizePolicy.setVerticalStretch(0)
+      self.mChoice.setSizePolicy(sizePolicy)
+      
+      self.mChoice.setObjectName("mChoice")
+      self.gridlayout.addWidget(self.mChoice,0,2,1,1)
+
+   def _fillCombo(self):
+      selected_index = 0
+      i = 0
+      for c in self.mObj.mChildren:
+         self.mChoice.addItem(c.getName())
+         if c.mSelected:
+            selected_index = i
+         i += 1
+   
+      if len(self.mObj.mChildren) > 0:
+         self.mChoice.setCurrentIndex(selected_index)
+         self._setChoice(selected_index)
+      else:
+         print "ERROR: No choices defined!"
+         QApplication.exit(0)
+
+   
+   def choiceSelected(self):
+     self._setChoice(self.mChoice.currentIndex())
+
+   def _setChoice(self, index):
+      if self.mSelectedObject is not None:
+         self.mSelectedObject.mSelected = False
+         self.mSelectedObject = None
+
+      if self.mSelectedFrame is not None:
+         self.layout().removeWidget(self.mSelectedFrame)
+         self.mSelectedFrame.deleteLater()
+
+      self.mSelectedFrame = None
+      # XXX: Add error testing
+      obj = self.mObj.mChildren[index]
+      self.mSelectedObject = obj
+      self.mSelectedObject.mSelected = True
+      if obj is not None and obj.mVisible:
+         if isPointless(obj):
+            mSelectedFrame = None
+         else:
+            self.mSelectedFrame = _buildWidget(obj)
+            self.mSelectedFrame.setEnabled(self.mSavedEnableState)
+            self.mSelectedFrame.setParent(self)
+            self.mSelectedFrame.setEnabled(True)
+            self.gridlayout.addWidget(self.mSelectedFrame,1,1,1,2)
+            #self.mSelectedFrame.show()
+            self.gridlayout.update()
+
+class GroupSheet(Sheet):
+   def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
+      Sheet.__init__(self, obj, buttonType, parent)
+
+      # XXX: Might want to put some where else.
+      self.setupUi()
+
+   def setupUi(self):
+      self.hboxlayout = QtGui.QHBoxLayout(self)
+      self.hboxlayout.setMargin(1)
+      self.hboxlayout.setSpacing(1)
+      self.hboxlayout.setObjectName("hboxlayout1")
+
+      # If we have a selection button, then use it.
+      if self.mLabel is not None:
+         self.hboxlayout.addWidget(self.mLabel)
+
+      if self.mObj.mVisible == True:
+         # Create group box to contain all sub options.
+         self.mGroupBox = QtGui.QGroupBox(self)
+         self.hboxlayout.addWidget(self.mGroupBox)
+         self.mGroupBox.setTitle(self.mObj.mLabel)
+
+         # Create layout for group box.
+         self.vboxlayout1 = QtGui.QVBoxLayout(self.mGroupBox)
+         self.vboxlayout1.setMargin(1)
+         self.vboxlayout1.setSpacing(1)
+         self.vboxlayout1.setObjectName("vboxlayout1")
+
+         # Add all sub options to group box.
+         for c in self.mObj.mChildren:
+            # All top level objects are selected by default.
+            c.mSelected = True
+            if c.mVisible and not isPointless(c):
+               sh = _buildWidget(c)
+               sh.setParent(self.mGroupBox);
+               self.mGroupBox.layout().addWidget(sh)
+
+   def setEnabled(self, val):
+      Sheet.setEnabled(self, val)
+      self.mGroupBox.setEnabled(val)
+
+      # Force the QBroupBox title to appear disabled.
+      if val:
+         self.mGroupBox.setAttribute(QtCore.Qt.WA_SetPalette, False)
+         # Don't need to set the color back.
+         #self.mGroupBox.palette().setColor(QtGui.QPalette.Foreground, \
+         #   self.mGroupBox.palette().buttonText().color())
+      else:
+         self.mGroupBox.setAttribute(QtCore.Qt.WA_SetPalette, True)
+         self.mGroupBox.palette().setColor(QtGui.QPalette.Foreground, \
+            self.mGroupBox.palette().dark().color())
+      self.mGroupBox.update()
+
+
+def isPointless(obj):
+   """ If we are not in ADVANCED user mode and an object is visible and
+       not editable then there is no point displaying it unless it is
+       in a choice.
    """
-   Representation of user-defined action buttons displayed in the controls
-   panel.
-   """
-   def __init__(self, xmlElt):
-      self.name    = xmlElt.get("name")
-      self.command = xmlElt.get("command")
+   user_mode = GlobalOptions.instance.mOptions["UserMode"]
+   return (GlobalOptions.ADVANCED != user_mode and obj.mVisible and not obj.mEditable)
 
-      tip = xmlElt.get("tooltip")
 
-      if tip == "" or tip == None:
-         tip = self.name
+class ValueSheet(Sheet):
+   def __init__(self, obj, buttonType = NO_BUTTON, parent = None):
+      Sheet.__init__(self, obj, buttonType, parent)
 
-      self.tip = tip
+      # Create layout to use for sheet.
+      self.mLayout = QtGui.QHBoxLayout(self)
+      self.mLayout.setMargin(1)
+      self.mLayout.setSpacing(1)
+      self.mLayout.addWidget(self.mLabel)
 
-   def getName(self):
-      return self.name
+      # Create editor if we want to allow the user to edit the value
+      # or we are in advanced mode.
+      self.mValueEditor = None
+      user_mode = GlobalOptions.instance.mOptions["UserMode"]
+      if (self.mObj.mEditable or GlobalOptions.ADVANCED == user_mode):
+         self.mValueEditor = QtGui.QLineEdit(self)
+         self.mValueEditor.setText(self.mObj.mValue)
+         self.mValueEditor.setEnabled(self.mObj.mEditable)
+         self.mLayout.addWidget(self.mValueEditor)
+         self.connect(self.mValueEditor, QtCore.SIGNAL("editingFinished()"),self.onEdited)
 
-   def getTip(self):
-      return self.tip
+   def config(self, text):
+      Sheet.config(self)
+      command_text = text + " [" + self.mObj.mClass + "]:"
+      self.mLabel.setText(command_text)
+
+   def setEnabled(self, val):
+      Sheet.setEnabled(self, val)
+      enable = val and self.mObj.mEditable
+      if self.mValueEditor:
+         self.mValueEditor.setEnabled(enable)
+
+   def onEdited(self):
+      if self.mValueEditor:
+         self.mObj.mValue = str(self.mValueEditor.text())
+
+
 
 
 def getModuleInfo():
