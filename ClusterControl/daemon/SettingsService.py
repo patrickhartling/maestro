@@ -8,6 +8,9 @@ import re
 import time
 import string
 
+if os.name = 'nt':
+   import wmi
+
 from Queue import Queue
 
 #platform.system()
@@ -53,7 +56,9 @@ class SettingsService(Pyro.core.ObjBase):
       Pyro.core.ObjBase.__init__(self)
       self.mQueue = Queue()
 
-      if os.name != 'nt':
+      if os.name == 'nt':
+         self.mWMIConnection = xmi.WMI()
+      else:
          self.mLastCPUTime = [0,0,0,0]
 
    def getPlatform(self):
@@ -75,7 +80,13 @@ class SettingsService(Pyro.core.ObjBase):
 
    def getCpuUsage(self):
       if os.name == 'nt':
-         return 0.0
+         total_usage = 0.0
+         cpus = mWMIConnection.Win32_Processor()
+         for p in cpus:
+            print "%s running at %d%% load" % (p.Name, p.LoadPercentage)
+            total_usage += p.LoadPercentage
+         print "%d%% load" % (total_usage/len(cpus))
+         return total_usage/len(cpus)
       else:
          statFile = file("/proc/stat", "r")
          for line in statFile.readlines():
@@ -95,19 +106,31 @@ class SettingsService(Pyro.core.ObjBase):
                return 0.0
 
    def getMemUsage(self):
-      # mpused, mpswaped, mpactive, mpinactive
-      fp = open("/proc/meminfo")
-      dic = {}
-      for line in fp.readlines():
-         m = PAT_MEMINFO.match(line)
-         if m:
-            dic[string.lower(m.group(1))] = long(m.group(2))
-      fp.close()
-      mtotal = dic.get('memtotal', 1)
-      mfree = dic.get('memfree', 0) + dic.get('buffers',0) + dic.get('cached',0)
-      mem_usage = float(mtotal-mfree)/mtotal
-      swap_usage = float(dic.get('swaptotal',0) - dic.get('swapfree',0))/mtotal
-      return (mem_usage * 100.0, swap_usage * 100.0)
+      if os.name = 'nt':
+         total_physical = float(self.mWMIConnection.Win32_ComputerSystem()[0].TotalPhysicalMemory)/1024
+         free_physical  = float(self.mWMIConnection.Win32_OperatingSystem()[0].FreePhysicalMemory)
+         total_virtual  = float(self.mWMIConnection.Win32_OperatingSystem()[0].TotalVirtualMemorySize)
+         free_virtual   = float(self.mWMIConnection.Win32_OperatingSystem()[0].FreeVirtualMemory)
+         print "Physical: total [%s KB] free [%s KB] pct [%s]" % (total_physical, free_physical, 0)
+         print "Virtual: total [%s KB] free [%s KB] pct [%s]" % (total_virtual, free_virtual, 0)
+         physical_pct = (total_physical - free_physical)/total_physical
+         virtual_pct = (total_virtual - free_virtual)/total_virtual
+         print "Physical [%s] Virtural [%s]" % (physical_pct * 100.0, virtual_pct * 100.0)
+         return (physical_pct * 100.0, virtual_pct * 100.0)
+      else:
+         # mpused, mpswaped, mpactive, mpinactive
+         fp = open("/proc/meminfo")
+         dic = {}
+         for line in fp.readlines():
+            m = PAT_MEMINFO.match(line)
+            if m:
+               dic[string.lower(m.group(1))] = long(m.group(2))
+         fp.close()
+         mtotal = dic.get('memtotal', 1)
+         mfree = dic.get('memfree', 0) + dic.get('buffers',0) + dic.get('cached',0)
+         mem_usage = float(mtotal-mfree)/mtotal
+         swap_usage = float(dic.get('swaptotal',0) - dic.get('swapfree',0))/mtotal
+         return (mem_usage * 100.0, swap_usage * 100.0)
       
    def getTime(self):
       return time.strftime(TIMEFORMAT)
