@@ -80,6 +80,7 @@ class SettingsService(Pyro.core.ObjBase):
 
    def getCpuUsage(self):
       if os.name == 'nt':
+         """
          total_usage = 0.0
          cpus = mWMIConnection.Win32_Processor()
          for p in cpus:
@@ -87,6 +88,8 @@ class SettingsService(Pyro.core.ObjBase):
             total_usage += p.LoadPercentage
          print "%d%% load" % (total_usage/len(cpus))
          return total_usage/len(cpus)
+         """
+         return 0.0
       else:
          statFile = file("/proc/stat", "r")
          for line in statFile.readlines():
@@ -107,6 +110,7 @@ class SettingsService(Pyro.core.ObjBase):
 
    def getMemUsage(self):
       if os.name == 'nt':
+         """
          total_physical = float(self.mWMIConnection.Win32_ComputerSystem()[0].TotalPhysicalMemory)/1024
          free_physical  = float(self.mWMIConnection.Win32_OperatingSystem()[0].FreePhysicalMemory)
          total_virtual  = float(self.mWMIConnection.Win32_OperatingSystem()[0].TotalVirtualMemorySize)
@@ -117,6 +121,8 @@ class SettingsService(Pyro.core.ObjBase):
          virtual_pct = (total_virtual - free_virtual)/total_virtual
          print "Physical [%s] Virtural [%s]" % (physical_pct * 100.0, virtual_pct * 100.0)
          return (physical_pct * 100.0, virtual_pct * 100.0)
+         """
+         return (0.0, 0.0)
       else:
          # mpused, mpswaped, mpactive, mpinactive
          fp = open("/proc/meminfo")
