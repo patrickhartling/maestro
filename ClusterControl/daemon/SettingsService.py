@@ -8,7 +8,7 @@ import re
 import time
 import string
 
-if os.name = 'nt':
+if os.name == 'nt':
    import wmi
 
 from Queue import Queue
@@ -106,7 +106,7 @@ class SettingsService(Pyro.core.ObjBase):
                return 0.0
 
    def getMemUsage(self):
-      if os.name = 'nt':
+      if os.name == 'nt':
          total_physical = float(self.mWMIConnection.Win32_ComputerSystem()[0].TotalPhysicalMemory)/1024
          free_physical  = float(self.mWMIConnection.Win32_OperatingSystem()[0].FreePhysicalMemory)
          total_virtual  = float(self.mWMIConnection.Win32_OperatingSystem()[0].TotalVirtualMemorySize)
