@@ -2,7 +2,7 @@
 
 from PyQt4 import QtGui, QtCore
 import ResourceViewerBase
-import ClusterSettingsResource
+import ResourceViewerResource
 
 class ResourceViewer(QtGui.QWidget, ResourceViewerBase.Ui_ResourceViewerBase):
    def __init__(self, parent = None):
@@ -150,7 +150,7 @@ class ResourceModel(QtCore.QAbstractTableModel):
 
 
 def getModuleInfo():
-   icon = QtGui.QIcon(":/ClusterSettings/images/tools.png")
+   icon = QtGui.QIcon(":/ResourceViewer/images/resources.png")
    return (ResourceViewer, icon)
 
 if __name__ == "__main__":

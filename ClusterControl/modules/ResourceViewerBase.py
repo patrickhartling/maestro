@@ -9,9 +9,6 @@
 import sys
 from PyQt4 import QtCore, QtGui
 
-
-
-
 class Ui_ResourceViewerBase(object):
    def setupUi(self, ResourceViewerBase):
       ResourceViewerBase.setObjectName("ResourceViewerBase")
@@ -40,7 +37,7 @@ class Ui_ResourceViewerBase(object):
       self.mTitleLbl.setObjectName("mTitleLbl")
       self.vboxlayout.addWidget(self.mTitleLbl)
       
-      self.mResourceTable = QtGui.QTableView()
+      self.mResourceTable = QtGui.QTableView(ResourceViewerBase)
       self.mResourceTable.setObjectName("mResourceTable")
       self.vboxlayout.addWidget(self.mResourceTable)
       
@@ -58,7 +55,7 @@ class Ui_ResourceViewerBase(object):
       self.vboxlayout.addLayout(self.hboxlayout)
       
       self.retranslateUi(ResourceViewerBase)
-      QtCore.QMetaObject.connectSlotsByName(ResourceViewerBase)
+      #QtCore.QMetaObject.connectSlotsByName(ResourceViewerBase)
    
    def tr(self, string):
       return QtGui.QApplication.translate("ResourceViewerBase", string, None, QtGui.QApplication.UnicodeUTF8)

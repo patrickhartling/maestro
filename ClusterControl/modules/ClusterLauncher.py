@@ -617,7 +617,7 @@ class ValueSheet(Sheet):
 
 
 def getModuleInfo():
-   icon = QtGui.QIcon(":/ClusterLauncher/images/launch2.png")
+   icon = QtGui.QIcon(":/ClusterLauncher/images/launch.png")
    return (ClusterLauncher, icon)
 
 def main():

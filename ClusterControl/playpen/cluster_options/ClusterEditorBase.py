@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ClusterEditorBase.ui'
+# Form implementation generated from reading ui file 'playpen/cluster_options/ClusterEditorBase.ui'
 #
 #      by: PyQt4 UI code generator vsnapshot-20060221
 #
@@ -70,7 +70,7 @@ class Ui_ClusterEditor(object):
       self.vboxlayout.addWidget(self.mLaunchFrame)
       
       self.retranslateUi(ClusterEditor)
-      #QtCore.QMetaObject.connectSlotsByName(ClusterEditor)
+      QtCore.QMetaObject.connectSlotsByName(ClusterEditor)
    
    def tr(self, string):
       return QtGui.QApplication.translate("ClusterEditor", string, None, QtGui.QApplication.UnicodeUTF8)

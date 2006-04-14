@@ -2,12 +2,12 @@
 
 # Form implementation generated from reading ui file 'modules/ClusterSettingsBase.ui'
 #
-#      by: PyQt4 UI code generator v0.4
+#      by: PyQt4 UI code generator vsnapshot-20060221
 #
 # WARNING! All changes made in this file will be lost!
 
 import sys
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtCore, QtGui
 
 class Ui_ClusterSettingsBase(object):
    def setupUi(self, ClusterSettingsBase):
@@ -160,7 +160,7 @@ class Ui_ClusterSettingsBase(object):
       self.mCurrentOsLbl.setBuddy(self.mCurrentOsEdit)
       
       self.retranslateUi(ClusterSettingsBase)
-
+      #QtCore.QMetaObject.connectSlotsByName(ClusterSettingsBase)
       ClusterSettingsBase.setTabOrder(self.mClusterListView,self.mRefreshBtn)
       ClusterSettingsBase.setTabOrder(self.mRefreshBtn,self.mAddBtn)
       ClusterSettingsBase.setTabOrder(self.mAddBtn,self.mRemoveBtn)
@@ -198,4 +198,3 @@ if __name__ == "__main__":
    ui.setupUi(ClusterSettingsBase)
    ClusterSettingsBase.show()
    sys.exit(app.exec_())
-

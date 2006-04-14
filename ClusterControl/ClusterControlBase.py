@@ -2,12 +2,12 @@
 
 # Form implementation generated from reading ui file 'ClusterControlBase.ui'
 #
-#      by: PyQt4 UI code generator v0.4
+#      by: PyQt4 UI code generator vsnapshot-20060221
 #
 # WARNING! All changes made in this file will be lost!
 
 import sys
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtCore, QtGui
 
 class Ui_ClusterControlBase(object):
    def setupUi(self, ClusterControlBase):
@@ -171,7 +171,7 @@ class Ui_ClusterControlBase(object):
       self.toolBar.addAction(self.actionSave)
       
       self.retranslateUi(ClusterControlBase)
-
+      #QtCore.QMetaObject.connectSlotsByName(ClusterControlBase)
    
    def tr(self, string):
       return QtGui.QApplication.translate("ClusterControlBase", string, None, QtGui.QApplication.UnicodeUTF8)
@@ -200,4 +200,3 @@ if __name__ == "__main__":
    ui.setupUi(ClusterControlBase)
    ClusterControlBase.show()
    sys.exit(app.exec_())
-

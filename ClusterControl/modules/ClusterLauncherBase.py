@@ -171,7 +171,7 @@ class Ui_ClusterLauncherBase(object):
       self.vboxlayout.addWidget(self.mTabWidget)
       
       self.retranslateUi(ClusterLauncherBase)
-      QtCore.QMetaObject.connectSlotsByName(ClusterLauncherBase)
+      #QtCore.QMetaObject.connectSlotsByName(ClusterLauncherBase)
    
    def tr(self, string):
       return QtGui.QApplication.translate("ClusterLauncherBase", string, None, QtGui.QApplication.UnicodeUTF8)

@@ -149,7 +149,7 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
    getName = staticmethod(getName)
 
 def getModuleInfo():
-   icon = QtGui.QIcon(":/ClusterSettings/images/tools.png")
+   icon = QtGui.QIcon(":/ClusterSettings/images/management.png")
    return (ClusterSettings, icon)
 
 if __name__ == "__main__":

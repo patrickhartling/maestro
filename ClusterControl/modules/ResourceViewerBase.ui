@@ -88,6 +88,8 @@
   </layout>
  </widget>
  <pixmapfunction></pixmapfunction>
- <resources/>
+ <resources>
+  <include location="ResourceViewerResource.qrc" />
+ </resources>
  <connections/>
 </ui>
