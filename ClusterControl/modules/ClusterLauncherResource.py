@@ -1,6 +1,6 @@
 # Resource object code
 #
-#      by: The Resource Compiler for PyQt (Qt v4.1.0)
+#      by: The Resource Compiler for PyQt (Qt v4.1.2)
 #
 # WARNING! All changes made in this file will be lost!
 

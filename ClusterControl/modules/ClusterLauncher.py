@@ -52,7 +52,7 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       self.actionDict          = {}   # Storage for user-defined action slots
       self.activeThread        = None
 
-   def configure(self, clusterModel):
+   def configure(self, clusterModel, daemon):
       self.mClusterModel = clusterModel
       self.mElement = clusterModel.mElement
       self.mTreeModel = LauncherModel.TreeModel(self.mElement)

@@ -125,7 +125,7 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
       self.mClusterListView.reset()
       self.refreshNodeInfo()
 
-   def configure(self, clusterModel):
+   def configure(self, clusterModel, daemon):
       """ Configure the user interface with data in cluster configuration. """
       # Set the new cluster configuration
       if not None == self.mClusterModel:

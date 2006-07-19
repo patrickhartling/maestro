@@ -3,6 +3,9 @@
 from PyQt4 import QtGui, QtCore
 import ResourceViewerBase
 import ResourceViewerResource
+import Pyro.core
+
+import daemon.SettingsService
 
 class ResourceViewer(QtGui.QWidget, ResourceViewerBase.Ui_ResourceViewerBase):
    def __init__(self, parent = None):
@@ -21,25 +24,45 @@ class ResourceViewer(QtGui.QWidget, ResourceViewerBase.Ui_ResourceViewerBase):
       delegate = PixelDelegate(self.mResourceTable)
       self.mResourceTable.setItemDelegate(delegate)
       
-      QtCore.QObject.connect(self.mRefreshBtn,QtCore.SIGNAL("clicked()"), self.onRefresh)
+#      QtCore.QObject.connect(self.mRefreshBtn,QtCore.SIGNAL("clicked()"), self.onRefresh)
 
       # Timer to refresh pyro connections to nodes.
-      self.mRefreshTimer = QtCore.QTimer()
-      self.mRefreshTimer.setInterval(1000)
-      self.mRefreshTimer.start()
-      QtCore.QObject.connect(self.mRefreshTimer, QtCore.SIGNAL("timeout()"), self.onRefresh)
+#      self.mRefreshTimer = QtCore.QTimer()
+#      self.mRefreshTimer.setInterval(1000)
+#      self.mRefreshTimer.start()
+#      QtCore.QObject.connect(self.mRefreshTimer, QtCore.SIGNAL("timeout()"), self.onRefresh)
    
-   def onRefresh(self):
-      """ Called when user presses the refresh button. """
-      self.mResourceModel.refreshUsage()
-      self.mResourceTable.reset()
+#   def onRefresh(self):
+#      """ Called when user presses the refresh button. """
+#      self.mResourceModel.refreshUsage()
+#      self.mResourceTable.reset()
 
-   def configure(self, clusterModel):
+   def configure(self, clusterModel, daemon):
       """ Configure the user interface with data in cluster configuration. """
       self.mClusterModel = clusterModel
 
       self.mResourceModel = ResourceModel(self.mClusterModel)
       self.mResourceTable.setModel(self.mResourceModel)
+      self.mResourceCallback = daemon.SettingsService.ResourceCallback()
+
+      for node in self.mClusterModel.mNodes:
+         if node.proxy() is not None:
+            # Get operating system
+            try:
+               print "Trying to get something."
+               cpu_usage = node.proxy().getService("Settings").register(self.mResourceCallback)
+               #cpu_usage = node.proxy().getService("Settings").register(None)
+               print "Got something"
+            except Exception, ex:
+               print "Excepetion: ", ex
+               self.mResourceModel.mCpuUsageMap[node] = 0.0
+               self.mResourceModel.mMemUsageMap[node] = (0.0, 0.0)
+         else:
+            print "Proxy is None"
+            self.mResourceModel.mCpuUsageMap[node] = 0.0
+            self.mResourceModel.mMemUsageMap[node] = (0.0, 0.0)
+
+      
 
    def getName():
         return "Resource Viewer"

@@ -12,7 +12,7 @@ import elementtree.ElementTree as ET
 
 import modules
 
-import Pyro
+import Pyro.core
 
 gui_base_dir = ""
 try:
@@ -102,7 +102,7 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
       self.setupUi(self)
       self.mClusterModel = None
 
-   def configure(self, clusterModel):
+   def configure(self, clusterModel, daemon):
       # Set the new cluster configuration
       if not None == self.mClusterModel:
          self.disconnect(self.mClusterModel, QtCore.SIGNAL("nodeAdded()"), self.onNodeAdded)
@@ -114,7 +114,7 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
       self.mTabPane.setModel(self.mClusterModel)
       
       for module in self.mModulePanels:
-         module.configure(clusterModel)
+         module.configure(clusterModel, daemon)
 
       
 
@@ -301,6 +301,12 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
    #   #self.mTextEdit.setText(str(message))
    #   self.mTextEdit.append("Aron")
 
+daemon = None
+
+def onUpdatePyro():
+   global daemon
+   daemon.handleRequests(timeout=0)
+
 def main():
    Pyro.config.PYRO_LOGFILE = 'Pyro_sys_log'
    Pyro.config.PYRO_USER_LOGFILE = 'Pyro_user_log'
@@ -318,9 +324,19 @@ def main():
       # Try to make inital connections
       cluster_model.refreshConnections()
 
+      Pyro.core.initServer()
+      Pyro.core.initClient()
+      global daemon
+      daemon = Pyro.core.Daemon()
+
+      # Create timer to call onUpdate once per frame
+      update_timer = QtCore.QTimer()
+      QtCore.QObject.connect(update_timer, QtCore.SIGNAL("timeout()"), onUpdatePyro)
+      update_timer.start(1000)
+
       # Create and display GUI
       cc = ClusterControl()
-      cc.configure(cluster_model)
+      cc.configure(cluster_model, daemon)
       cc.show()
       sys.exit(app.exec_())
    except IOError, ex:
