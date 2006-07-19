@@ -305,6 +305,7 @@ daemon = None
 
 def onUpdatePyro():
    global daemon
+   print "updatePyro: ", daemon
    daemon.handleRequests(timeout=0)
 
 def main():

@@ -5,7 +5,7 @@ import ResourceViewerBase
 import ResourceViewerResource
 import Pyro.core
 
-import daemon.SettingsService
+import services.SettingsService
 
 class ResourceViewer(QtGui.QWidget, ResourceViewerBase.Ui_ResourceViewerBase):
    def __init__(self, parent = None):
@@ -43,14 +43,15 @@ class ResourceViewer(QtGui.QWidget, ResourceViewerBase.Ui_ResourceViewerBase):
 
       self.mResourceModel = ResourceModel(self.mClusterModel)
       self.mResourceTable.setModel(self.mResourceModel)
-      self.mResourceCallback = daemon.SettingsService.ResourceCallback()
+      self.mResourceCallback = services.SettingsService.ResourceCallback()
+      daemon.connect(self.mResourceCallback)
 
       for node in self.mClusterModel.mNodes:
          if node.proxy() is not None:
             # Get operating system
             try:
                print "Trying to get something."
-               cpu_usage = node.proxy().getService("Settings").register(self.mResourceCallback)
+               cpu_usage = node.proxy().getService("Settings").register(self.mResourceCallback.getProxy())
                #cpu_usage = node.proxy().getService("Settings").register(None)
                print "Got something"
             except Exception, ex:

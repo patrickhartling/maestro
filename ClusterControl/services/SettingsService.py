@@ -12,6 +12,7 @@ if os.name == 'nt':
    import wmi
 
 from Queue import Queue
+from threading import Thread
 
 #platform.system()
 #os.uname()
@@ -78,6 +79,19 @@ class SettingsService(Pyro.core.ObjBase):
    def register(self, client):
       print "REGISTER", client
       self.clients.append(client)
+
+   def onUpdate(self):
+      while (self.mRunning):
+         time.sleep(1)
+         self.shout("Hi")
+
+   def start(self):
+      self.mRunning = True
+      self.mThread=Thread(target=self.onUpdate)
+      self.mThread.start()
+
+   def stop(self):
+      self.mRunning = False
 
    def shout(self, message):
       print "Got shout: ", message

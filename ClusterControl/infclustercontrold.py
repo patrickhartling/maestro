@@ -5,8 +5,8 @@ import re
 import Pyro.core
 import Pyro.naming
 
-import SettingsService
-import process
+import services.SettingsService
+import util.process
 import datetime
 import signal
 
@@ -44,10 +44,11 @@ class ClusterServer(Pyro.core.ObjBase):
    def registerInitialServices(self):
       # Register initial services
       self.mServices = {}
-      settings = SettingsService.SettingsService()
+      settings = services.SettingsService.SettingsService()
       self.getDaemon().connect(settings)
       self.mServices["Settings"] = settings.getProxy()
       self.mProcess = None
+      settings.start()
 
    def getService(self, name):
       return self.mServices[name]
@@ -202,6 +203,7 @@ if os.name == 'nt':
 
 def RunServer():
    Pyro.core.initServer()
+   Pyro.core.initClient()
    daemon = Pyro.core.Daemon()
    cluster_server = ClusterServer()
    uri = daemon.connect(cluster_server, "cluster_server")
