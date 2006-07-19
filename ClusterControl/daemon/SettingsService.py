@@ -51,6 +51,18 @@ OsNameMap = {ERROR  : 'Error',
 if os.name == 'nt':
     import win32api, win32event, win32serviceutil, win32service, win32security, ntsecuritycon
 
+
+class ResourceCallback(Pyro.core.CallbackObjBase):
+   def __init__(self):
+      Pyro.core.CallbackObjBase.__init__(self)
+
+   def reportCpuUsage(self, val):
+      print "CPU Usage: ", val
+
+   def reportMemUsage(self, val):
+      print "Mem Usage: ", val
+
+
 class SettingsService(Pyro.core.ObjBase):
    def __init__(self):
       Pyro.core.ObjBase.__init__(self)
@@ -60,6 +72,24 @@ class SettingsService(Pyro.core.ObjBase):
          self.mWMIConnection = xmi.WMI()
       else:
          self.mLastCPUTime = [0,0,0,0]
+
+      self.clients = []
+
+   def register(self, client):
+      print "REGISTER", client
+      self.clients.append(client)
+
+   def shout(self, message):
+      print "Got shout: ", message
+      for c in self.clients[:]: # use a copy of the list
+         try:
+            c.reportCpuUsage(self.getCpuUsage()) # oneway call
+         except Pyro.errors.ConnectionClosedError, x:
+            # connection dropped, remove the listener if it's still there
+            # check for existence because other thread may have killed it already
+            if c in self.clients:
+               self.clients.remove(c)
+               print 'Removed dead listener',c
 
    def getPlatform(self):
       """Returns tuple with error code and platform code.
