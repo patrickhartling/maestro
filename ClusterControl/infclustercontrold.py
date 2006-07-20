@@ -7,8 +7,10 @@ import Pyro.naming
 
 import services.SettingsService
 import util.process
+import util.EventManager
 import datetime
 import signal
+import time
 
 ERROR = 0
 LINUX = 1
@@ -40,6 +42,7 @@ if os.name == 'nt':
 class ClusterServer(Pyro.core.ObjBase):
    def __init__(self):
       Pyro.core.ObjBase.__init__(self)
+      self.mEventManager = util.EventManager.EventManager()
 
    def registerInitialServices(self):
       # Register initial services
@@ -48,7 +51,12 @@ class ClusterServer(Pyro.core.ObjBase):
       self.getDaemon().connect(settings)
       self.mServices["Settings"] = settings.getProxy()
       self.mProcess = None
-      settings.start()
+
+      # Register callbacks to send info to clients
+      self.mEventManager.timers().createTimer(settings.update, 2.0)
+
+   def update(self):
+      self.mEventManager.update()
 
    def getService(self, name):
       return self.mServices[name]
@@ -213,7 +221,11 @@ def RunServer():
    print "The object's uri is:",uri
 
    try:
-      daemon.requestLoop()
+      #daemon.requestLoop()
+      while (True):
+         daemon.handleRequests(timeout=0.5)
+         cluster_server.update()
+         #time.sleep(0)
    except:
       print "Unregistering Pyro objects"
       daemon.shutdown(True)
