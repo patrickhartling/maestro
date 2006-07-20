@@ -24,18 +24,13 @@ class ResourceViewer(QtGui.QWidget, ResourceViewerBase.Ui_ResourceViewerBase):
       delegate = PixelDelegate(self.mResourceTable)
       self.mResourceTable.setItemDelegate(delegate)
       
-#      QtCore.QObject.connect(self.mRefreshBtn,QtCore.SIGNAL("clicked()"), self.onRefresh)
+   def reportCpuUsage(self, ip, val):
+      print "RV CPU Usage [%s]: %s" % (ip, val)
+      self.mResourceModel.mCpuUsageMap[ip] = val
+      self.mResourceTable.reset()
 
-      # Timer to refresh pyro connections to nodes.
-#      self.mRefreshTimer = QtCore.QTimer()
-#      self.mRefreshTimer.setInterval(1000)
-#      self.mRefreshTimer.start()
-#      QtCore.QObject.connect(self.mRefreshTimer, QtCore.SIGNAL("timeout()"), self.onRefresh)
-   
-#   def onRefresh(self):
-#      """ Called when user presses the refresh button. """
-#      self.mResourceModel.refreshUsage()
-#      self.mResourceTable.reset()
+   def reportMemUsage(self, ip, val):
+      print "RV Mem Usage [%s]: %s" % (hostname, val)
 
    def configure(self, clusterModel, daemon):
       """ Configure the user interface with data in cluster configuration. """
@@ -44,25 +39,21 @@ class ResourceViewer(QtGui.QWidget, ResourceViewerBase.Ui_ResourceViewerBase):
       self.mResourceModel = ResourceModel(self.mClusterModel)
       self.mResourceTable.setModel(self.mResourceModel)
       self.mResourceCallback = services.SettingsService.ResourceCallback()
+      self.mResourceCallback.delegateTo(self)
       daemon.connect(self.mResourceCallback)
 
       for node in self.mClusterModel.mNodes:
          if node.proxy() is not None:
             # Get operating system
             try:
-               print "Trying to get something."
                cpu_usage = node.proxy().getService("Settings").register(self.mResourceCallback.getProxy())
-               #cpu_usage = node.proxy().getService("Settings").register(None)
-               print "Got something"
+               ip_addr = node.getIpAddress()
+               self.mResourceModel.mCpuUsageMap[ip_addr] = 0.0
+               self.mResourceModel.mMemUsageMap[ip_addr] = (0.0, 0.0)
             except Exception, ex:
                print "Excepetion: ", ex
-               self.mResourceModel.mCpuUsageMap[node] = 0.0
-               self.mResourceModel.mMemUsageMap[node] = (0.0, 0.0)
          else:
             print "Proxy is None"
-            self.mResourceModel.mCpuUsageMap[node] = 0.0
-            self.mResourceModel.mMemUsageMap[node] = (0.0, 0.0)
-
       
 
    def getName():
@@ -126,51 +117,51 @@ class ResourceModel(QtCore.QAbstractTableModel):
 
       cm_index = self.mClusterModel.createIndex(index.row(), index.column())
 
+      node = self.mClusterModel.data(cm_index, QtCore.Qt.UserRole)
+      ip_addr = node.getIpAddress()
       if index.column() == 0:
          return QtCore.QVariant(self.mClusterModel.data(cm_index))
       elif index.column() == 1:
-         node = self.mClusterModel.data(cm_index, QtCore.Qt.UserRole)
-         if self.mCpuUsageMap.has_key(node):
-            return QtCore.QVariant(self.mCpuUsageMap[node])
-         else:
+         try:
+            return QtCore.QVariant(self.mCpuUsageMap[ip_addr])
+         except:
             return QtCore.QVariant(0.0)
       elif index.column() == 2:
          node = self.mClusterModel.data(cm_index, QtCore.Qt.UserRole)
-         if self.mMemUsageMap.has_key(node):
-            return QtCore.QVariant(self.mMemUsageMap[node][0])
-         else:
+         try:
+            return QtCore.QVariant(self.mCpuUsageMap[ip_addr][0])
+         except:
             return QtCore.QVariant(0.0)
       elif index.column() == 3:
          node = self.mClusterModel.data(cm_index, QtCore.Qt.UserRole)
-         if self.mMemUsageMap.has_key(node):
-            return QtCore.QVariant(self.mMemUsageMap[node][1])
-         else:
+         try:
+            return QtCore.QVariant(self.mCpuUsageMap[ip_addr][1])
+         except:
             return QtCore.QVariant(0.0)
-
       
       return QtCore.QVariant()
 
-   def refreshUsage(self):
-      for node in self.mClusterModel.mNodes:
-         if node.proxy() is not None:
-            # Get operating system
-            try:
-               cpu_usage = node.proxy().getService("Settings").getCpuUsage()
-               self.mCpuUsageMap[node] = cpu_usage
-            except Exception, ex:
-               print "Excepetion", ex
-               self.mCpuUsageMap[node] = 0.0
-            try:
-               mem_usage = node.proxy().getService("Settings").getMemUsage()
-               self.mMemUsageMap[node] = mem_usage
-            except Exception, ex:
-               print "Excepetion", ex
-               self.mMemUsageMap[node] = (0.0, 0.0)
-
-         else:
-            print "Proxy is None"
-            self.mCpuUsageMap[node] = 0.0
-            self.mMemUsageMap[node] = (0.0, 0.0)
+#   def refreshUsage(self):
+#      for node in self.mClusterModel.mNodes:
+#         if node.proxy() is not None:
+#            # Get operating system
+#            try:
+#               cpu_usage = node.proxy().getService("Settings").getCpuUsage()
+#               self.mCpuUsageMap[node] = cpu_usage
+#            except Exception, ex:
+#               print "Excepetion", ex
+#               self.mCpuUsageMap[node] = 0.0
+#            try:
+#               mem_usage = node.proxy().getService("Settings").getMemUsage()
+#               self.mMemUsageMap[node] = mem_usage
+#            except Exception, ex:
+#               print "Excepetion", ex
+#               self.mMemUsageMap[node] = (0.0, 0.0)
+#
+#         else:
+#            print "Proxy is None"
+#            self.mCpuUsageMap[node] = 0.0
+#            self.mMemUsageMap[node] = (0.0, 0.0)
 
 
 def getModuleInfo():

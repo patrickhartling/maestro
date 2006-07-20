@@ -9,6 +9,7 @@ from PyQt4 import QtCore, QtGui
 from Queue import Queue
 
 import copy
+import socket
 
 import modules.ClusterSettingsResource
 
@@ -182,17 +183,20 @@ class ClusterNode:
       return self.mElement.set("name", newName)
 
    def getHostname(self):
-      return self.mElement.get("hostname")
+      return self.mHostname
 
    def setHostname(self, newHostname):
       return self.mElement.set("hostname", newHostname)
+
+   def getIpAddress(self):
+      return socket.gethostbyname(self.mHostname)
 
    def connect(self):
       if None == self.mProxy:
          try:
             print "Trying to connect to: PYROLOC://%s:7766/cluster_server" % (self.getHostname())
             self.mProxy = Pyro.core.getProxyForURI("PYROLOC://" + self.getHostname() + ":7766/cluster_server")
-            print "Connected to [%s]" % (self.getName())
+            print "Connected to [%s] [%s]" % (self.getName(), self.mProxy.GUID())
             return True
          except:
             self.mProxy = None

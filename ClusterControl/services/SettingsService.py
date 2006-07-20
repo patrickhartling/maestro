@@ -7,6 +7,7 @@ import popen2
 import re
 import time
 import string
+import socket
 
 if os.name == 'nt':
    import wmi
@@ -57,11 +58,11 @@ class ResourceCallback(Pyro.core.CallbackObjBase):
    def __init__(self):
       Pyro.core.CallbackObjBase.__init__(self)
 
-   def reportCpuUsage(self, val):
-      print "CPU Usage: ", val
+   def reportCpuUsage(self, ip, val):
+      print "CPU Usage [%s]: %s" % (ip, val)
 
-   def reportMemUsage(self, val):
-      print "Mem Usage: ", val
+   def reportMemUsage(self, ip, val):
+      print "Mem Usage [%s]: %s" % (ip, val)
 
 
 class SettingsService(Pyro.core.ObjBase):
@@ -95,9 +96,11 @@ class SettingsService(Pyro.core.ObjBase):
 
    def shout(self, message):
       print "Got shout: ", message
+      import Pyro.protocol
+      ip_address = Pyro.protocol.getIPAddress(self.daemon.hostname)
       for c in self.clients[:]: # use a copy of the list
          try:
-            c.reportCpuUsage(self.getCpuUsage()) # oneway call
+            c.reportCpuUsage(ip_address, self.getCpuUsage()) # oneway call
          except Pyro.errors.ConnectionClosedError, x:
             # connection dropped, remove the listener if it's still there
             # check for existence because other thread may have killed it already
