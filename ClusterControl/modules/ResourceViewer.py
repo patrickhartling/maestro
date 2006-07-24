@@ -23,6 +23,15 @@ class ResourceViewer(QtGui.QWidget, ResourceViewerBase.Ui_ResourceViewerBase):
       
       delegate = PixelDelegate(self.mResourceTable)
       self.mResourceTable.setItemDelegate(delegate)
+
+      QtCore.QObject.connect(self.mRefreshBtn,QtCore.SIGNAL("clicked()"), self.onRefresh)
+
+   def onRefresh(self):
+      """ Called when user presses the refresh button. """
+      if not None == self.mClusterModel:
+         self.mClusterModel.refreshConnections()
+      self.mEventDispatcher.emit("*", "settings.get_usage", ())
+      self.mEventDispatcher.emit("*", "settings.get_mem_usage", ())
       
    def reportCpuUsage(self, ip, val):
       print "RV CPU Usage [%s]: %s" % (ip, val)
@@ -40,10 +49,9 @@ class ResourceViewer(QtGui.QWidget, ResourceViewerBase.Ui_ResourceViewerBase):
 
       self.mResourceModel = ResourceModel(self.mClusterModel)
       self.mResourceTable.setModel(self.mResourceModel)
-      self.mResourceCallback = services.SettingsService.ResourceCallback()
-      self.mResourceCallback.delegateTo(self)
-      self.mEventManager = eventManager
 
+      self.mEventDispatcher = eventDispatcher
+      self.mEventManager = eventManager
       self.mEventManager.connect("*", "settings.mem_usage", self.reportMemUsage)
       self.mEventManager.connect("*", "settings.cpu_usage", self.reportCpuUsage)
 

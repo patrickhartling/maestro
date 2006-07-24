@@ -90,31 +90,22 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
       self.mEventManager = eventManager
       self.mEventDispatcher = eventDispatcher
 
-      self.mEventManager.connect("*", "settings.os", self.onReportOs)
-
-
-      self.mSettingsModel = SettingsModel(self.mClusterModel)
+      #self.mSettingsModel = SettingsModel(self.mClusterModel)
 
 
       # If selection model already exists then disconnect signal
       if not None == self.mClusterListView.selectionModel():
          QtCore.QObject.disconnect(self.mClusterListView.selectionModel(),
             QtCore.SIGNAL("currentChanged(QModelIndex,QModelIndex)"), self.onNodeSelected)
-      self.mClusterListView.setModel(self.mSettingsModel)
+      self.mClusterListView.setModel(self.mClusterModel)
       #self.mMasterCB.setModel(self.mClusterModel)
 
       # Connect new selection model
       QtCore.QObject.connect(self.mClusterListView.selectionModel(),
          QtCore.SIGNAL("currentChanged(QModelIndex,QModelIndex)"), self.onNodeSelected)
 
-   def onReportOs(self, nodeId, os):
-      print "onReportOs [%s] [%s]" % (nodeId, os)
-      self.mSettingsModel.setOperatingSystem(nodeId, os)
-
-
    def onRefresh(self):
-      """ Called when user presses the refresh button. """
-      print "onRefresh"
+      """ Get current data from remote objects. """
       if not None == self.mClusterModel:
          self.mClusterModel.refreshConnections()
 
@@ -136,7 +127,8 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
 
       # Get the currently selected node.
       selected_node = self.mClusterListView.model().data(self.mClusterListView.currentIndex(), QtCore.Qt.UserRole)
-      
+
+
       # Can't get a change if a node is not selected
       assert not None == selected_node
 
@@ -148,31 +140,38 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
          modified = True
 
       if self.mHostnameEdit.isModified():
+         # Disconnect and try to connect to new hostname later..
+         try:
+            ip_address = selected_node.getIpAddress()
+            self.mEventDispatcher.disconnect(ip_address)
+         except:
+            # Do nothing
+            pass
+
+         # Set the new hostname.
          selected_node.setHostname(str(self.mHostnameEdit.text()))
          self.mHostnameEdit.setModified(False)
          modified = True
 
-         # Disconnect and try to connect to new hostname.
-         selected_node.disconnect()
+         # Try to connect to new hostname.
          self.mClusterModel.refreshConnections()
 
       # Only update gui if something really changed.
       if modified:
-         #self.refreshNodeInfo()
+         self.refreshNodeInfo()
          # Force the cluster model to generate a dataChanged signal.
          self.mClusterListView.model().setData(self.mClusterListView.currentIndex(), QtCore.QVariant(), QtCore.Qt.DisplayRole)
    
-      #def refreshNodeInfo(self):
-      #"""
-      #Fills in the node information for the currently selected node. This gets called
-      #whenever a new node is selected in the list.
-      #"""
-
    def onNodeSelected(self, selected, deselected):
       """ Called when a cluster node in the list is selected. """
-      #self.refreshNodeInfo()
+      self.refreshNodeInfo()
 
 
+   def refreshNodeInfo(self):
+      """
+      Fills in the node information for the currently selected node. This gets called
+      whenever a new node is selected in the list.
+      """
       self.mNameEdit.clear()
       self.mHostnameEdit.clear()
       self.mCurrentOsEdit.clear()
@@ -195,19 +194,13 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
          except:
             self.mIpAddressEdit.setText('Unknown')
 
-         # Get information from proxy
-#      if not None == selected_node.proxy():
-#         # Get operating system
-#         try:
-#            platform = selected_node.proxy().getService("Settings").getPlatformName()   
-#            self.mCurrentOsEdit.setText(platform)
-#         except:
-#            self.mCurrentOsEdit.setText("Unknown")
+         # Get the name of the current platform.
+         self.mCurrentOsEdit.setText(selected_node.getPlatformName())
 
    def onNewConnections(self):
+      """ Called when the cluster control has connected to another node. """
       self.mClusterListView.reset()
       self.refreshNodeInfo()
-
 
 
    def getName():
