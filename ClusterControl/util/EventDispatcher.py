@@ -6,19 +6,19 @@ class EventDispatcher(object):
        TODO:
          - Add culling of null references
    """
-   def __init__(self, hostName, callback=None):
+   def __init__(self, ipAddress, callback=None):
       """ Initialize the event dispatcher. """
       # Connections is a map of:
       #     node_guid: {signam, (slot callables,)}
       self.mConnections = {}
-      self.mHostname = hostName
+      self.mIpAddress = ipAddress
       self.mCallback = callback
 
    def register(self, nodeId, obj):
       """ Register object to recieve callback events for the given node.
       """
       if self.mConnections.has_key(nodeId):
-         raise AttributeError("EventDispatcher.connect: already connected to [%s]" % (nodeId))
+         raise AttributeError("EventDispatcher.register: already connected to [%s]" % (nodeId))
 
       self.mConnections[nodeId] = obj
       obj._setOneway(['emit'])
@@ -38,9 +38,9 @@ class EventDispatcher(object):
          print "Trying to connect to: PYROLOC://%s:7766/cluster_server" % (nodeId)
          proxy = Pyro.core.getProxyForURI("PYROLOC://" + nodeId + ":7766/cluster_server")
          print "Connected to [%s] [%s]" % (nodeId, proxy.GUID())
-         self.mConnections[nodeId] = proxy
-         proxy._setOneway(['register', 'emit'])
-         proxy.register(self.mHostname, self.mCallback)
+         self.register(nodeId, proxy)
+         proxy._setOneway(['register'])
+         proxy.register(self.mIpAddress, self.mCallback)
       except Exception, ex:
          print "Error connecting proxy to [%s]" % (nodeId)
          print ex
@@ -70,14 +70,16 @@ class EventDispatcher(object):
          raise TypeError("EventDispatcher.connect: argsTuple not of tuple type passed.")
       
       # Get local IP address to use for nodeId mask on remote nodes.
-      ip_address = Pyro.protocol.getIPAddress(self.mHostname)
+      ip_address = Pyro.protocol.getIPAddress(self.mIpAddress)
 
+      print "DEBUG: EventDispatcher.emit([%s][%s][%s])" % (nodeId, sigName, argsTuple)
       # Build up a list of all connections to emit signal on.
-      node = []
+      nodes = []
       if nodeId == "*":
          nodes = self.mConnections.items()
       elif self.mConnections.has_key(nodeId):
-         nodes = [(node, self.mConnections[nodeId])]
+         nodes = [(nodeId, self.mConnections[nodeId])]
+      print "   DEBUG: [%s][%s] " % (self.mConnections.items(), nodes)
 
       # Emit signal to selected nodes, removing any that have dropped their connection.
       for k, v in nodes:

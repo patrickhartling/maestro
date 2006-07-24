@@ -97,6 +97,7 @@ class EventManager(object):
                   # remove slot
                   pass
 
+      # If there are slots registered for all nodes, loop over them and call
       if self.mConnections.has_key("*"):
          if self.mConnections["*"].has_key(sigName):
             for slot in self.mConnections["*"][sigName]:
