@@ -68,10 +68,9 @@ class ResourceCallback(Pyro.core.CallbackObjBase):
 
 
 class SettingsService(Pyro.core.ObjBase):
-   def __init__(self, eventDispatcher):
+   def __init__(self):
       Pyro.core.ObjBase.__init__(self)
       self.mQueue = Queue()
-      self.mEventDispatcher = eventDispatcher
 
       if os.name == 'nt':
          self.mWMIConnection = xmi.WMI()
@@ -80,39 +79,30 @@ class SettingsService(Pyro.core.ObjBase):
 
       self.clients = []
 
+   def init(self, eventManager, eventDispatcher):
+      self.mEventManager = eventManager
+      self.mEventDispatcher = eventDispatcher
+
+      self.mEventManager.connect("*", "settings.get_os", self.onGetOs)
+
+   def onGetOs(self, nodeId):
+      platform = self.getPlatform()
+
+      self.mEventDispatcher.emit(nodeId, "settings.os", (platform,))
+         
+
    def register(self, client):
       print "REGISTER", client
       self.clients.append(client)
 
    def update(self):
       cpu_usage = self.getCpuUsage()
-      self.mEventDispatcher.emit("*", "cpu_usage", (cpu_usage,))
-      #self.shout("Hi")
+      platform = self.getPlatform()
+      mem_usage = self.getMemUsage()
+      self.mEventDispatcher.emit("*", "settings.cpu_usage", (cpu_usage,))
+      self.mEventDispatcher.emit("*", "settings.mem_usage", (mem_usage,))
+      self.mEventDispatcher.emit("*", "settings.os", (platform,))
 
-#   def start(self):
-#      self.mRunning = True
-#      self.mThread=Thread(target=self.onUpdate)
-#      self.mThread.start()
-
-   def stop(self):
-      self.mRunning = False
-
-#   def shout(self, message):
-#      print "Got shout: ", message
-#      import Pyro.protocol
-#      ip_address = Pyro.protocol.getIPAddress(self.daemon.hostname)
-#      cpu_usage = self.getCpuUsage()
-#      print "CPU usage: ", cpu_usage
-#
-#      for c in self.clients[:]: # use a copy of the list
-#         try:
-#            c.reportCpuUsage(ip_address, cpu_usage) # oneway call
-#         except Pyro.errors.ConnectionClosedError, x:
-#            # connection dropped, remove the listener if it's still there
-#            # check for existence because other thread may have killed it already
-#            if c in self.clients:
-#               self.clients.remove(c)
-#               print 'Removed dead listener',c
 
    def getPlatform(self):
       """Returns tuple with error code and platform code.
