@@ -44,15 +44,14 @@ class ClusterServer(Pyro.core.ObjBase):
    def __init__(self):
       Pyro.core.ObjBase.__init__(self)
       self.mEventManager = util.EventManager.EventManager()
+      self.mServices = []
 
    def registerInitialServices(self):
       self.mEventDispatcher = util.EventDispatcher.EventDispatcher(self.getDaemon().hostname)
       # Register initial services
-      self.mServices = {}
-      settings = services.SettingsService.SettingsService(self.mEventDispatcher)
-      #self.getDaemon().connect(settings)
-      #self.mServices["Settings"] = settings.getProxy()
-      self.mServices["Settings"] = settings
+      settings = services.SettingsService.SettingsService()
+      settings.init(self.mEventManager, self.mEventDispatcher)
+      self.mServices.append(settings)
       self.mProcess = None
 
       # Register callbacks to send info to clients
@@ -66,9 +65,6 @@ class ClusterServer(Pyro.core.ObjBase):
 
    def update(self):
       self.mEventManager.update()
-
-   def getService(self, name):
-      return self.mServices[name]
 
    def test(self):
       print "Test"
