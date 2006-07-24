@@ -83,31 +83,33 @@ class EventManager(object):
       if not isinstance(argsTuple, types.TupleType):
          raise TypeError("EventManager.connect: argsTuple not of tuple type passed.")
 
-      # Append out hostname to distinguish where messages are coming from.
-      argsTuple = (nodeId,) + argsTuple
+      try:
+         # Append out hostname to distinguish where messages are coming from.
+         argsTuple = (nodeId,) + argsTuple
 
-      # If there are slots, loop over them and call
-      if self.mConnections.has_key(nodeId):
-         if self.mConnections[nodeId].has_key(sigName):
-            for slot in self.mConnections[nodeId][sigName]:
-               assert isinstance(slot, (WeakMethodBound, WeakMethodFree))               
-               if not slot.isDead():
-                  slot(*argsTuple)
-               else:
-                  # remove slot
-                  pass
+         # If there are slots, loop over them and call
+         if self.mConnections.has_key(nodeId):
+            if self.mConnections[nodeId].has_key(sigName):
+               for slot in self.mConnections[nodeId][sigName]:
+                  assert isinstance(slot, (WeakMethodBound, WeakMethodFree))               
+                  if not slot.isDead():
+                     slot(*argsTuple)
+                  else:
+                     # remove slot
+                     pass
 
-      # If there are slots registered for all nodes, loop over them and call
-      if self.mConnections.has_key("*"):
-         if self.mConnections["*"].has_key(sigName):
-            for slot in self.mConnections["*"][sigName]:
-               assert isinstance(slot, (WeakMethodBound, WeakMethodFree))               
-               if not slot.isDead():
-                  slot(*argsTuple)
-               else:
-                  # remove slot
-                  pass
-
+         # If there are slots registered for all nodes, loop over them and call
+         if self.mConnections.has_key("*"):
+            if self.mConnections["*"].has_key(sigName):
+               for slot in self.mConnections["*"][sigName]:
+                  assert isinstance(slot, (WeakMethodBound, WeakMethodFree))               
+                  if not slot.isDead():
+                     slot(*argsTuple)
+                  else:
+                     # remove slot
+                     pass
+      except Exception, ex:
+         print "ERROR: EventManager.emit(%s, %s, %s) [%s]" % (nodeId, sigName, argsTuple, ex)
          
 
    def timers(self):

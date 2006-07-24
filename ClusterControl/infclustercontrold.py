@@ -5,6 +5,7 @@ import re
 import Pyro.core
 import Pyro.naming
 
+import services.LaunchService
 import services.SettingsService
 import util.process
 import util.EventManager
@@ -53,9 +54,13 @@ class ClusterServer(Pyro.core.ObjBase):
       settings.init(self.mEventManager, self.mEventDispatcher)
       self.mServices.append(settings)
       self.mProcess = None
+      
+      launch_service = services.LaunchService.LaunchService()
+      launch_service.init(self.mEventManager, self.mEventDispatcher)
+      self.mServices.append(launch_service)
 
       # Register callbacks to send info to clients
-      self.mEventManager.timers().createTimer(settings.update, 2.0)
+      #self.mEventManager.timers().createTimer(settings.update, 2.0)
 
    def register(self, nodeId, obj):
       self.mEventDispatcher.register(nodeId, obj)

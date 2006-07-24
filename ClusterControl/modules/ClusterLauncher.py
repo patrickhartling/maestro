@@ -60,6 +60,9 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
       self.mTreeView.setModel(self.mTreeModel)
       self.mTableView.setModel(self.mTableModel)
 
+      self.mEventManager = eventManager
+      self.mEventDispatcher = eventDispatcher
+
       self._fillInApps()
 
       QtCore.QObject.connect(self.mTreeView.selectionModel(),
@@ -180,8 +183,10 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
          print "   Final Cmd [%s]" % (total_command)
          print "   Cwd       [%s]" % (cwd)
          print "   EnvVars   [%s]" % (option_visitor.mEnvVars)
-         node.runCommand(command=total_command, cwd=cwd, envMap=env_map, outputLogger=self.mClusterModel.mOutputLogger)
-
+         #node.runCommand(command=total_command, cwd=cwd, envMap=env_map, outputLogger=self.mClusterModel.mOutputLogger)
+         ip_address = node.getIpAddress()
+         self.mEventDispatcher.emit(ip_address, "launch.run_command", (total_command, cwd, env_map))
+         
 
    def getName():
         return "Cluster Launcher"

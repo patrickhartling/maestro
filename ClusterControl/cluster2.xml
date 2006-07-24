@@ -49,6 +49,8 @@
         </choice>
       </app>
       <app label="Test1" global_options="VR Juggler 2.0" tooltip="Test 1" helpUrl="">
+        <command class="" visible="false" selected="true">ls</command>
+        <cwd class="" visible="false" selected="true">/home/aronb</cwd>
       </app>
     </applications>
     <global_options>
