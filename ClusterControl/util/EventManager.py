@@ -94,6 +94,18 @@ class EventManager(object):
                   # remove slot
                   pass
 
+      if self.mConnections.has_key("*"):
+         if self.mConnections["*"].has_key(sigName):
+            for slot in self.mConnections["*"][sigName]:
+               assert isinstance(slot, (WeakMethodBound, WeakMethodFree))               
+               if not slot.isDead():
+                  slot(*argsTuple)
+               else:
+                  # remove slot
+                  pass
+
+         
+
    def timers(self):
       """ Return the timer handler class. """
       return self.mTimerHandler

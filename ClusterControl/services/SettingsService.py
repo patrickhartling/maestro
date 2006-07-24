@@ -9,6 +9,8 @@ import time
 import string
 import socket
 
+import util.EventDispatcher
+
 if os.name == 'nt':
    import wmi
 
@@ -66,9 +68,10 @@ class ResourceCallback(Pyro.core.CallbackObjBase):
 
 
 class SettingsService(Pyro.core.ObjBase):
-   def __init__(self):
+   def __init__(self, eventDispatcher):
       Pyro.core.ObjBase.__init__(self)
       self.mQueue = Queue()
+      self.mEventDispatcher = eventDispatcher
 
       if os.name == 'nt':
          self.mWMIConnection = xmi.WMI()
@@ -82,7 +85,9 @@ class SettingsService(Pyro.core.ObjBase):
       self.clients.append(client)
 
    def update(self):
-      self.shout("Hi")
+      cpu_usage = self.getCpuUsage()
+      self.mEventDispatcher.emit("*", "cpu_usage", (cpu_usage,))
+      #self.shout("Hi")
 
 #   def start(self):
 #      self.mRunning = True
@@ -92,22 +97,22 @@ class SettingsService(Pyro.core.ObjBase):
    def stop(self):
       self.mRunning = False
 
-   def shout(self, message):
-      print "Got shout: ", message
-      import Pyro.protocol
-      ip_address = Pyro.protocol.getIPAddress(self.daemon.hostname)
-      cpu_usage = self.getCpuUsage()
-      print "CPU usage: ", cpu_usage
-
-      for c in self.clients[:]: # use a copy of the list
-         try:
-            c.reportCpuUsage(ip_address, cpu_usage) # oneway call
-         except Pyro.errors.ConnectionClosedError, x:
-            # connection dropped, remove the listener if it's still there
-            # check for existence because other thread may have killed it already
-            if c in self.clients:
-               self.clients.remove(c)
-               print 'Removed dead listener',c
+#   def shout(self, message):
+#      print "Got shout: ", message
+#      import Pyro.protocol
+#      ip_address = Pyro.protocol.getIPAddress(self.daemon.hostname)
+#      cpu_usage = self.getCpuUsage()
+#      print "CPU usage: ", cpu_usage
+#
+#      for c in self.clients[:]: # use a copy of the list
+#         try:
+#            c.reportCpuUsage(ip_address, cpu_usage) # oneway call
+#         except Pyro.errors.ConnectionClosedError, x:
+#            # connection dropped, remove the listener if it's still there
+#            # check for existence because other thread may have killed it already
+#            if c in self.clients:
+#               self.clients.remove(c)
+#               print 'Removed dead listener',c
 
    def getPlatform(self):
       """Returns tuple with error code and platform code.

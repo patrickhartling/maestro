@@ -26,6 +26,8 @@ SOLARIS = 8
 class ClusterModel(QtCore.QAbstractListModel):
    def __init__(self, xmlTree, parent=None):
       QtCore.QAbstractListModel.__init__(self, parent)
+
+      self.mEventDispatcher = None
       # Store cluster XML element
       self.mElement = xmlTree.getroot()
       assert self.mElement.tag == "cluster_config"
@@ -63,6 +65,9 @@ class ClusterModel(QtCore.QAbstractListModel):
       # Simple callback to print all output to stdout
       def debugCallback(message):
          sys.stdout.write("DEBUG: " + message)
+
+   def init(self, eventDispatcher):
+      self.mEventDispatcher = eventDispatcher
 
    def insertRows(self, row, count, parent):
       self.beginInsertRows(QtCore.QModelIndex(), row, row + count - 1)
@@ -108,8 +113,8 @@ class ClusterModel(QtCore.QAbstractListModel):
       new_connections = False
 
       for n in self.mNodes:
-         if None == n.mProxy:
-            if n.connect():
+         if (not self.mEventDispatcher.isConnected(n.getIpAddress())):
+            if self.mEventDispatcher.connect(n.getIpAddress()):
                new_connections = True
 
       if new_connections:
@@ -131,11 +136,11 @@ class ClusterModel(QtCore.QAbstractListModel):
         
       if role == QtCore.Qt.DecorationRole:
          cluster_node = self.mNodes[index.row()]
-         try:
-            index = cluster_node.proxy().getService("Settings").getPlatform()
-            return QtCore.QVariant(self.mIcons[index])
-         except:
-            return QtCore.QVariant(self.mIcons[ERROR])
+         #try:
+         #   index = cluster_node.proxy().getService("Settings").getPlatform()
+         #   return QtCore.QVariant(self.mIcons[index])
+         #except:
+         return QtCore.QVariant(self.mIcons[ERROR])
       elif role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:
          return QtCore.QVariant(str(self.mNodes[index.row()].getName()))
       elif role == QtCore.Qt.UserRole:

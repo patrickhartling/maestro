@@ -9,7 +9,8 @@ import ClusterControlBase
 import ClusterControlResource
 import ClusterModel
 import elementtree.ElementTree as ET
-
+import util.EventManager
+import util.EventDispatcher
 import modules
 
 import Pyro.core
@@ -102,7 +103,7 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
       self.setupUi(self)
       self.mClusterModel = None
 
-   def configure(self, clusterModel, daemon):
+   def init(self, clusterModel, daemon):
       # Set the new cluster configuration
       if not None == self.mClusterModel:
          self.disconnect(self.mClusterModel, QtCore.SIGNAL("nodeAdded()"), self.onNodeAdded)
@@ -112,13 +113,25 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
       self.connect(self.mClusterModel, QtCore.SIGNAL("nodeRemoved()"), self.onNodeRemoved)
       
       self.mTabPane.setModel(self.mClusterModel)
+
+      self.mEventManager = util.EventManager.EventManager()
+
+      # Create callback object so that EventManager does not have to derive from Pyro.ObjBase.
+      callback = Pyro.core.ObjBase()
+      callback.delegateTo(self.mEventManager)
+      daemon.connect(callback)
+
+      # Create an event dispatcher that will:
+      #   - Connect to remote event manager objects.
+      #   - Emit events to remote event manager objects.
+      self.mEventDispatcher = util.EventDispatcher.EventDispatcher(daemon.hostname, callback.getProxy())
       
+      # Try to make inital connections
+      self.mClusterModel.init(self.mEventDispatcher)
+
+      # Initialize all loaded modules.
       for module in self.mModulePanels:
-         module.configure(clusterModel, daemon)
-
-      
-
-
+         module.configure(self.mClusterModel, self.mEventManager, self.mEventDispatcher)
 
 
    def onNodeAdded(self, node):
@@ -322,9 +335,6 @@ def main():
       # Create cluster configuration
       cluster_model = ClusterModel.ClusterModel(tree);
 
-      # Try to make inital connections
-      cluster_model.refreshConnections()
-
       Pyro.core.initServer()
       Pyro.core.initClient()
       global daemon
@@ -337,7 +347,7 @@ def main():
 
       # Create and display GUI
       cc = ClusterControl()
-      cc.configure(cluster_model, daemon)
+      cc.init(cluster_model, daemon)
       cc.show()
       sys.exit(app.exec_())
    except IOError, ex:

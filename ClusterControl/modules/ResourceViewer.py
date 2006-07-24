@@ -32,7 +32,7 @@ class ResourceViewer(QtGui.QWidget, ResourceViewerBase.Ui_ResourceViewerBase):
    def reportMemUsage(self, ip, val):
       print "RV Mem Usage [%s]: %s" % (hostname, val)
 
-   def configure(self, clusterModel, daemon):
+   def configure(self, clusterModel, eventManager, eventDispatcher):
       """ Configure the user interface with data in cluster configuration. """
       self.mClusterModel = clusterModel
 
@@ -40,8 +40,12 @@ class ResourceViewer(QtGui.QWidget, ResourceViewerBase.Ui_ResourceViewerBase):
       self.mResourceTable.setModel(self.mResourceModel)
       self.mResourceCallback = services.SettingsService.ResourceCallback()
       self.mResourceCallback.delegateTo(self)
-      daemon.connect(self.mResourceCallback)
+      self.mEventManager = eventManager
 
+      self.mEventManager.connect("*", "cpu_usage", self.reportCpuUsage)
+      self.mEventManager.connect("*", "mem_usage", self.reportMemUsage)
+
+      """
       for node in self.mClusterModel.mNodes:
          if node.proxy() is not None:
             # Get operating system
@@ -54,6 +58,7 @@ class ResourceViewer(QtGui.QWidget, ResourceViewerBase.Ui_ResourceViewerBase):
                print "Excepetion: ", ex
          else:
             print "Proxy is None"
+      """
       
 
    def getName():

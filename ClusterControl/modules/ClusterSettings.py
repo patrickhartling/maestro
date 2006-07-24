@@ -100,7 +100,8 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
       
       # Get the currently selected node.
       selected_node = self.mClusterListView.model().data(self.mClusterListView.currentIndex(), QtCore.Qt.UserRole)
-      
+
+      print "Refresh node info for node: [%s][%s]" % (selected_node, repr(selected_node))
       # Set node information that we know
       self.mNameEdit.setText(selected_node.getName())
       self.mHostnameEdit.setText(selected_node.getHostname())
@@ -125,7 +126,7 @@ class ClusterSettings(QtGui.QWidget, ClusterSettingsBase.Ui_ClusterSettingsBase)
       self.mClusterListView.reset()
       self.refreshNodeInfo()
 
-   def configure(self, clusterModel, daemon):
+   def configure(self, clusterModel, eventManager, eventDispatcher):
       """ Configure the user interface with data in cluster configuration. """
       # Set the new cluster configuration
       if not None == self.mClusterModel:

@@ -8,6 +8,7 @@ import Pyro.naming
 import services.SettingsService
 import util.process
 import util.EventManager
+import util.EventDispatcher
 import datetime
 import signal
 import time
@@ -45,15 +46,23 @@ class ClusterServer(Pyro.core.ObjBase):
       self.mEventManager = util.EventManager.EventManager()
 
    def registerInitialServices(self):
+      self.mEventDispatcher = util.EventDispatcher.EventDispatcher(self.getDaemon().hostname)
       # Register initial services
       self.mServices = {}
-      settings = services.SettingsService.SettingsService()
-      self.getDaemon().connect(settings)
-      self.mServices["Settings"] = settings.getProxy()
+      settings = services.SettingsService.SettingsService(self.mEventDispatcher)
+      #self.getDaemon().connect(settings)
+      #self.mServices["Settings"] = settings.getProxy()
+      self.mServices["Settings"] = settings
       self.mProcess = None
 
       # Register callbacks to send info to clients
       self.mEventManager.timers().createTimer(settings.update, 2.0)
+
+   def register(self, nodeId, obj):
+      self.mEventDispatcher.register(nodeId, obj)
+
+   def emit(self, nodeId, sigName, argsTuple=()):
+      self.mEventManager.emit(nodeId, sigName, argsTuple)
 
    def update(self):
       self.mEventManager.update()
