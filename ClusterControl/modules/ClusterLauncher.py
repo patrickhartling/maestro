@@ -129,36 +129,6 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
             self.mAppSpecificWidgets.append(sh)
             sh.show()
 
-
-   """
-   def _setCommandOptions(self):
-      for w, opt in self.selectedAppOptions.items():
-         if w.isChecked():
-            self.commandChoices.append(opt.mChoices[0])
-         label = opt.mChoices[0].label
-
-      # Get combo box options.
-      for cb, opt in self.mComboBoxes.items():
-         index = cb.currentIndex()
-         result = ""
-         # XXX: Since this is not a choice, it is not yet supported.
-         if index >= len(opt.mChoices):
-            result = cb.currentText()
-         else:
-            self.commandChoices.append(opt.mChoices[index])
-            result = opt.mChoices[index].label
-
-   def onCommandButton(self, action):
-      if action.command != "" and action.command != None:
-         for node in self.mClusterModel.mNodes:
-            print "\n Node: [%s] [%s]" % (node.getName(), action.command)
-            temp_env = {'DISPLAY':':0.0'}
-            print "Running single shot command:", action.command
-            node.runSingleShotCommand(command=action.command, cwd=None, envMap=temp_env, outputLogger=self.mClusterModel.mOutputLogger)
-      else:
-         assert "This should never happen"
-   """
-
    def onKillApp(self):
       self.mClusterModel.killCommand()
       #self.launchButton.setEnabled(True)
@@ -211,58 +181,6 @@ class ClusterLauncher(QtGui.QWidget, ClusterLauncherBase.Ui_ClusterLauncherBase)
          print "   Cwd       [%s]" % (cwd)
          print "   EnvVars   [%s]" % (option_visitor.mEnvVars)
          node.runCommand(command=total_command, cwd=cwd, envMap=env_map, outputLogger=self.mClusterModel.mOutputLogger)
-      """
-      for node in self.mClusterModel.mNodes:
-         app = self.apps[self.selectedApp]
-         command_map = app.getCommandMap()
-         command = getMaxMatchValue(command_map, node.getClass())
-         opts = ""
-         for c in self.commandChoices:
-            opt = getMaxMatchValue(c.getValueMap(), node.getClass())
-
-            if not None == opt:
-               # Add flag
-               if not None == opt[0]:
-                  opts = opts + " " + opt[0]
-               # Add value
-               if not None == opt[1]:
-                  opts = opts + " " + opt[1]
-         
-         if not None == command:
-            cmd = command[0] + opts
-            cwd = command[1]
-            env_name =command[2]
-            env_map = None
-            # Try to get the correct environment
-            try:
-               env = self.mGlobalEnvs[env_name]
-               env_map = env.mEnvMap
-            except:
-               pass
-
-            #try:
-            print "\n Node: [%s] [%s] [%s] [%s]" % (node.getName(), cmd, cwd, env_map)
-            node.runCommand(command=cmd, cwd=cwd, envMap=env_map, outputLogger=self.mClusterModel.mOutputLogger)
-            #except:
-            #   pass
-
-      
-      # Construct the list of options as a single string.
-      #opts = ""
-      #for o in self.commandChoices:
-      #   opts += " " + o
-      #cmd = cmd + opts
-
-      #if cmd != "" and cmd != None:
-      #   print "running command: ", cmd
-      #   self.mClusterModel.runRemoteCommand(cmd, cmd)
-#     #    self.mClusterModel.runRemoteCommand('rpm -qa', 'rpm -qa')
-      #   #self.launchButton.setEnabled(False)
-      #   #self.killButton.setEnabled(True)
-      #else:
-      #   assert "This should never happen"
-      """
-
 
 
    def getName():
