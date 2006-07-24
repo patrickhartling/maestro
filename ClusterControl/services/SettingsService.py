@@ -84,11 +84,18 @@ class SettingsService(Pyro.core.ObjBase):
       self.mEventDispatcher = eventDispatcher
 
       self.mEventManager.connect("*", "settings.get_os", self.onGetOs)
+      self.mEventManager.connect("*", "settings.get_usage", self.onGetUsage)
 
    def onGetOs(self, nodeId):
       platform = self.getPlatform()
 
       self.mEventDispatcher.emit(nodeId, "settings.os", (platform,))
+
+   def onGetUsage(self, nodeId):
+      cpu_usage = self.getCpuUsage()
+      mem_usage = self.getMemUsage()
+      self.mEventDispatcher.emit("*", "settings.cpu_usage", (cpu_usage,))
+      self.mEventDispatcher.emit("*", "settings.mem_usage", (mem_usage,))
          
 
    def register(self, client):
