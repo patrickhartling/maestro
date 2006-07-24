@@ -14,6 +14,7 @@ import util.EventDispatcher
 import modules
 
 import Pyro.core
+import socket
 
 gui_base_dir = ""
 try:
@@ -124,7 +125,8 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
       # Create an event dispatcher that will:
       #   - Connect to remote event manager objects.
       #   - Emit events to remote event manager objects.
-      self.mEventDispatcher = util.EventDispatcher.EventDispatcher(daemon.hostname, callback.getProxy())
+      ip_address = socket.gethostbyname(daemon.hostname)
+      self.mEventDispatcher = util.EventDispatcher.EventDispatcher(ip_address, callback.getProxy())
       
       # Try to make inital connections
       self.mClusterModel.init(self.mEventDispatcher)
