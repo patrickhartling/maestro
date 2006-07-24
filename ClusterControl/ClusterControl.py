@@ -129,7 +129,7 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
       self.mEventDispatcher = util.EventDispatcher.EventDispatcher(ip_address, callback.getProxy())
       
       # Try to make inital connections
-      self.mClusterModel.init(self.mEventDispatcher)
+      self.mClusterModel.init(self.mEventManager, self.mEventDispatcher)
 
       # Initialize all loaded modules.
       for module in self.mModulePanels:
@@ -320,7 +320,6 @@ daemon = None
 
 def onUpdatePyro():
    global daemon
-   print "updatePyro: ", daemon
    daemon.handleRequests(timeout=0)
 
 def main():
