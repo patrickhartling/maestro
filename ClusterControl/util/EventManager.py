@@ -83,6 +83,9 @@ class EventManager(object):
       if not isinstance(argsTuple, types.TupleType):
          raise TypeError("EventManager.connect: argsTuple not of tuple type passed.")
 
+      # Append out hostname to distinguish where messages are coming from.
+      argsTuple = (nodeId,) + argsTuple
+
       # If there are slots, loop over them and call
       if self.mConnections.has_key(nodeId):
          if self.mConnections[nodeId].has_key(sigName):

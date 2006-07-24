@@ -66,27 +66,23 @@ class EventDispatcher(object):
       if not isinstance(argsTuple, types.TupleType):
          raise TypeError("EventDispatcher.connect: argsTuple not of tuple type passed.")
       
-      # Append out hostname to distinguish where messages are coming from.
+      # Get local IP address to use for nodeId mask on remote nodes.
       ip_address = Pyro.protocol.getIPAddress(self.mHostname)
-      argsTuple = (ip_address,) + argsTuple
 
+      node = []
       if nodeId == "*":
-         for k, v in self.mConnections.iteritems():
-            try:
-               v.emit(nodeId, sigName, argsTuple)
-            except Pyro.errors.ConnectionClosedError, x:
-               del self.mConnections[k]
-               print 'Removed dead connection', k
-      # If there are slots, loop over them and call
+         nodes = self.mConnections.items()
       elif self.mConnections.has_key(nodeId):
+         nodes = [(node, self.mConnections[nodeId])]
+
+      for k, v in nodes:
          try:
-            self.mConnections[nodeId].emit(nodeId, sigName, argsTuple)
+            v.emit(ip_address, sigName, argsTuple)
          except Pyro.errors.ConnectionClosedError, x:
             # connection dropped, remove the listener if it's still there
             # check for existence because other thread may have killed it already
-            if self.mConnections.has_key(nodeId):
-               del self.mConnections[nodeId]
-               print 'Removed dead connection', nodeId
+            del self.mConnections[k]
+            print 'Removed dead connection', k
 
    def isConnected(self, nodeId):
       return self.mConnections.has_key(nodeId)
