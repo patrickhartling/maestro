@@ -49,14 +49,14 @@ class EventDispatcher(object):
 
    def disconnect(self, nodeId):
       """ Disconnect a signal from a slot (callable). 
-         Removes *all* found slots matching nodeId, sigName, slotCallable.
+          Removes *all* found slots matching nodeId, sigName, slotCallable.
       """
       if not isinstance(nodeId, types.StringType):
          raise TypeError("EventDispatcher.connect: nodeId of non-string type passed")
-      
+
       if self.mConnections.has_key(nodeId):
+         print "DEBUG: EventDispatcher.disconnect(%s)" % (nodeId)
          del self.mConnections[nodeId]
-   
       
    def emit(self, nodeId, sigName, argsTuple=()):
       """ Emit the named signal on the given node.
