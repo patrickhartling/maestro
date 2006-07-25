@@ -87,6 +87,8 @@ class EventManager(object):
          # Append out hostname to distinguish where messages are coming from.
          argsTuple = (nodeId,) + argsTuple
 
+         print "DEBUG: EventManager.emit([%s][%s][%s])" % (nodeId, sigName, argsTuple)
+
          # If there are slots, loop over them and call
          if self.mConnections.has_key(nodeId):
             if self.mConnections[nodeId].has_key(sigName):

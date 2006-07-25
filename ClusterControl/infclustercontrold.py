@@ -61,6 +61,7 @@ class ClusterServer(Pyro.core.ObjBase):
 
       # Register callbacks to send info to clients
       #self.mEventManager.timers().createTimer(settings.update, 2.0)
+      self.mEventManager.timers().createTimer(launch_service.update, 0)
 
    def register(self, nodeId, obj):
       self.mEventDispatcher.register(nodeId, obj)
@@ -233,10 +234,12 @@ def RunServer():
    try:
       #daemon.requestLoop()
       while (True):
-         daemon.handleRequests(timeout=0.5)
+         #daemon.handleRequests(timeout=0.5)
+         daemon.handleRequests(timeout=0.01)
          cluster_server.update()
          #time.sleep(0)
-   except:
+   except Exception, ex:
+      print "ERROR: ", ex
       print "Unregistering Pyro objects"
       daemon.shutdown(True)
 

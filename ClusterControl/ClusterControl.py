@@ -12,9 +12,12 @@ import elementtree.ElementTree as ET
 import util.EventManager
 import util.EventDispatcher
 import modules
+import LogWidget
 
 import Pyro.core
 import socket
+
+Pyro.config.PYRO_MULTITHREADED  = 0
 
 gui_base_dir = ""
 try:
@@ -28,9 +31,10 @@ class OutputTabWidget(QtGui.QTabWidget, QtGui.QAbstractItemView):
    def __init__(self, parent):
       QtGui.QTabWidget.__init__(self, parent)
       self.mClusterModel = None
-      self.mTabMap = []
+      self.mTabMap = {}
+      self.mEditMap = {}
 
-   def setModel(self, model):
+   def init(self, clusterModel, eventManager):
       #if not None == self.mClusterModel:
          #self.disconnect(self.mClusterModel, QtCore.SIGNAL(dataChanged(QModelIndex,QModelIndex)),
          #          self, QtCore.SLOT(dataChanged(QModelIndex,QModelIndex)));
@@ -43,7 +47,8 @@ class OutputTabWidget(QtGui.QTabWidget, QtGui.QAbstractItemView):
          #disconnect(d->model, SIGNAL(modelReset()), this, SLOT(reset()));
          #disconnect(d->model, SIGNAL(layoutChanged()), this, SLOT(doItemsLayout()));
 
-      self.mClusterModel = model
+      self.mClusterModel = clusterModel
+      self.mEventManager = eventManager
 
       self.connect(self.mClusterModel, QtCore.SIGNAL("rowsAboutToBeRemoved(int,int)"),
                    self.rowsAboutToBeRemoved)
@@ -52,51 +57,87 @@ class OutputTabWidget(QtGui.QTabWidget, QtGui.QAbstractItemView):
       self.connect(self.mClusterModel, QtCore.SIGNAL("dataChanged(int)"),
                    self.dataChanged)
 
+      self.mEventManager.connect("*", "launch.output", self.onOutput)
+
       self.reset()
+
    def test(self):
       print "TEST"
 
    def reset(self):
       for i in xrange(self.count()):
          self.removeTab(0)
-      self.mTabMap = []
+      self.mTabMap = {}
+      self.mEditMap = {}
          
       for i in xrange(len(self.mClusterModel.mNodes)):
          node = self.mClusterModel.mNodes[i]
-         tab = self.addOutputTab(node, i)
-         self.mTabMap.append(tab)
+         self.addOutputTab(node, i)
+
+
+   def onOutput(self, nodeId, output):
+      print "[%s]: %s" % (nodeId, output)
+      try:
+         textedit = self.mEditMap[nodeId]
+         textedit.append(output)
+      except KeyError:
+         print "ERROR: OutputTabWidget.onOutput: Got output for [%s] when we do not have a tab for it." % (nodeId)
 
    def rowsAboutToBeRemoved(self, row, count):
       for i in xrange(count):
          self.removeTab(row+i)
-         del self.mTabMap[row+i]
+         node = self.mClusterModel.mNodes[i]
+         ip_address = node.getIpAddress()
+         del self.mTabMap[ip_address]
+         del self.mEditMap[ip_address]
    
    def rowsInserted(self, row, count):
       for i in xrange(count):
          node = self.mClusterModel.mNodes[row+i]
-         tab = self.addOutputTab(node, row+i)
-         self.mTabMap.append(tab)
+         self.addOutputTab(node, row+i)
    
    def dataChanged(self, index):
+      """ Called when the name of a node changes. """
       node = self.mClusterModel.mNodes[index]
       self.setTabText(index, node.getName())
       
    def addOutputTab(self, node, index):
+      """ Adds an output tab for the specified node are the given node.
+          node - Node to add output tab for.
+          index - index to insert tab at.
+      """
+      # Ensure that we do not already have a tab for this node.
+      ip_address = node.getIpAddress()
+      if self.mTabMap.has_key(ip_address):
+         raise AttributeError("OutputTabWidget: [%s] already has a tab." % ip_address)
+      if self.mEditMap.has_key(ip_address):
+         raise AttributeError("OutputTabWidget: [%s] already has a textedit widget." % ip_address)
+
       tab = QtGui.QWidget()
       tab.setObjectName("tab")
       
-      hboxlayout2 = QtGui.QHBoxLayout(tab)
-      hboxlayout2.setMargin(9)
-      hboxlayout2.setSpacing(6)
-      hboxlayout2.setObjectName("hboxlayout2")
+      hboxlayout = QtGui.QHBoxLayout(tab)
+      hboxlayout.setMargin(9)
+      hboxlayout.setSpacing(6)
+      hboxlayout.setObjectName("TabLayout")
+
+      scroll_area = QtGui.QScrollArea(tab)
+      log_widget = LogWidget.LogWidget()
+      scroll_area.setWidget(log_widget)
+      hboxlayout.addWidget(scroll_area)
       
-      textedit = QtGui.QTextEdit(tab)
-      textedit.setObjectName("TextEdit")
-      hboxlayout2.addWidget(textedit)
-      self.insertTab(index, tab, "")
-      self.setTabText(self.indexOf(tab), node.getName())
-      self.mClusterModel.getOutputLogger().subscribeForNode(node, textedit.append)
-      return tab
+      #textedit = QtGui.QTextEdit(tab)
+      #textedit.setObjectName("TextEdit")
+      #hboxlayout.addWidget(textedit)
+      self.insertTab(index, tab, node.getName())
+      #self.setTabText(self.indexOf(tab), node.getName())
+
+      #self.mClusterModel.getOutputLogger().subscribeForNode(node, textedit.append)
+      #self.mEventManager.connect(ip_address, "launch.output", textedit.append)
+      
+      self.mTabMap[ip_address] = tab
+      #self.mEditMap[ip_address] = textedit
+      self.mEditMap[ip_address] = log_widget
 
 class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase):
    def __init__(self, parent = None):
@@ -113,9 +154,9 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
       self.connect(self.mClusterModel, QtCore.SIGNAL("nodeAdded()"), self.onNodeAdded)
       self.connect(self.mClusterModel, QtCore.SIGNAL("nodeRemoved()"), self.onNodeRemoved)
       
-      self.mTabPane.setModel(self.mClusterModel)
-
       self.mEventManager = util.EventManager.EventManager()
+
+      self.mOutputTab.init(self.mClusterModel, self.mEventManager)
 
       # Create callback object so that EventManager does not have to derive from Pyro.ObjBase.
       callback = Pyro.core.ObjBase()
@@ -149,8 +190,8 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
       widget.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.mStatusWindow)
       self.mToolbox.setBackgroundRole(QtGui.QPalette.Mid)
       
-      self.mTabPane = OutputTabWidget(self.mDockWidgetContents)
-      self.vboxlayout3.addWidget(self.mTabPane)
+      self.mOutputTab = OutputTabWidget(self.mDockWidgetContents)
+      self.vboxlayout3.addWidget(self.mOutputTab)
 
       # Load custom modules
       self.mPlugins = {}             # Dict of plugins: mod_name -> (module, ..)
@@ -344,7 +385,7 @@ def main():
       # Create timer to call onUpdate once per frame
       update_timer = QtCore.QTimer()
       QtCore.QObject.connect(update_timer, QtCore.SIGNAL("timeout()"), onUpdatePyro)
-      update_timer.start(1000)
+      update_timer.start(0)
 
       # Create and display GUI
       cc = ClusterControl()

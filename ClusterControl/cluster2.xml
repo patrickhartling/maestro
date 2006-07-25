@@ -52,6 +52,10 @@
         <command class="" visible="false" selected="true">ls</command>
         <cwd class="" visible="false" selected="true">/home/aronb</cwd>
       </app>
+      <app label="Test2" global_options="VR Juggler 2.0" tooltip="Test 1" helpUrl="">
+        <command class="" visible="false" selected="true">./test</command>
+        <cwd class="" visible="false" selected="true">/home/aronb</cwd>
+      </app>
     </applications>
     <global_options>
     </global_options>
@@ -63,5 +67,5 @@
   <cluster_node name="infiscape1" hostname="infiscape1" sub_class="master"/>
   <cluster_node name="infiscape2" hostname="infiscape2" sub_class="master"/>
   -->
-  <cluster_node name="timmy" hostname="timmy" sub_class="Linux,master"/>
+  <cluster_node name="timmy" hostname="morpheus" sub_class="Linux,master"/>
 </cluster_config>
