@@ -72,7 +72,7 @@ class LaunchService:
       print "LaunchService.onRunCommand(%s, %s, %s)" % (command, cwd, envMap)
 
       try:
-         if not None == self.mProcess and self.isCommandRunning():
+         if not None == self.mProcess and self.isProcessRunning():
             print "Command already running."
             return False
          else:
