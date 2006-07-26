@@ -154,6 +154,7 @@ class ClusterModel(QtCore.QAbstractListModel):
                   self.mEventDispatcher.emit(ip_address, "settings.get_os", ())
          except Exception, ex:
             print "WARNING: Could not connect to [%s]" % (node.getHostname())
+            print "       ", ex
 
       if new_connections:
          print "We had new connections"

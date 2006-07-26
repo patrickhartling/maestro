@@ -90,7 +90,7 @@ class LogWidget(QtGui.QWidget):
 
          self.emit(QtCore.SIGNAL('sizeChanged'), (self,))
          self.update()
-         QtGui.qApp.processEvents(QtCore.QEventLoop.AllEvents, 10)
+         #QtGui.qApp.processEvents(QtCore.QEventLoop.AllEvents, 10)
       except Exception, ex:
          print "EXCEPTION: ", ex
       

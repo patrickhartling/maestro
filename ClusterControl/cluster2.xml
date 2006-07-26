@@ -67,5 +67,8 @@
   <cluster_node name="infiscape1" hostname="infiscape1" sub_class="master"/>
   <cluster_node name="infiscape2" hostname="infiscape2" sub_class="master"/>
   -->
-  <cluster_node name="timmy" hostname="morpheus" sub_class="Linux,master"/>
+  <cluster_node name="timmy" hostname="timmy" sub_class="Linux,master"/>
+  <!--
+  <cluster_node name="morpheus" hostname="morpheus" sub_class="Linux,master"/>
+  -->
 </cluster_config>

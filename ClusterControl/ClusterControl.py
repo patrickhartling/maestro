@@ -16,6 +16,7 @@ import LogWidget
 
 import Pyro.core
 import socket
+import time
 
 Pyro.config.PYRO_MULTITHREADED  = 0
 
@@ -145,7 +146,7 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
       self.setupUi(self)
       self.mClusterModel = None
 
-   def init(self, clusterModel, daemon):
+   def init(self, clusterModel, eventManager, eventDispatcher):
       # Set the new cluster configuration
       if not None == self.mClusterModel:
          self.disconnect(self.mClusterModel, QtCore.SIGNAL("nodeAdded()"), self.onNodeAdded)
@@ -154,23 +155,11 @@ class ClusterControl(QtGui.QMainWindow, ClusterControlBase.Ui_ClusterControlBase
       self.connect(self.mClusterModel, QtCore.SIGNAL("nodeAdded()"), self.onNodeAdded)
       self.connect(self.mClusterModel, QtCore.SIGNAL("nodeRemoved()"), self.onNodeRemoved)
       
-      self.mEventManager = util.EventManager.EventManager()
+      self.mEventManager = eventManager
+      self.mEventDispatcher = eventDispatcher
 
       self.mOutputTab.init(self.mClusterModel, self.mEventManager)
-
-      # Create callback object so that EventManager does not have to derive from Pyro.ObjBase.
-      callback = Pyro.core.ObjBase()
-      callback.delegateTo(self.mEventManager)
-      daemon.connect(callback)
-
-      # Create an event dispatcher that will:
-      #   - Connect to remote event manager objects.
-      #   - Emit events to remote event manager objects.
-      ip_address = socket.gethostbyname(daemon.hostname)
-      self.mEventDispatcher = util.EventDispatcher.EventDispatcher(ip_address, callback.getProxy())
       
-      # Try to make inital connections
-      self.mClusterModel.init(self.mEventManager, self.mEventDispatcher)
 
       # Initialize all loaded modules.
       for module in self.mModulePanels:
@@ -374,23 +363,51 @@ def main():
       # Parse xml config file
       tree = ET.ElementTree(file=sys.argv[1])
 
-      # Create cluster configuration
-      cluster_model = ClusterModel.ClusterModel(tree);
 
       Pyro.core.initServer()
       Pyro.core.initClient()
       global daemon
       daemon = Pyro.core.Daemon()
 
+
       # Create timer to call onUpdate once per frame
       update_timer = QtCore.QTimer()
       QtCore.QObject.connect(update_timer, QtCore.SIGNAL("timeout()"), onUpdatePyro)
       update_timer.start(0)
 
+      pixmap = QtGui.QPixmap("/home/aronb/Source/Infiscape/tools/ClusterControl/images/cpu_array.png")
+      splash = QtGui.QSplashScreen(pixmap, QtCore.Qt.WindowStaysOnTopHint)
+      splash.show()
+      splash.showMessage("Establishing connections...")
+
+      QtGui.qApp.processEvents()
+
+      # Create the event manager
+      event_manager = util.EventManager.EventManager()
+      # Create callback object so that EventManager does not have to derive from Pyro.ObjBase.
+      callback = Pyro.core.ObjBase()
+      callback.delegateTo(event_manager)
+      daemon.connect(callback)
+
+      # Create an event dispatcher that will:
+      #   - Connect to remote event manager objects.
+      #   - Emit events to remote event manager objects.
+      ip_address = socket.gethostbyname(daemon.hostname)
+      event_dispatcher = util.EventDispatcher.EventDispatcher(ip_address, callback.getProxy())
+
+
+      # Try to make inital connections
+      # Create cluster configuration
+      cluster_model = ClusterModel.ClusterModel(tree);
+      cluster_model.init(event_manager, event_dispatcher)
+      cluster_model.refreshConnections()
+
+
       # Create and display GUI
       cc = ClusterControl()
-      cc.init(cluster_model, daemon)
+      cc.init(cluster_model, event_manager, event_dispatcher)
       cc.show()
+      splash.finish(cc)
       sys.exit(app.exec_())
    except IOError, ex:
       print "Failed to read %s: %s" % (sys.argv[1], ex.strerror)
