@@ -1,6 +1,0 @@
-# Swappable plugin
-import util.plugin
-
-class SwapPlugin(util.plugin.Plugin):
-   def getId(self):
-      return "B"
