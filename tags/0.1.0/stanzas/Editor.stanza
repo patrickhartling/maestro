@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<stanza namespace="editor">
+   <application helpUrl="help.html" label="Test Application" name="TestApplication">
+      <command class="Linux" name="linux_cmd">
+         runLinux
+      </command>
+      <choice label="Stereo" name="Stereo" tooltip="" type="one">
+         <arg editable="true" flag="-j" label="Active Stereo" name="Arg0" selected="true">
+            sim.active.jconf
+         </arg>
+      </choice>
+      <env_var key="PATH" label="Path" name="Env0">
+         /some/path
+      </env_var>
+      <choice label="VR Juggler Configuration" name="VRJConfig" tooltip="" type="one">
+         <group label="Simulator" name="Sim" selected="true">
+            <arg editable="true" flag="-j" label="Simulator Config" name="SimConfig0">
+               sim.base.jconf
+            </arg>
+            <arg editable="true" flag="-j" label="Simulator Config" name="SimConfig1">
+               sim.wand.mixin.jconf
+            </arg>
+         </group>
+         <choice label="CAVE Configuration" name="CAVE" type="one">
+            <arg editable="true" flag="-j" label="Open" name="Open">
+               open.displays.jconf
+            </arg>
+            <arg editable="true" flag="-j" label="Closed" name="Closed">
+               closed.displays.jconf
+            </arg>
+         </choice>
+      </choice>
+      <ref id="editor:Global1">
+         <add id="">
+            <group name="Powerwall">
+               <arg flag="-j" name="base">
+                  powerwall.jconf
+               </arg>
+            </group>
+         </add>
+         <remove id="Arg0"/>
+         <override flag="--jconf" id="*"/>
+      </ref>
+   </application>
+   <global_option name="Global1">
+      <arg name="Arg0"/>
+      <group name="Group0">
+         <cwd name="Cwd0"/>
+         <choice name="Choice0">
+            <arg name="SubArg0"/>
+            <arg name="SubArg1"/>
+         </choice>
+      </group>
+   </global_option>
+</stanza>

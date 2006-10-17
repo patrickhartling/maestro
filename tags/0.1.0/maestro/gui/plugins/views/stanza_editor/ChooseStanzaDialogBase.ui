@@ -1,0 +1,190 @@
+<ui version="4.0" >
+ <class>ChooseStanzaDialogBase</class>
+ <widget class="QDialog" name="ChooseStanzaDialogBase" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>569</width>
+    <height>249</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Choose Stanza</string>
+  </property>
+  <layout class="QGridLayout" >
+   <property name="margin" >
+    <number>9</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
+   <item row="2" column="0" colspan="3" >
+    <layout class="QHBoxLayout" >
+     <property name="margin" >
+      <number>0</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item>
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>251</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton" >
+       <property name="text" >
+        <string>OK</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_2" >
+       <property name="text" >
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="1" >
+    <widget class="QLineEdit" name="mNewStanzaEdit" >
+     <property name="enabled" >
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2" >
+    <widget class="QToolButton" name="mBrowseBtn" >
+     <property name="enabled" >
+      <bool>false</bool>
+     </property>
+     <property name="text" >
+      <string>Browse</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" colspan="2" >
+    <widget class="QListWidget" name="mStanzaList" />
+   </item>
+   <item row="1" column="0" >
+    <widget class="QRadioButton" name="mNewStanzaRB" >
+     <property name="text" >
+      <string>New Stanza</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" >
+    <widget class="QRadioButton" name="mExistingStazaRB" >
+     <property name="text" >
+      <string>Existing Stanza</string>
+     </property>
+     <property name="checked" >
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>mExistingStazaRB</tabstop>
+  <tabstop>mStanzaList</tabstop>
+  <tabstop>mNewStanzaRB</tabstop>
+  <tabstop>mNewStanzaEdit</tabstop>
+  <tabstop>mBrowseBtn</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>pushButton_2</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>mExistingStazaRB</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mStanzaList</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>79</x>
+     <y>100</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>145</x>
+     <y>105</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mNewStanzaRB</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mNewStanzaEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>79</x>
+     <y>204</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>279</x>
+     <y>205</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mNewStanzaRB</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mBrowseBtn</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>46</x>
+     <y>204</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>427</x>
+     <y>206</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ChooseStanzaDialogBase</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>266</x>
+     <y>226</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>116</x>
+     <y>137</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>ChooseStanzaDialogBase</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>379</x>
+     <y>225</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>435</x>
+     <y>138</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

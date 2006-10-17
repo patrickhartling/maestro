@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<stanza>
+   <application global_options="" helpUrl="" label="Directory Listing" name="DirListing" tooltip="List files in a directory.">
+      <command class="Linux" name="linux_cmd">
+         ls
+      </command>
+      <command class="Windows XP" name="windows_cmd">
+         dir
+      </command>
+      <cwd class="Linux" name="linux_cwd">
+         /
+      </cwd>
+      <cwd class="Windows XP" name="windows_cwd">
+         C:\
+      </cwd>
+   </application>
+</stanza>

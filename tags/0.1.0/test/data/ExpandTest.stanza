@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stanza namespace="expand">
+  <application name="Include_VRJugglerBasic">
+    <ref id="expand:VRJugglerBasic/*" />
+  </application>
+  <application name="Include_VRJuggler_All">
+    <ref id="expand:VRJuggler*/*" />
+  </application>
+  <application name="Include_VRJugglerByIndex">
+    <ref id="expand:VRJuggler*@1/*" />
+  </application>
+  <application name="AddOurOwnDisplaySystem">
+    <ref id="expand:VRJugglerBasic/DisplaySystem">
+      <add id="./">
+        <arg name="add0" flag="-j"/>
+      </add>
+      <add id=".">
+        <arg name="add1" flag="-j"/>
+      </add>
+      <add>
+        <arg name="add2" flag="-j"/>
+      </add>
+      <add id="Simulator">
+        <arg name="add3" flag="-j"/>
+      </add>
+      <add id="./Simulator">
+        <arg name="add4" flag="-j"/>
+      </add>
+      <add id="/Simulator">
+        <arg name="add5" flag="-j"/>
+      </add>
+    </ref>
+  </application>
+  <application name="AddDisplaySystemReference">
+    <ref id="expand:VRJugglerBasic/DisplaySystem">
+      <add>
+        <ref id="expand:OddsAndEnds/VizBox"/>
+      </add>
+    </ref>
+  </application>
+  <application name="RemoveSimDisplaySystem">
+    <ref id="expand:VRJugglerBasic/DisplaySystem">
+      <remove id="Simulator"/>
+    </ref>
+  </application>
+  <application name="OverrideAllFlags">
+    <ref id="expand:VRJugglerBasic/*">
+      <override id="*" flag="--jconf"/>
+    </ref>
+  </application>
+  <global_option name="VRJugglerBasic">
+    <choice name="DisplaySystem">
+      <group name="Simulator">
+        <arg name="base" flag="-j">sim.base.jconf</arg>
+        <arg name="wand" flag="-j">sim.wand.mixin.jconf</arg>
+      </group>
+      <group name="CAVE">
+        <arg name="displays" flag="-j">displays.jconf</arg>
+        <arg name="tracker" flag="-j">intersense.jconf</arg>
+      </group>
+    </choice>
+  </global_option>
+  <global_option name="VRJugglerSound">
+    <choice name="SonixPlugin">
+      <arg name="openal" flag="-s">openal</arg>
+      <arg name="audiere" flag="-s">audiere</arg>
+    </choice>
+  </global_option>
+  <global_option name="OddsAndEnds">
+    <group name="VizBox">
+      <arg name="base" flag="-j">vizbox.jconf</arg>
+    </group>
+  </global_option>
+  <!--
+      <add>
+        <arg name="AddedArg0" flag="-j">test.jconf</arg>
+        <ref id="expand:Global1/G1-Arg0"/>
+      </add>
+      <remove id="G0-Arg0"/>
+   -->
+</stanza>

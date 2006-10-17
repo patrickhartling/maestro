@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<stanza>
+   <application global_options="Configuration Files,VR Juggler 2.0" helpUrl="" label="Example Volume Renderer" name="ExampleVolumeRenderer" tooltip="Example Volume Renderer">
+      <command class="" hidden="true">
+         ./build.linux-i686/Viewer/infi_app
+      </command>
+      <env_var class="" hidden="true" key="DISPLAY" label="Display">
+         :0.0
+      </env_var>
+      <cwd class="" hidden="true">
+         /home/aronb/Source/Infiscape/common/IOV
+      </cwd>
+      <arg editable="true" flag="-w" label="World location">
+         world.config
+      </arg>
+      <arg editable="true" flag="-m" label="Master">
+         timmy
+      </arg>
+      <group label="VRJ Configuration">
+         <arg editable="true" flag="-j" label="Base config">
+            sim.base.jconf
+         </arg>
+         <group label="Input Configuration">
+            <arg editable="true" flag="-j" label="Tracker config">
+               sim.base.jconf
+            </arg>
+            <arg editable="true" flag="-j" label="Wand config">
+               sim.wand.mixin.jconf
+            </arg>
+         </group>
+      </group>
+      <choice label="Stereo" tooltip="" type="one">
+         <arg editable="true" flag="-j" label="Active Stereo" selected="true">
+            sim.active.jconf
+         </arg>
+         <choice label="Side " tooltip="" type="one">
+            <arg editable="true" flag="-j" label="Left">
+               sim.passive.jconf
+            </arg>
+            <arg editable="true" flag="-j" label="Right">
+               sim.passive.jconf
+            </arg>
+         </choice>
+      </choice>
+   </application>
+</stanza>
