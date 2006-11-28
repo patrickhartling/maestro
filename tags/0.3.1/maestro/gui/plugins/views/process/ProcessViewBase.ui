@@ -1,0 +1,72 @@
+<ui version="4.0" >
+ <class>ProcessViewBase</class>
+ <widget class="QWidget" name="ProcessViewBase" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>609</width>
+    <height>485</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Process View</string>
+  </property>
+  <property name="toolTip" >
+   <string>Process View: Displays a list of processes running on all nodes.</string>
+  </property>
+  <property name="statusTip" >
+   <string>Process View</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <property name="margin" >
+    <number>9</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
+   <item>
+    <widget class="QTableView" name="mProcessTable" />
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <property name="margin" >
+      <number>0</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="mRefreshBtn" >
+       <property name="text" >
+        <string>&amp;Refresh</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="mTerminateBtn" >
+       <property name="text" >
+        <string>&amp;Terminate</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
