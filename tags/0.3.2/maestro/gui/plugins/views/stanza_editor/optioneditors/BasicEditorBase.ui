@@ -1,0 +1,56 @@
+<ui version="4.0" >
+ <class>BasicEditorBase</class>
+ <widget class="QWidget" name="BasicEditorBase" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>241</width>
+    <height>168</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Basic Editor</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <property name="margin" >
+    <number>9</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
+   <item>
+    <layout class="QHBoxLayout" >
+     <property name="margin" >
+      <number>0</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="mValueLabel" >
+       <property name="text" >
+        <string>Value:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="mValueEditor" />
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="mAttribLbl" >
+     <property name="text" >
+      <string>Attributes:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTableView" name="mAttribTable" />
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
