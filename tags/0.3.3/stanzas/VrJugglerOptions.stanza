@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<stanza namespace="vrj">
+   <global_option name="BasicOptions">
+      <choice label="Debug Output Level" name="DebugOutput" parent_path="" tooltip="" type="one_cb">
+         <env_var key="VPR_DEBUG_NFY_LEVEL" label="Critical Messages" name="CRITICAL" selected="true">
+            0
+         </env_var>
+         <env_var key="VPR_DEBUG_NFY_LEVEL" label="Warning Messages" name="WARNING">
+            1
+         </env_var>
+         <env_var key="VPR_DEBUG_NFY_LEVEL" label="System Configuration Results" name="CONFIG_STATUS">
+            2
+         </env_var>
+         <env_var key="VPR_DEBUG_NFY_LEVEL" label="System Configuration Details" name="CONFIG">
+            3
+         </env_var>
+         <env_var key="VPR_DEBUG_NFY_LEVEL" label="State Changes" name="STATE">
+            4
+         </env_var>
+         <env_var key="VPR_DEBUG_NFY_LEVEL" label="Verbose" name="VERB">
+            5
+         </env_var>
+         <env_var key="VPR_DEBUG_NFY_LEVEL" label="Highly Verbose" name="HVERB">
+            6
+         </env_var>
+         <env_var key="VPR_DEBUG_NFY_LEVEL" label="Detailed" name="DETAIL">
+            7
+         </env_var>
+         <env_var key="VPR_DEBUG_NFY_LEVEL" label="Hexidecimal" name="HEX">
+            8
+         </env_var>
+         <env_var editable="true" key="VPR_DEBUG_NFY_LEVEL" label="Other" name="Other">
+            0
+         </env_var>
+      </choice>
+   </global_option>
+</stanza>
