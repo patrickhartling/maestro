@@ -1,0 +1,406 @@
+<ui version="4.0" >
+ <class>MaestroBase</class>
+ <widget class="QMainWindow" name="MaestroBase" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>557</width>
+    <height>523</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Maestro Client by Infiscape</string>
+  </property>
+  <property name="windowIcon" >
+   <iconset resource="MaestroResource.qrc" >:/Maestro/images/maestro_icon.png</iconset>
+  </property>
+  <property name="autoFillBackground" >
+   <bool>true</bool>
+  </property>
+  <property name="toolButtonStyle" >
+   <enum>Qt::ToolButtonIconOnly</enum>
+  </property>
+  <widget class="QWidget" name="centralwidget" >
+   <layout class="QGridLayout" >
+    <property name="margin" >
+     <number>9</number>
+    </property>
+    <property name="spacing" >
+     <number>6</number>
+    </property>
+    <item row="0" column="1" >
+     <widget class="QLabel" name="mViewTitleLbl" >
+      <property name="sizePolicy" >
+       <sizepolicy>
+        <hsizetype>3</hsizetype>
+        <vsizetype>5</vsizetype>
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font" >
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>12</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+        <underline>false</underline>
+        <strikeout>false</strikeout>
+       </font>
+      </property>
+      <property name="autoFillBackground" >
+       <bool>true</bool>
+      </property>
+      <property name="frameShape" >
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow" >
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <property name="lineWidth" >
+       <number>2</number>
+      </property>
+      <property name="text" >
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1" >
+     <widget class="QStackedWidget" name="mStack" >
+      <property name="sizePolicy" >
+       <sizepolicy>
+        <hsizetype>13</hsizetype>
+        <vsizetype>13</vsizetype>
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <widget class="QWidget" name="mOldPage" >
+       <property name="sizePolicy" >
+        <sizepolicy>
+         <hsizetype>5</hsizetype>
+         <vsizetype>5</vsizetype>
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="autoFillBackground" >
+        <bool>true</bool>
+       </property>
+      </widget>
+     </widget>
+    </item>
+    <item rowspan="2" row="0" column="0" >
+     <widget class="QListWidget" name="mViewList" >
+      <property name="sizePolicy" >
+       <sizepolicy>
+        <hsizetype>4</hsizetype>
+        <vsizetype>7</vsizetype>
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize" >
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize" >
+       <size>
+        <width>100</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="dragDropMode" >
+       <enum>QAbstractItemView::NoDragDrop</enum>
+      </property>
+      <property name="iconSize" >
+       <size>
+        <width>45</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="movement" >
+       <enum>QListView::Static</enum>
+      </property>
+      <property name="viewMode" >
+       <enum>QListView::IconMode</enum>
+      </property>
+      <property name="uniformItemSizes" >
+       <bool>false</bool>
+      </property>
+      <property name="sortingEnabled" >
+       <bool>false</bool>
+      </property>
+      <item>
+       <property name="text" >
+        <string>Aron</string>
+       </property>
+       <property name="icon" >
+        <iconset resource="MaestroResource.qrc" >:/Maestro/images/linux2.png</iconset>
+       </property>
+      </item>
+      <item>
+       <property name="text" >
+        <string>New Item</string>
+       </property>
+       <property name="icon" >
+        <iconset resource="MaestroResource.qrc" >:/Maestro/images/archive.png</iconset>
+       </property>
+      </item>
+      <item>
+       <property name="text" >
+        <string>New Item</string>
+       </property>
+       <property name="icon" >
+        <iconset resource="MaestroResource.qrc" >:/Maestro/images/construction.png</iconset>
+       </property>
+      </item>
+      <item>
+       <property name="text" >
+        <string>New Item</string>
+       </property>
+       <property name="icon" >
+        <iconset resource="MaestroResource.qrc" >:/Maestro/images/copy.png</iconset>
+       </property>
+      </item>
+      <item>
+       <property name="text" >
+        <string>New Item</string>
+       </property>
+       <property name="icon" >
+        <iconset resource="MaestroResource.qrc" >:/Maestro/images/desktop.png</iconset>
+       </property>
+      </item>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>557</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuTools" >
+    <property name="title" >
+     <string>&amp;Tools</string>
+    </property>
+    <addaction name="mChangeAuthAction" />
+   </widget>
+   <widget class="QMenu" name="menuFile" >
+    <property name="title" >
+     <string>&amp;File</string>
+    </property>
+    <widget class="QMenu" name="menuNew" >
+     <property name="title" >
+      <string>New</string>
+     </property>
+     <addaction name="mCreateNewEnsembleAction" />
+    </widget>
+    <widget class="QMenu" name="menuOpen" >
+     <property name="title" >
+      <string>Open</string>
+     </property>
+     <addaction name="mLoadEnsembleAction" />
+     <addaction name="mLoadStanzaAction" />
+    </widget>
+    <addaction name="separator" />
+    <addaction name="menuNew" />
+    <addaction name="menuOpen" />
+    <addaction name="mSaveEnsembleAction" />
+    <addaction name="mSaveEnsembleAsAction" />
+    <addaction name="separator" />
+    <addaction name="mSaveStanzaAction" />
+    <addaction name="mSaveAllStanzasAction" />
+    <addaction name="mSaveStanzaAsAction" />
+    <addaction name="separator" />
+    <addaction name="mArchiveLogsAction" />
+    <addaction name="mArchiveServerLogsAction" />
+    <addaction name="separator" />
+    <addaction name="mExitAction" />
+   </widget>
+   <widget class="QMenu" name="menuView" >
+    <property name="title" >
+     <string>&amp;View</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuHelp" >
+    <property name="title" >
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="mLicenseAction" />
+    <addaction name="separator" />
+    <addaction name="mAboutAction" />
+   </widget>
+   <addaction name="menuFile" />
+   <addaction name="menuTools" />
+   <addaction name="menuView" />
+   <addaction name="menuHelp" />
+  </widget>
+  <widget class="QStatusBar" name="statusbar" />
+  <widget class="QToolBar" name="mToolbar" >
+   <property name="windowTitle" >
+    <string>Maestro Toolbar</string>
+   </property>
+   <property name="movable" >
+    <bool>true</bool>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <attribute name="toolBarArea" >
+    <number>4</number>
+   </attribute>
+   <addaction name="mLoadEnsembleAction" />
+   <addaction name="mLoadStanzaAction" />
+   <addaction name="mArchiveLogsAction" />
+  </widget>
+  <widget class="QDockWidget" name="mLogWindow" >
+   <property name="allowedAreas" >
+    <set>Qt::BottomDockWidgetArea</set>
+   </property>
+   <property name="windowTitle" >
+    <string>Log Window</string>
+   </property>
+   <attribute name="dockWidgetArea" >
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="mDockWidgetContents" >
+    <layout class="QVBoxLayout" >
+     <property name="margin" >
+      <number>9</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+    </layout>
+   </widget>
+  </widget>
+  <action name="mLoadEnsembleAction" >
+   <property name="icon" >
+    <iconset resource="MaestroResource.qrc" >:/Maestro/images/maestro_icon.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Open Ensemble...</string>
+   </property>
+  </action>
+  <action name="mAboutAction" >
+   <property name="icon" >
+    <iconset resource="MaestroResource.qrc" >:/Maestro/images/infiscape.png</iconset>
+   </property>
+   <property name="text" >
+    <string>About</string>
+   </property>
+   <property name="menuRole" >
+    <enum>QAction::AboutRole</enum>
+   </property>
+  </action>
+  <action name="mLoadStanzaAction" >
+   <property name="icon" >
+    <iconset resource="MaestroResource.qrc" >:/Maestro/images/stanza.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Open Stanza...</string>
+   </property>
+  </action>
+  <action name="mSaveEnsembleAction" >
+   <property name="icon" >
+    <iconset resource="MaestroResource.qrc" >:/Maestro/images/save.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Save Ensemble</string>
+   </property>
+  </action>
+  <action name="mSaveAllStanzasAction" >
+   <property name="icon" >
+    <iconset resource="MaestroResource.qrc" >:/Maestro/images/save.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Save All Stanzas</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+A</string>
+   </property>
+  </action>
+  <action name="mArchiveLogsAction" >
+   <property name="icon" >
+    <iconset resource="MaestroResource.qrc" >:/Maestro/images/archive.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Archive Execution Logs...</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+L</string>
+   </property>
+  </action>
+  <action name="mExitAction" >
+   <property name="icon" >
+    <iconset resource="MaestroResource.qrc" >:/Maestro/images/exit.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Exit</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Q</string>
+   </property>
+   <property name="menuRole" >
+    <enum>QAction::QuitRole</enum>
+   </property>
+  </action>
+  <action name="mSaveEnsembleAsAction" >
+   <property name="text" >
+    <string>Save Ensemble As...</string>
+   </property>
+  </action>
+  <action name="mCreateNewEnsembleAction" >
+   <property name="text" >
+    <string>New Ensemble</string>
+   </property>
+  </action>
+  <action name="mSaveStanzaAsAction" >
+   <property name="text" >
+    <string>Save Stanza As...</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="mChangeAuthAction" >
+   <property name="text" >
+    <string>Change &amp;Authentication</string>
+   </property>
+  </action>
+  <action name="mArchiveServerLogsAction" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="text" >
+    <string>Archive Server Logs...</string>
+   </property>
+  </action>
+  <action name="mLicenseAction" >
+   <property name="text" >
+    <string>License Terms</string>
+   </property>
+  </action>
+  <action name="mSaveStanzaAction" >
+   <property name="text" >
+    <string>Save Stanza</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="MaestroResource.qrc" />
+ </resources>
+ <connections/>
+</ui>

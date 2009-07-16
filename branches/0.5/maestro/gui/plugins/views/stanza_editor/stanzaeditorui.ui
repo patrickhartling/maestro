@@ -1,0 +1,403 @@
+<ui version="4.0" >
+ <class>StanzaEditorBase</class>
+ <widget class="QWidget" name="StanzaEditorBase" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>455</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Stanza Editor</string>
+  </property>
+  <property name="toolTip" >
+   <string>Stanza Editor: Provides a method to create/modify application launch options.</string>
+  </property>
+  <property name="statusTip" >
+   <string>Stanza Editor</string>
+  </property>
+  <layout class="QGridLayout" >
+   <property name="margin" >
+    <number>9</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
+   <item row="1" column="0" >
+    <widget class="QFrame" name="mToolboxFrame" >
+     <property name="frameShape" >
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow" >
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" >
+      <property name="margin" >
+       <number>9</number>
+      </property>
+      <property name="spacing" >
+       <number>6</number>
+      </property>
+      <item>
+       <spacer>
+        <property name="orientation" >
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" >
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="1" >
+    <widget class="QSplitter" name="mSplitter1" >
+     <property name="sizePolicy" >
+      <sizepolicy>
+       <hsizetype>7</hsizetype>
+       <vsizetype>7</vsizetype>
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <widget class="QGraphicsView" name="mGraphicsView" >
+      <property name="sizePolicy" >
+       <sizepolicy>
+        <hsizetype>7</hsizetype>
+        <vsizetype>3</vsizetype>
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+     <widget class="QFrame" name="mEditFrame" >
+      <property name="frameShape" >
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow" >
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QVBoxLayout" >
+       <property name="margin" >
+        <number>9</number>
+       </property>
+       <property name="spacing" >
+        <number>6</number>
+       </property>
+       <item>
+        <widget class="QSplitter" name="mSplitter2" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <widget class="QTabWidget" name="mEditorTabWidget" >
+          <property name="sizePolicy" >
+           <sizepolicy>
+            <hsizetype>7</hsizetype>
+            <vsizetype>7</vsizetype>
+            <horstretch>4</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+         <widget class="QTextEdit" name="mHelpWidget" >
+          <property name="sizePolicy" >
+           <sizepolicy>
+            <hsizetype>7</hsizetype>
+            <vsizetype>7</vsizetype>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="textInteractionFlags" >
+           <enum>Qt::TextBrowserInteraction</enum>
+          </property>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2" >
+    <widget class="QGroupBox" name="mToolGroupBox" >
+     <property name="title" >
+      <string/>
+     </property>
+     <layout class="QHBoxLayout" >
+      <property name="margin" >
+       <number>0</number>
+      </property>
+      <property name="spacing" >
+       <number>3</number>
+      </property>
+      <item>
+       <widget class="QToolButton" name="mNewAppBtn" >
+        <property name="toolTip" >
+         <string>New Application</string>
+        </property>
+        <property name="text" >
+         <string>...</string>
+        </property>
+        <property name="icon" >
+         <iconset resource="../../../MaestroResource.qrc" >:/Maestro/images/stanza_new.png</iconset>
+        </property>
+        <property name="iconSize" >
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="mNewGlobalOptBtn" >
+        <property name="toolTip" >
+         <string>New Global Option</string>
+        </property>
+        <property name="text" >
+         <string>...</string>
+        </property>
+        <property name="icon" >
+         <iconset resource="../../../MaestroResource.qrc" >:/Maestro/images/stanza_global_new.png</iconset>
+        </property>
+        <property name="iconSize" >
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="mLayoutBtn" >
+        <property name="toolTip" >
+         <string>Layout</string>
+        </property>
+        <property name="text" >
+         <string>Layout</string>
+        </property>
+        <property name="icon" >
+         <iconset resource="StanzaEditorResource.qrc" >:/Maestro/StanzaEditor/images/layout.png</iconset>
+        </property>
+        <property name="iconSize" >
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="popupMode" >
+         <enum>QToolButton::MenuButtonPopup</enum>
+        </property>
+        <property name="toolButtonStyle" >
+         <enum>Qt::ToolButtonIconOnly</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="mNoDragBtn" >
+        <property name="toolTip" >
+         <string>Select Mode</string>
+        </property>
+        <property name="text" >
+         <string>...</string>
+        </property>
+        <property name="icon" >
+         <iconset resource="StanzaEditorResource.qrc" >:/Maestro/StanzaEditor/images/no-drag.png</iconset>
+        </property>
+        <property name="iconSize" >
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="checkable" >
+         <bool>true</bool>
+        </property>
+        <property name="checked" >
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="mScrollDragBtn" >
+        <property name="toolTip" >
+         <string>Scroll Mode</string>
+        </property>
+        <property name="text" >
+         <string>...</string>
+        </property>
+        <property name="icon" >
+         <iconset resource="StanzaEditorResource.qrc" >:/Maestro/StanzaEditor/images/scroll-drag.png</iconset>
+        </property>
+        <property name="iconSize" >
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="checkable" >
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="mRubberBandDragBtn" >
+        <property name="toolTip" >
+         <string>Group Mode</string>
+        </property>
+        <property name="text" >
+         <string>...</string>
+        </property>
+        <property name="icon" >
+         <iconset resource="StanzaEditorResource.qrc" >:/Maestro/StanzaEditor/images/rubber-drag.png</iconset>
+        </property>
+        <property name="iconSize" >
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="checkable" >
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="mZoomExtentsBtn" >
+        <property name="toolTip" >
+         <string>Zoom Extents</string>
+        </property>
+        <property name="text" >
+         <string>...</string>
+        </property>
+        <property name="icon" >
+         <iconset resource="StanzaEditorResource.qrc" >:/Maestro/StanzaEditor/images/zoom-extents.png</iconset>
+        </property>
+        <property name="iconSize" >
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="autoRaise" >
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="mApplicationLbl" >
+        <property name="text" >
+         <string>Application:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="mStanzaCB" >
+        <property name="sizePolicy" >
+         <sizepolicy>
+          <hsizetype>3</hsizetype>
+          <vsizetype>0</vsizetype>
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="mClassLine" >
+        <property name="orientation" >
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="mClassFilterLbl" >
+        <property name="text" >
+         <string/>
+        </property>
+        <property name="pixmap" >
+         <pixmap resource="StanzaEditorResource.qrc" >:/Maestro/StanzaEditor/images/filter.png</pixmap>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="mOperatingSystemCB" >
+        <property name="sizePolicy" >
+         <sizepolicy>
+          <hsizetype>7</hsizetype>
+          <vsizetype>0</vsizetype>
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="mClassFilterComma" >
+        <property name="font" >
+         <font>
+          <pointsize>20</pointsize>
+         </font>
+        </property>
+        <property name="text" >
+         <string/>
+        </property>
+        <property name="pixmap" >
+         <pixmap/>
+        </property>
+        <property name="alignment" >
+         <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="mClassFilterCB" >
+        <property name="sizePolicy" >
+         <sizepolicy>
+          <hsizetype>7</hsizetype>
+          <vsizetype>0</vsizetype>
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="editable" >
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+  <action name="mNewApplicationAction" >
+   <property name="icon" >
+    <iconset resource="../../../MaestroResource.qrc" >:/Maestro/images/stanza_new.png</iconset>
+   </property>
+   <property name="text" >
+    <string>New Application</string>
+   </property>
+  </action>
+  <action name="mNewGlobalOptionAction" >
+   <property name="icon" >
+    <iconset resource="../../../MaestroResource.qrc" >:/Maestro/images/stanza_global_new.png</iconset>
+   </property>
+   <property name="text" >
+    <string>New Global Option</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="StanzaEditorResource.qrc" />
+  <include location="../../../MaestroResource.qrc" />
+ </resources>
+ <connections/>
+</ui>

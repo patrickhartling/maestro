@@ -1,0 +1,169 @@
+<ui version="4.0" >
+ <class>EnvListEditorBase</class>
+ <widget class="QWidget" name="EnvListEditorBase" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>226</width>
+    <height>115</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>EnvVar List Editor</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <property name="margin" >
+    <number>9</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
+   <item>
+    <widget class="QSplitter" name="mSplitter" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="childrenCollapsible" >
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="layoutWidget" >
+      <layout class="QGridLayout" >
+       <property name="margin" >
+        <number>0</number>
+       </property>
+       <property name="spacing" >
+        <number>6</number>
+       </property>
+       <item row="0" column="1" >
+        <widget class="QToolButton" name="mAddKeyBtn" >
+         <property name="toolTip" >
+          <string>Add a new environment variable to the list.</string>
+         </property>
+         <property name="text" >
+          <string>...</string>
+         </property>
+         <property name="icon" >
+          <iconset resource="../../../../MaestroResource.qrc" >:/Maestro/images/edit_add.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="3" >
+        <widget class="QListView" name="mKeysList" />
+       </item>
+       <item row="0" column="0" >
+        <widget class="QLabel" name="mKeyLbl" >
+         <property name="sizePolicy" >
+          <sizepolicy>
+           <hsizetype>5</hsizetype>
+           <vsizetype>4</vsizetype>
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text" >
+          <string>&amp;Key:</string>
+         </property>
+         <property name="textFormat" >
+          <enum>Qt::PlainText</enum>
+         </property>
+         <property name="buddy" >
+          <cstring>mKeysList</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2" >
+        <widget class="QToolButton" name="mRemoveKeyBtn" >
+         <property name="toolTip" >
+          <string>Remove the currently selected environment variable.</string>
+         </property>
+         <property name="text" >
+          <string>...</string>
+         </property>
+         <property name="icon" >
+          <iconset resource="../../../../MaestroResource.qrc" >:/Maestro/images/edit_remove.png</iconset>
+         </property>
+         <property name="shortcut" >
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layoutWidget" >
+      <layout class="QGridLayout" >
+       <property name="margin" >
+        <number>0</number>
+       </property>
+       <property name="spacing" >
+        <number>6</number>
+       </property>
+       <item row="0" column="0" >
+        <widget class="QLabel" name="mValuesLbl" >
+         <property name="sizePolicy" >
+          <sizepolicy>
+           <hsizetype>5</hsizetype>
+           <vsizetype>4</vsizetype>
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text" >
+          <string>&amp;Values:</string>
+         </property>
+         <property name="textFormat" >
+          <enum>Qt::PlainText</enum>
+         </property>
+         <property name="buddy" >
+          <cstring>mValuesTable</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1" >
+        <widget class="QToolButton" name="mAddValueBtn" >
+         <property name="whatsThis" >
+          <string>Add a potential value for the environment varible.</string>
+         </property>
+         <property name="text" >
+          <string>...</string>
+         </property>
+         <property name="icon" >
+          <iconset resource="../../../../MaestroResource.qrc" >:/Maestro/images/edit_add.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2" >
+        <widget class="QToolButton" name="mRemoveValueBtn" >
+         <property name="toolTip" >
+          <string>Remove the currently selected value.</string>
+         </property>
+         <property name="text" >
+          <string>...</string>
+         </property>
+         <property name="icon" >
+          <iconset resource="../../../../MaestroResource.qrc" >:/Maestro/images/edit_remove.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="3" >
+        <widget class="QTableView" name="mValuesTable" />
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>mAddKeyBtn</tabstop>
+  <tabstop>mRemoveKeyBtn</tabstop>
+  <tabstop>mKeysList</tabstop>
+  <tabstop>mValuesTable</tabstop>
+  <tabstop>mAddValueBtn</tabstop>
+  <tabstop>mRemoveValueBtn</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../../../../MaestroResource.qrc" />
+ </resources>
+ <connections/>
+</ui>
