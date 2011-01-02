@@ -10,7 +10,7 @@ This page holds links to development discussions and plans.
    * [GettingTheCode Getting the code]
    * [ContributingToMaestro Contributing]
 
- * [wiki:MaestroToDo To-do list]
+ * [MaestroToDo To-do list]
  * Active development discussions
    * [SecurityDiscussion Adding security] (encryption and authentication)
    * [ScreenSaver Managing the screen saver and screen blanking]
