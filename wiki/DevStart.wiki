@@ -1,0 +1,33 @@
+#summary Starting point for Maestro developers.
+#labels Phase-Design
+
+= Developer Discussions =
+
+This page holds links to development discussions and plans.
+
+ * Getting started with development
+   * [CodingStandard Coding and documentation standard]
+   * [GettingTheCode Getting the code]
+   * [ContributingToMaestro Contributing]
+
+ * [wiki:MaestroToDo To-do list]
+ * Active development discussions
+   * [SecurityDiscussion Adding security] (encryption and authentication)
+   * [ScreenSaver Managing the screen saver and screen blanking]
+   * [DesktopTweaking Changing desktop settings such as the background image]
+
+= Developer Resoures =
+
+== Standards ==
+
+ * [http://standards.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html Freedesktop desktop entry specification] (used for `.desktop` files)
+ * [http://freedesktop.org/wiki/Standards_2fshared_2dmime_2dinfo_2dspec File associations based on MIME type]
+    * The [http://rox.sourceforge.net/desktop/static.html ROX Desktop] MIME-Editor software is helpful for this.
+    * Trying a [http://www.fedoraforum.org/forum/archive/index.php/t-26875.html manual approach] does not seem to work well.
+    * [http://primates.ximian.com/~federico/docs/gnome-isv-guide/index.html Integrating existing software with GNOME] (from Ximian)
+    * [http://www.ces.clemson.edu/linux/fc4_desktop.shtml Some instructions for GNOME 2.10 and KDE 3.4] (these were helpful in getting the file icon association working)
+ * [http://freedesktop.org/wiki/Standards/icon-theme-spec Freedsktop icon theme specification]
+
+== Programming References ==
+
+ * [http://aspn.activestate.com/ASPN/docs/ActivePython/2.4/pywin32/PyWin32.html PyWin32 API documentation]
