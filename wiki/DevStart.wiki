@@ -1,5 +1,5 @@
 #summary Starting point for Maestro developers.
-#labels Phase-Design
+#labels Phase-Design,Featured
 
 = Developer Discussions =
 
