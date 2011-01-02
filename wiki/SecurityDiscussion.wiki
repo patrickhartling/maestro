@@ -1,0 +1,19 @@
+#summary Maestro security topics.
+#labels Phase-Design
+
+[[T(PageHeader|)]]
+
+== All Platforms ==
+
+ * EncryptedCommunication
+
+== Authentication ==
+
+ * [PamAuthentication PAM]
+ * [PkiAuthentication Public/private key authentication] (leveraging [http://www.google.com/search?sourceid=mozclient&ie=utf-8&oe=utf-8&q=ssh-agent ssh-agent] and [http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html Pageant])
+ * [KerberosAuthentication Kerberos] (Windows and UNIX)
+ * [WindowsAuthentication  Windows-specific authentication] (includes SSPI and credentials forwarding topics)
+
+== Related Topics ==
+
+ * [WinlogonDesktop The Winlogon desktop] and its implications for logon requirements and access rights
