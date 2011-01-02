@@ -3,11 +3,11 @@
 
 = Sceenshots of the Maestro GUI =
 
- * [attachment:maestro-ensemble-view.png Ensemble View]: Shows the "ensemble" (all the nodes in the cluster) and allows dynamic addition and removal of nodes.
- * [attachment:maestro-resource-view.png Resource View]: Shows the resource usage of the ensemble. This can be set to update the view of all nodes (or of individual nodes) periodically to provide a "streaming" view of the resource usage over time.
+ * [http://code.google.com/p/maestro/source/browse/wiki-images/maestro-ensemble-view.png Ensemble View]: Shows the "ensemble" (all the nodes in the cluster) and allows dynamic addition and removal of nodes.
+ * [http://code.google.com/p/maestro/source/browse/wiki-images/maestro-resource-view.png Resource View]: Shows the resource usage of the ensemble. This can be set to update the view of all nodes (or of individual nodes) periodically to provide a "streaming" view of the resource usage over time.
  * Stanza Editor: A graphical editor for Maestro "stanzas" (application execution configurations).
-   * [attachment:maestro-stanza-editor1.png Selection of a Choice node in the hierarchy]
-   * [attachment:maestro-stanza-editor2.png Floating node editor and property editing for a Choice node in the hierarchy]
-   * [attachment:maestro-stanza-editor3.png Selection of an Arg node in the hierarchy and class-based node filtering based on operating system]
-   * [attachment:maestro-stanza-editor4.png Editing an Override node for a global option Reference]
- * [attachment:maestro-desktop-view.png Desktop View]: Allows manipulation of screen saver behavior and desktop wallpaper for all nodes or individual nodes.
+   * [http://code.google.com/p/maestro/source/browse/wiki-images/maestro-stanza-editor1.png Selection of a Choice node in the hierarchy]
+   * [http://code.google.com/p/maestro/source/browse/wiki-images/maestro-stanza-editor2.png Floating node editor and property editing for a Choice node in the hierarchy]
+   * [http://code.google.com/p/maestro/source/browse/wiki-images/maestro-stanza-editor3.png Selection of an Arg node in the hierarchy and class-based node filtering based on operating system]
+   * [http://code.google.com/p/maestro/source/browse/wiki-images/maestro-stanza-editor4.png Editing an Override node for a global option Reference]
+ * [http://code.google.com/p/maestro/source/browse/wiki-images/maestro-desktop-view.png Desktop View]: Allows manipulation of screen saver behavior and desktop wallpaper for all nodes or individual nodes.
