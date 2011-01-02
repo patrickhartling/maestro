@@ -1,8 +1,6 @@
 #summary Maestro security topics.
 #labels Phase-Design
 
-[[T(PageHeader|)]]
-
 == All Platforms ==
 
  * EncryptedCommunication
